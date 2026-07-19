@@ -1,0 +1,19 @@
+方法一（推薦，以後都用這個）
+
+先進入專案：
+
+cd D:\IChing
+
+啟動虛擬環境：
+
+.\.venv\Scripts\Activate.ps1
+
+看到前面變成：
+
+(.venv) PS D:\IChing>
+
+然後輸入：
+
+pyside6-designer
+
+Qt Designer 就會開啟。

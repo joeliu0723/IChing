@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+.venv/
+
+# VSCode
+.vscode/
+
+# Qt
+*.autosave
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Backup
+backup/
+
+# Build
+dist/
+build/
