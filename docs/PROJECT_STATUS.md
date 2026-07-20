@@ -1,52 +1,93 @@
-專案名稱
+# PROJECT STATUS
 
-易經研究工作台（IChing Research Workbench）
+Project
 
-已完成
-V0.1
-Python 專案建立
-PySide6 環境建立
-V0.2
-Qt Designer 導入
-MainWindow 建立
-V0.3
-起卦頁面建立
-解卦頁面建立
-六爻輸入 UI 完成
-V0.4
-Input Mode 完成
-六爻
-卦名
-卦序
-上下卦
-✅ V0.5-1（今日完成）
-六爻輸入控制器
-QPushButton Checkable
-六爻資料同步
-UI 與資料模型連結完成
-下一步（V0.5-2）
+Project IChing（易經研究工作台）
 
-建立第一個核心運算模組：
+Current Version
 
-core/
-    hexagram.py
+V1.0
 
-預計完成：
+Status
 
-六爻 → 陰陽
-陰陽 → 八卦
-八卦 → 本卦
-老陰／老陽 → 變卦
-自動取得卦名
+🟢 Active Development
 
-完成後，UI 將第一次能自動顯示：
+Last Update
 
-本卦
-風火家人
+2026-07-20
 
-變卦
-風山漸
-目前專案進度
-██████████░░░░░░░░░░░░░░░░░░ 35%
+---
 
-目前已完成整體 UI 與六爻輸入流程，接下來將進入《易經》核心演算法的開發。之後的功能會以資料模型為核心，逐步加入本卦、變卦、卦辭、爻辭、互卦、錯卦、綜卦等分析能力。
+# Current Milestone
+
+M1：解卦 UI
+
+---
+
+# Current Sprint
+
+完成解卦頁面並串接 Presenter。
+
+---
+
+# Completed
+
+## 已完成
+
+- Git Repository
+- GitHub
+- GitHub Desktop
+- 文件架構
+- 起卦 UI
+- 六爻輸入
+- 排卦核心
+- HexagramEngine
+- HexagramController
+- HexagramResult
+- JSON 資料格式
+- Unit Test
+
+---
+
+# In Progress
+
+- 解卦頁 UI
+- Presenter
+
+---
+
+# Next Tasks
+
+□ 完成解卦頁 UI
+
+□ 顯示本卦
+
+□ 顯示變卦
+
+□ 顯示動爻
+
+□ 串接 HexagramResult
+
+□ 顯示卦辭
+
+---
+
+# Blockers
+
+目前無
+
+---
+
+# Scope
+
+依 PRODUCT_SPEC V1.0
+
+---
+
+# Notes
+
+Architecture Frozen
+
+Folder Structure Frozen
+
+依 PRODUCT_SPEC / DATA_SPEC 開發。

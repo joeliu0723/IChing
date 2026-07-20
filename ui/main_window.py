@@ -124,8 +124,17 @@ class MainWindow:
 
         # ===== 六爻完成，開始排卦 =====
 
-        engine = HexagramEngine(self.lines)
-        engine.debug()
+        from core.controller import HexagramController
+        from core.presenter import HexagramPresenter
+
+        controller = HexagramController()
+        result = controller.calculate(self.lines)
+
+        presenter = HexagramPresenter(self.window)
+        presenter.show(result)
+
+        if hasattr(self.window, "tabWidget") and hasattr(self.window, "tab_interpretation"):
+            self.window.tabWidget.setCurrentWidget(self.window.tab_interpretation)
 
     def show(self):
         self.window.show()
