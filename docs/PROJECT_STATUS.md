@@ -1,100 +1,161 @@
-==================================================
-Project : IChing
-Current Version : V0.8.2
-Status : 資料層重構準備
-==================================================
+# PROJECT_STATUS.md
 
-【目前完成】
+# Project IChing（易經研究工作台）
 
-✓ PySide6 GUI 建立
-✓ 六爻輸入
-✓ 本卦 / 變卦計算
-✓ HTML Parser 建立
-✓ hexagrams.json 自動產生
-✓ HTML 結構分析完成
-✓ 專案架構分析完成
+## Current Version
 
---------------------------------------------------
+V0.8.2
 
-【目前進行】
+---
 
-■ Database V1.0 重構
+# 專案狀態
 
-目標：
+目前核心 MVC 已完成並驗證。
 
-建立統一資料模型：
+目前程式流程：
 
-hexagrams.json
-
-↓
-
+```
+MainWindow
+    ↓
+HexagramController
+    ↓
 HexagramEngine
-
-↓
-
-Controller
-
-↓
-
+    ↓
+HexagramResult
+    ↓
+HexagramPresenter
+    ↓
 UI
+```
 
---------------------------------------------------
+此流程已確認可正常運作。
 
-【下一步】
+---
 
-STEP 1
-重構 HexagramEngine
+# 已完成
 
-改為支援新的 hexagrams.json。
+## Git
 
-STEP 2
-修改資料查詢方式。
+* Git Repository
+* GitHub Repository
+* GitHub Desktop
 
-由舊：
+---
 
-乾_乾
+## Environment
 
-改為：
+* Python
+* PySide6
+* Qt Designer
 
-number
+---
 
-(或必要時使用 name)
-
-STEP 3
-UI 成功顯示：
-
-✓ 本卦
-✓ 變卦
-✓ 卦辭
-✓ 解說
-
---------------------------------------------------
-
-【Frozen】
-
-暫停開發：
-
-□ 爻辭
-□ 象傳
-□ 文言
-□ 搜尋
-□ 收藏
-□ 心得
-□ 匯出
-
-待資料層完成後再進行。
-
---------------------------------------------------
-
-【Version Goal】
-
-V0.9
+## UI
 
 完成：
 
-✓ 新資料模型
-✓ HexagramEngine 重構
-✓ UI 成功讀取資料
-✓ JSON 統一
+* 六爻輸入
+* 解卦頁
+* 本卦顯示
+* 變卦顯示
+* 動爻顯示
 
-==================================================
+---
+
+## Core
+
+完成：
+
+* HexagramEngine
+* HexagramController
+* HexagramPresenter
+* HexagramResult
+
+---
+
+## Data
+
+目前使用：
+
+hexagrams.json
+
+保持目前資料格式，不進行擴充。
+
+---
+
+## 已完成功能
+
+* 六爻輸入
+* 排卦
+* 本卦
+* 變卦
+* 動爻
+* 解卦頁顯示
+* MVC 完整串接
+
+---
+
+# 尚未開始
+
+## History
+
+每次占卜自動建立紀錄。
+
+內容包含：
+
+* 日期
+* 時間
+* 問題
+* 六爻
+* 本卦
+* 變卦
+* 動爻
+
+---
+
+## Notes
+
+每筆紀錄可編輯心得。
+
+---
+
+## AI Analysis
+
+根據：
+
+* 本卦
+* 變卦
+* 動爻
+* 問題
+
+產生 AI 解卦內容。
+
+---
+
+## Search
+
+搜尋歷史紀錄。
+
+---
+
+## Favorite
+
+收藏重要占卜。
+
+---
+
+# 下一次開始
+
+直接開始：
+
+## V0.9.0
+
+第一個功能：
+
+History（占卜紀錄）
+
+完成後依序開發：
+
+History → Notes → AI Analysis → Search → Favorite
+
+除非發現重大架構問題，否則不再修改 MVC 核心架構。
