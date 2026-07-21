@@ -1,93 +1,100 @@
-# PROJECT STATUS
+==================================================
+Project : IChing
+Current Version : V0.8.2
+Status : 資料層重構準備
+==================================================
 
-Project
+【目前完成】
 
-Project IChing（易經研究工作台）
+✓ PySide6 GUI 建立
+✓ 六爻輸入
+✓ 本卦 / 變卦計算
+✓ HTML Parser 建立
+✓ hexagrams.json 自動產生
+✓ HTML 結構分析完成
+✓ 專案架構分析完成
 
-Current Version
+--------------------------------------------------
 
-V1.0
+【目前進行】
 
-Status
+■ Database V1.0 重構
 
-🟢 Active Development
+目標：
 
-Last Update
+建立統一資料模型：
 
-2026-07-20
+hexagrams.json
 
----
+↓
 
-# Current Milestone
+HexagramEngine
 
-M1：解卦 UI
+↓
 
----
+Controller
 
-# Current Sprint
+↓
 
-完成解卦頁面並串接 Presenter。
+UI
 
----
+--------------------------------------------------
 
-# Completed
+【下一步】
 
-## 已完成
+STEP 1
+重構 HexagramEngine
 
-- Git Repository
-- GitHub
-- GitHub Desktop
-- 文件架構
-- 起卦 UI
-- 六爻輸入
-- 排卦核心
-- HexagramEngine
-- HexagramController
-- HexagramResult
-- JSON 資料格式
-- Unit Test
+改為支援新的 hexagrams.json。
 
----
+STEP 2
+修改資料查詢方式。
 
-# In Progress
+由舊：
 
-- 解卦頁 UI
-- Presenter
+乾_乾
 
----
+改為：
 
-# Next Tasks
+number
 
-□ 完成解卦頁 UI
+(或必要時使用 name)
 
-□ 顯示本卦
+STEP 3
+UI 成功顯示：
 
-□ 顯示變卦
+✓ 本卦
+✓ 變卦
+✓ 卦辭
+✓ 解說
 
-□ 顯示動爻
+--------------------------------------------------
 
-□ 串接 HexagramResult
+【Frozen】
 
-□ 顯示卦辭
+暫停開發：
 
----
+□ 爻辭
+□ 象傳
+□ 文言
+□ 搜尋
+□ 收藏
+□ 心得
+□ 匯出
 
-# Blockers
+待資料層完成後再進行。
 
-目前無
+--------------------------------------------------
 
----
+【Version Goal】
 
-# Scope
+V0.9
 
-依 PRODUCT_SPEC V1.0
+完成：
 
----
+✓ 新資料模型
+✓ HexagramEngine 重構
+✓ UI 成功讀取資料
+✓ JSON 統一
 
-# Notes
-
-Architecture Frozen
-
-Folder Structure Frozen
-
-依 PRODUCT_SPEC / DATA_SPEC 開發。
+==================================================

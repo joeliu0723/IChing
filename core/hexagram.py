@@ -2,7 +2,7 @@
 ==================================================
 Project IChing
 File : core/hexagram.py
-Version : V0.8.1
+Version : V0.8.2
 ==================================================
 """
 
@@ -26,10 +26,9 @@ class HexagramEngine:
         )
 
         with open(json_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+            self.hexagrams = json.load(f)
 
-        self.version = data.get("version", "")
-        self.hexagrams = data.get("hexagrams", {})
+        self.version = "V1"
 
     # -------------------------------------------------
     # 本卦 Binary
@@ -109,9 +108,15 @@ class HexagramEngine:
 
     def _lookup(self, upper_name, lower_name):
 
-        key = f"{upper_name}_{lower_name}"
+        for item in self.hexagrams:
 
-        return self.hexagrams.get(key)
+            if (
+                item.get("upper") == upper_name
+                and item.get("lower") == lower_name
+            ):
+                return item
+
+        return None
 
     # -------------------------------------------------
 
@@ -123,6 +128,8 @@ class HexagramEngine:
             upper["name"],
             lower["name"]
         )
+
+    # -------------------------------------------------
 
     def get_changed_hexagram(self):
 
@@ -146,7 +153,7 @@ class HexagramEngine:
 
             name=data.get("name", ""),
 
-            title=data.get("title", ""),
+            title=data.get("title", data.get("name", "")),
 
             upper=data.get("upper", ""),
 
@@ -154,15 +161,26 @@ class HexagramEngine:
 
             symbol=data.get("symbol", ""),
 
-            gua_text=data.get("gua_text", ""),
+            gua_text=data.get(
+                "gua_text",
+                data.get("gua", "")
+            ),
 
-            tuan=data.get("tuan", ""),
+            tuan=data.get(
+                "tuan",
+                data.get("description", "")
+            ),
 
             xiang=data.get("xiang", ""),
 
             wenyan=data.get("wenyan", ""),
 
-            translation=data.get("translation", "")
+            translation=data.get(
+                "translation",
+                data.get("modern", "")
+            ),
+
+            raw=data
 
         )
 
@@ -183,7 +201,27 @@ class HexagramEngine:
         return result
 
     # -------------------------------------------------
-    # 計算
+    # 六爻
+    # -------------------------------------------------
+
+    def get_line_text(self, line_no: int):
+
+        info = self._build_info(
+            self.get_hexagram()
+        )
+
+        return info.line_text(line_no)
+
+    # -------------------------------------------------
+
+    def get_changed_line_text(self, line_no: int):
+
+        info = self._build_info(
+            self.get_changed_hexagram()
+        )
+
+        return info.line_text(line_no)
+
     # -------------------------------------------------
 
     def calculate(self):
@@ -243,5 +281,15 @@ class HexagramEngine:
         print(result.moving_lines)
 
         print()
+
+        if result.moving_lines:
+
+            print("Moving Line Text")
+
+            for line in result.moving_lines:
+
+                print(f"{line} :", self.get_line_text(line))
+
+            print()
 
         print("===================================")

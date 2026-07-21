@@ -5,7 +5,6 @@ from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QPushButton
 
-from core.hexagram import HexagramEngine
 
 
 class MainWindow:
