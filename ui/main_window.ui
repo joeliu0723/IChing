@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>800</height>
+    <height>926</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tabDivination">
        <attribute name="title">
@@ -28,7 +28,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>10</y>
+          <y>110</y>
           <width>1182</width>
           <height>678</height>
          </rect>
@@ -62,7 +62,7 @@
              <rect>
               <x>80</x>
               <y>10</y>
-              <width>301</width>
+              <width>353</width>
               <height>81</height>
              </rect>
             </property>
@@ -531,12 +531,214 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="horizontalLayoutWidget_7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>481</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>占卜問題</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="editQuestion"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_interpretation">
        <attribute name="title">
         <string>解卦</string>
        </attribute>
-      <layout class="QVBoxLayout" name="verticalLayoutInterpretation"><item><layout class="QFormLayout" name="formInfo"><item row="0" column="0"><widget class="QLabel" name="label_lblMainName"><property name="text"><string>本卦</string></property></widget></item><item row="0" column="1"><widget class="QLabel" name="lblMainName"><property name="text"><string>-</string></property></widget></item><item row="1" column="0"><widget class="QLabel" name="label_lblMainNumber"><property name="text"><string>本卦編號</string></property></widget></item><item row="1" column="1"><widget class="QLabel" name="lblMainNumber"><property name="text"><string>-</string></property></widget></item><item row="2" column="0"><widget class="QLabel" name="label_lblChangedName"><property name="text"><string>變卦</string></property></widget></item><item row="2" column="1"><widget class="QLabel" name="lblChangedName"><property name="text"><string>-</string></property></widget></item><item row="3" column="0"><widget class="QLabel" name="label_lblChangedNumber"><property name="text"><string>變卦編號</string></property></widget></item><item row="3" column="1"><widget class="QLabel" name="lblChangedNumber"><property name="text"><string>-</string></property></widget></item><item row="4" column="0"><widget class="QLabel" name="label_lblMovingLines"><property name="text"><string>動爻</string></property></widget></item><item row="4" column="1"><widget class="QLabel" name="lblMovingLines"><property name="text"><string>-</string></property></widget></item></layout></item><item><widget class="QGroupBox" name="grp_txtJudgment"><property name="title"><string>卦辭</string></property><layout class="QVBoxLayout" name="layout_txtJudgment"><item><widget class="QPlainTextEdit" name="txtJudgment" /></item></layout></widget></item><item><widget class="QGroupBox" name="grp_txtTuan"><property name="title"><string>彖傳</string></property><layout class="QVBoxLayout" name="layout_txtTuan"><item><widget class="QPlainTextEdit" name="txtTuan" /></item></layout></widget></item><item><widget class="QGroupBox" name="grp_txtXiang"><property name="title"><string>象傳</string></property><layout class="QVBoxLayout" name="layout_txtXiang"><item><widget class="QPlainTextEdit" name="txtXiang" /></item></layout></widget></item><item><widget class="QGroupBox" name="grp_txtWenyan"><property name="title"><string>文言</string></property><layout class="QVBoxLayout" name="layout_txtWenyan"><item><widget class="QPlainTextEdit" name="txtWenyan" /></item></layout></widget></item><item><widget class="QGroupBox" name="grp_txtTranslation"><property name="title"><string>白話翻譯</string></property><layout class="QVBoxLayout" name="layout_txtTranslation"><item><widget class="QPlainTextEdit" name="txtTranslation" /></item></layout></widget></item><item><widget class="QGroupBox" name="grp_txtAIAnalysis"><property name="title"><string>AI分析</string></property><layout class="QVBoxLayout" name="layout_txtAIAnalysis"><item><widget class="QPlainTextEdit" name="txtAIAnalysis" /></item></layout></widget></item><item><widget class="QGroupBox" name="grp_txtNotes"><property name="title"><string>我的心得</string></property><layout class="QVBoxLayout" name="layout_txtNotes"><item><widget class="QPlainTextEdit" name="txtNotes" /></item></layout></widget></item></layout></widget>
+       <layout class="QVBoxLayout" name="verticalLayoutInterpretation">
+        <item>
+         <layout class="QFormLayout" name="formInfo">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_lblMainName">
+            <property name="text">
+             <string>本卦</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="lblMainName">
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_lblMainNumber">
+            <property name="text">
+             <string>本卦編號</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="lblMainNumber">
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_lblChangedName">
+            <property name="text">
+             <string>變卦</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="lblChangedName">
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_lblChangedNumber">
+            <property name="text">
+             <string>變卦編號</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="lblChangedNumber">
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_lblMovingLines">
+            <property name="text">
+             <string>動爻</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="lblMovingLines">
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grp_txtJudgment">
+          <property name="title">
+           <string>卦辭</string>
+          </property>
+          <layout class="QVBoxLayout" name="layout_txtJudgment">
+           <item>
+            <widget class="QPlainTextEdit" name="txtJudgment"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grp_txtTuan">
+          <property name="title">
+           <string>彖傳</string>
+          </property>
+          <layout class="QVBoxLayout" name="layout_txtTuan">
+           <item>
+            <widget class="QPlainTextEdit" name="txtTuan"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grp_txtXiang">
+          <property name="title">
+           <string>象傳</string>
+          </property>
+          <layout class="QVBoxLayout" name="layout_txtXiang">
+           <item>
+            <widget class="QPlainTextEdit" name="txtXiang"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grp_txtWenyan">
+          <property name="title">
+           <string>文言</string>
+          </property>
+          <layout class="QVBoxLayout" name="layout_txtWenyan">
+           <item>
+            <widget class="QPlainTextEdit" name="txtWenyan"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grp_txtTranslation">
+          <property name="title">
+           <string>白話翻譯</string>
+          </property>
+          <layout class="QVBoxLayout" name="layout_txtTranslation">
+           <item>
+            <widget class="QPlainTextEdit" name="txtTranslation"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grp_txtAIAnalysis">
+          <property name="title">
+           <string>AI分析</string>
+          </property>
+          <layout class="QVBoxLayout" name="layout_txtAIAnalysis">
+           <item>
+            <widget class="QPlainTextEdit" name="txtAIAnalysis"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grp_txtNotes">
+          <property name="title">
+           <string>我的心得</string>
+          </property>
+          <layout class="QVBoxLayout" name="layout_txtNotes">
+           <item>
+            <widget class="QPlainTextEdit" name="txtNotes"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_history">
+       <attribute name="title">
+        <string>歷史紀錄</string>
+       </attribute>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>9</x>
+          <y>-1</y>
+          <width>1161</width>
+          <height>831</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QListWidget" name="listHistory"/>
+         </item>
+        </layout>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -551,8 +753,8 @@
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources />
- <connections />
+ <resources/>
+ <connections/>
 </ui>

@@ -5,6 +5,9 @@ from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QPushButton
 
+from core.controller import HexagramController
+from core.presenter import HexagramPresenter
+from ui.history_page import HistoryPage
 
 
 class MainWindow:
@@ -41,10 +44,17 @@ class MainWindow:
             "YoungYang": "少陽",
             "YoungYin": "少陰",
             "OldYang": "老陽",
-            "OldYin": "老陰"
+            "OldYin": "老陰",
         }
 
         self.buttons = {}
+
+        # Controller / Presenter
+        self.controller = HexagramController()
+        self.presenter = HexagramPresenter(self.window)
+
+        # History Page
+        self.history_page = HistoryPage(self.window)
 
         self.init_buttons()
 
@@ -54,7 +64,7 @@ class MainWindow:
             "YoungYang",
             "YoungYin",
             "OldYang",
-            "OldYin"
+            "OldYin",
         ]
 
         for line in range(1, 7):
@@ -65,7 +75,7 @@ class MainWindow:
 
                 button = self.window.findChild(
                     QPushButton,
-                    f"rb{line}{name}"
+                    f"rb{line}{name}",
                 )
 
                 if button is None:
@@ -91,7 +101,7 @@ class MainWindow:
         # 設定目前按鈕
         button = self.window.findChild(
             QPushButton,
-            f"rb{line}{name}"
+            f"rb{line}{name}",
         )
 
         if button is not None:
@@ -113,7 +123,7 @@ class MainWindow:
                 "三爻",
                 "四爻",
                 "五爻",
-                "上爻"
+                "上爻",
             ]
 
             for i in range(6):
@@ -123,17 +133,27 @@ class MainWindow:
 
         # ===== 六爻完成，開始排卦 =====
 
-        from core.controller import HexagramController
-        from core.presenter import HexagramPresenter
+        question = ""
 
-        controller = HexagramController()
-        result = controller.calculate(self.lines)
+        if hasattr(self.window, "editQuestion"):
+            question = self.window.editQuestion.text().strip()
 
-        presenter = HexagramPresenter(self.window)
-        presenter.show(result)
+        result = self.controller.calculate(
+            self.lines,
+            question,
+        )
 
-        if hasattr(self.window, "tabWidget") and hasattr(self.window, "tab_interpretation"):
-            self.window.tabWidget.setCurrentWidget(self.window.tab_interpretation)
+        self.presenter.show(result)
+
+        self.history_page.refresh()
+
+        if (
+            hasattr(self.window, "tabWidget")
+            and hasattr(self.window, "tab_interpretation")
+        ):
+            self.window.tabWidget.setCurrentWidget(
+                self.window.tab_interpretation
+            )
 
     def show(self):
         self.window.show()
