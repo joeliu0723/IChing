@@ -17,3 +17,5 @@ cd D:\IChing
 pyside6-designer
 
 Qt Designer 就會開啟。
+ python main.py
+ 開視窗

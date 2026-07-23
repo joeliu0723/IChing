@@ -166,10 +166,7 @@ class HexagramEngine:
                 data.get("gua", "")
             ),
 
-            tuan=data.get(
-                "tuan",
-                data.get("description", "")
-            ),
+            tuan=data.get("tuan", ""),
 
             xiang=data.get("xiang", ""),
 
@@ -177,7 +174,10 @@ class HexagramEngine:
 
             translation=data.get(
                 "translation",
-                data.get("modern", "")
+                data.get(
+                    "modern",
+                    data.get("description", "")
+                )
             ),
 
             raw=data
