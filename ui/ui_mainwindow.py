@@ -18,14 +18,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QFormLayout, QGroupBox, QHBoxLayout,
     QLabel, QLineEdit, QListWidget, QListWidgetItem,
     QMainWindow, QMenuBar, QPlainTextEdit, QPushButton,
-    QRadioButton, QSizePolicy, QStatusBar, QTabWidget,
-    QVBoxLayout, QWidget)
+    QRadioButton, QSizePolicy, QSpinBox, QStatusBar,
+    QTabWidget, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1200, 926)
+        MainWindow.resize(1600, 926)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -337,6 +337,29 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2.addWidget(self.editQuestion)
 
+        self.horizontalLayoutWidget_8 = QWidget(self.tabDivination)
+        self.horizontalLayoutWidget_8.setObjectName(u"horizontalLayoutWidget_8")
+        self.horizontalLayoutWidget_8.setGeometry(QRect(510, 40, 621, 80))
+        self.horizontalLayout_3 = QHBoxLayout(self.horizontalLayoutWidget_8)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.label_14 = QLabel(self.horizontalLayoutWidget_8)
+        self.label_14.setObjectName(u"label_14")
+
+        self.horizontalLayout_3.addWidget(self.label_14)
+
+        self.spinHexagramNumber = QSpinBox(self.horizontalLayoutWidget_8)
+        self.spinHexagramNumber.setObjectName(u"spinHexagramNumber")
+        self.spinHexagramNumber.setMinimum(1)
+        self.spinHexagramNumber.setMaximum(64)
+
+        self.horizontalLayout_3.addWidget(self.spinHexagramNumber)
+
+        self.btnNumberCalculate = QPushButton(self.horizontalLayoutWidget_8)
+        self.btnNumberCalculate.setObjectName(u"btnNumberCalculate")
+
+        self.horizontalLayout_3.addWidget(self.btnNumberCalculate)
+
         self.tabWidget.addTab(self.tabDivination, "")
         self.tab_interpretation = QWidget()
         self.tab_interpretation.setObjectName(u"tab_interpretation")
@@ -502,7 +525,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1200, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1600, 33))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -510,7 +533,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -561,6 +584,8 @@ class Ui_MainWindow(object):
         self.rb1OldYin.setText(QCoreApplication.translate("MainWindow", u"\u8001\u9670", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"\u4e00", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"\u5360\u535c\u554f\u984c", None))
+        self.label_14.setText(QCoreApplication.translate("MainWindow", u"\u5366\u5e8f", None))
+        self.btnNumberCalculate.setText(QCoreApplication.translate("MainWindow", u"\u4f9d\u5366\u5e8f\u6392\u5366", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabDivination), QCoreApplication.translate("MainWindow", u"\u8d77\u5366", None))
         self.label_lblMainName.setText(QCoreApplication.translate("MainWindow", u"\u672c\u5366", None))
         self.lblMainName.setText(QCoreApplication.translate("MainWindow", u"-", None))

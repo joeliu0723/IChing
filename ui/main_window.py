@@ -1,35 +1,22 @@
 import sys
-from pathlib import Path
 
-from PySide6.QtCore import QFile
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication, QPushButton
+from PySide6.QtWidgets import QApplication, QMainWindow
 
+from ui.ui_mainwindow import Ui_MainWindow
 from core.controller import HexagramController
 from core.presenter import HexagramPresenter
 from ui.history_page import HistoryPage
 
 
-class MainWindow:
+class MainWindow(QMainWindow):
 
     def __init__(self):
+        super().__init__()
 
-        loader = QUiLoader()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        ui_file = Path(__file__).parent / "main_window.ui"
-
-        file = QFile(str(ui_file))
-        if not file.open(QFile.ReadOnly):
-            raise RuntimeError(f"無法開啟 {ui_file}")
-
-        self.window = loader.load(file)
-        file.close()
-
-        if self.window is None:
-            raise RuntimeError("UI 載入失敗")
-
-        # 被選取按鈕樣式
-        self.window.setStyleSheet("""
+        self.setStyleSheet("""
         QPushButton:checked {
             background-color: #4CAF50;
             color: white;
@@ -37,7 +24,6 @@ class MainWindow:
         }
         """)
 
-        # 六爻資料（由下往上）
         self.lines = [None] * 6
 
         self.values = {
@@ -49,38 +35,21 @@ class MainWindow:
 
         self.buttons = {}
 
-        # Controller / Presenter
         self.controller = HexagramController()
-        self.presenter = HexagramPresenter(self.window)
-
-        # History Page
-        self.history_page = HistoryPage(self.window)
+        self.presenter = HexagramPresenter(self.ui)
+        self.history_page = HistoryPage(self.ui)
 
         self.init_buttons()
+        self.init_number_input()
 
     def init_buttons(self):
-
-        names = [
-            "YoungYang",
-            "YoungYin",
-            "OldYang",
-            "OldYin",
-        ]
+        names = ["YoungYang", "YoungYin", "OldYang", "OldYin"]
 
         for line in range(1, 7):
-
             group = []
 
             for name in names:
-
-                button = self.window.findChild(
-                    QPushButton,
-                    f"rb{line}{name}",
-                )
-
-                if button is None:
-                    print(f"找不到 rb{line}{name}")
-                    continue
+                button = getattr(self.ui, f"rb{line}{name}")
 
                 button.clicked.connect(
                     lambda checked=False, l=line, n=name: self.select_line(l, n)
@@ -90,81 +59,65 @@ class MainWindow:
 
             self.buttons[line] = group
 
+    def init_number_input(self):
+        """
+        初始化卦序輸入
+        """
+        self.ui.btnNumberCalculate.clicked.connect(
+            self.calculate_by_number
+        )
+
     def select_line(self, line, name):
 
-        # 同一爻取消其它按鈕
         for btn in self.buttons[line]:
             btn.blockSignals(True)
             btn.setChecked(False)
             btn.blockSignals(False)
 
-        # 設定目前按鈕
-        button = self.window.findChild(
-            QPushButton,
-            f"rb{line}{name}",
-        )
+        button = getattr(self.ui, f"rb{line}{name}")
+        button.blockSignals(True)
+        button.setChecked(True)
+        button.blockSignals(False)
 
-        if button is not None:
-            button.blockSignals(True)
-            button.setChecked(True)
-            button.blockSignals(False)
-
-        # 更新六爻資料
         self.lines[line - 1] = self.values[name]
 
-        # 六爻尚未輸入完成
         if None in self.lines:
-
-            print("\n========== 六爻 ==========")
-
-            titles = [
-                "初爻",
-                "二爻",
-                "三爻",
-                "四爻",
-                "五爻",
-                "上爻",
-            ]
-
-            for i in range(6):
-                print(f"{titles[i]}：{self.lines[i]}")
-
             return
-
-        # ===== 六爻完成，開始排卦 =====
-
-        question = ""
-
-        if hasattr(self.window, "editQuestion"):
-            question = self.window.editQuestion.text().strip()
 
         result = self.controller.calculate(
             self.lines,
-            question,
+            self.ui.editQuestion.text().strip()
         )
 
         self.presenter.show(result)
+        self.history_page.refresh()
+        self.ui.tabWidget.setCurrentWidget(
+            self.ui.tab_interpretation
+        )
 
+    def calculate_by_number(self):
+
+        number = self.ui.spinHexagramNumber.value()
+
+        question = self.ui.editQuestion.text().strip()
+
+        result = self.controller.calculate_by_number(
+            number,
+            question
+        )
+
+        self.presenter.show(result)
         self.history_page.refresh()
 
-        if (
-            hasattr(self.window, "tabWidget")
-            and hasattr(self.window, "tab_interpretation")
-        ):
-            self.window.tabWidget.setCurrentWidget(
-                self.window.tab_interpretation
-            )
-
-    def show(self):
-        self.window.show()
+        self.ui.tabWidget.setCurrentWidget(
+            self.ui.tab_interpretation
+        )
 
 
 def run_app():
-
     app = QApplication(sys.argv)
 
     window = MainWindow()
-
     window.show()
 
     sys.exit(app.exec())
