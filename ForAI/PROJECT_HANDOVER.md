@@ -1,6 +1,10 @@
 IChing Research Workbench（易經研究工作台）
 
-Version：V1.1（Development）
+Version：V1.3（Development）
+
+最後同步：2026-07-26（依程式碼現況更新）
+
+---
 
 一、專案定位
 
@@ -17,13 +21,15 @@ Version：V1.1（Development）
 易經全文
 六爻排卦
 解卦
-AI研究
+AI 研究
 個人研究資料
 搜尋
 收藏
 長期知識管理
 
 而不是傳統命理軟體。
+
+---
 
 二、V1 開發目標
 
@@ -41,6 +47,8 @@ V1 的目標只有一個：
 可保存研究心得
 
 AI 功能放在最後完成。
+
+---
 
 三、不納入 V1 的功能
 
@@ -66,141 +74,86 @@ V1 不開發：
 
 先完成核心功能。
 
+---
+
 四、目前技術架構
 
 採用 MVC。
 
 資料流程：
 
-UI
-
-↓
-
-Controller
-
-↓
-
-HexagramEngine
-
-↓
-
-Presenter
-
-↓
-
-UI
+UI → Controller → HexagramEngine → Presenter → UI
 
 各層職責：
 
-UI
+UI — 顯示、接收輸入，不得放商業邏輯
 
-只負責：
+Controller — 接收 UI 操作、呼叫 Engine / Presenter，不得直接操作 UI 控制項
 
-顯示
-接收輸入
+Engine — 排卦、卦象計算、動爻、變卦，不得碰 UI
 
-不得放商業邏輯。
+Presenter — 將 Engine 回傳資料轉換成 UI 可顯示格式，不得做演算法
 
-Controller
+實際目錄：
 
-負責：
+- `core/` — Engine、Controller、Presenter、History、Session
+- `ui/` — MainWindow、HistoryPage、Qt Designer 檔案
+- `data/` — hexagrams.json、history.json
 
-接收 UI 操作
-呼叫 Engine
-呼叫 Presenter
-
-不得直接操作 UI 控制項。
-
-Engine
-
-負責：
-
-排卦
-卦象計算
-動爻
-變卦
-易經資料整理
-
-不得碰 UI。
-
-Presenter
-
-負責：
-
-將 Engine 回傳資料：
-
-轉換成 UI 可直接顯示的格式。
-
-不得做演算法。
+---
 
 五、目前已完成
 
-目前完成：
-
 ✅ Git 專案建立
-
-✅ Python 環境
-
-✅ PySide6
-
-✅ Qt Designer
-
+✅ Python 環境（PySide6、Qt Designer）
 ✅ MVC 架構
+✅ MainWindow（起卦 / 解卦 / 歷史紀錄 三個分頁）
+✅ HexagramEngine（本卦、變卦、動爻）
+✅ HexagramController / HexagramPresenter
+✅ 六爻輸入（UI 已串接）
+✅ 卦序輸入（UI 已串接）
+✅ 排卦完成自動切換解卦頁
+✅ 解卦頁顯示本卦卦辭、彖傳、象傳、文言、白話翻譯
+✅ HistoryManager + history.json 自動儲存
+✅ HistoryPage 列表顯示
+✅ HexagramLookup 查詢模組
+✅ 上下卦輸入（UI 已串接）
+✅ 輸入模式切換（四種方式）
 
-✅ MainWindow
-
-✅ 六爻輸入
-
-✅ 卦序輸入
-
-✅ HexagramEngine
-
-✅ Controller
-
-✅ Presenter
-
-✅ 排卦
-
-✅ 排卦切換解卦頁
+---
 
 六、目前開發順序（唯一版本）
 
 後續開發依照以下順序，不得跳號。
 
-V1.1 輸入方式完善
+V1.1 輸入方式完善 — 已完成
 
-已完成：
+V1.2 起卦功能完善 — 已完成
 
-六爻輸入
-卦序輸入
+- 共用起卦流程 run_cast()
+- Controller 輸入驗證
+- 錯誤提示
+- 移除 debug print
 
-待完成：
-
-卦名輸入
-上下卦輸入
-輸入模式切換
-V1.2 起卦功能完善
-輸入驗證
-起卦按鈕整合
-共用起卦流程
 V1.3 解卦頁
-本卦資訊
-變卦資訊
-動爻資訊
-卦辭
-彖傳
-象傳
-文言
-白話翻譯
+
+- 變卦經文
+- 爻辭
+- History 詳情顯示
+
 V1.4 研究功能
-我的心得
-歷史紀錄
-搜尋
-收藏
+
+- 我的心得編輯與儲存
+- 搜尋、收藏、編輯、刪除
+
 V1.5 AI 功能
-AI 解卦
-AI 問答
-AI 研究輔助
+
+- AI 解卦
+- AI 問答
+- AI 研究輔助
+
+---
+
 七、AI 開發原則
 
 所有 AI 必須遵守：
@@ -213,16 +166,11 @@ AI 研究輔助
 每次修改提供完整檔案，不提供程式片段。
 若規格沒有衝突，不要反覆要求使用者確認流程。
 以既有專案結構為準，不重新設計架構。
+
+---
+
 八、下一個工作
 
 目前下一個工作為：
 
-V1.1：完成「卦名輸入」功能。
-
-完成後才可進行：
-
-上下卦輸入
-
-四種輸入方式全部完成後，再實作：
-
-輸入模式切換（RadioButton）。
+V1.3：變卦經文、爻辭、History 詳情顯示。

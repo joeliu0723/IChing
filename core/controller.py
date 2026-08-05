@@ -7,10 +7,25 @@ from core.session import session
 from core.hexagram_lookup import HexagramLookup
 
 
+VALID_LINE_VALUES = ("少陽", "少陰", "老陽", "老陰")
+
+
 class HexagramController:
 
     def __init__(self):
         self.history_manager = HistoryManager()
+
+    def _validate_lines(self, lines):
+        if not isinstance(lines, list) or len(lines) != 6:
+            raise ValueError("六爻輸入不完整，請選擇全部六爻。")
+
+        for line in lines:
+            if line not in VALID_LINE_VALUES:
+                raise ValueError(f"無效的爻值：{line}")
+
+    def _validate_number(self, number):
+        if not isinstance(number, int) or not 1 <= number <= 64:
+            raise ValueError(f"卦序必須為 1 到 64，目前為：{number}")
 
     def calculate(self, lines, question=""):
         """
@@ -19,6 +34,8 @@ class HexagramController:
         建立 History
         更新 Session
         """
+
+        self._validate_lines(lines)
 
         engine = HexagramEngine(lines)
         result = engine.calculate()
@@ -37,13 +54,7 @@ class HexagramController:
 
         record.moving_lines = result.moving_lines.copy()
 
-        print("HistoryManager.add()")
-
         self.history_manager.add(record)
-
-        print("History saved")
-
-        # ===== 更新目前工作階段 =====
 
         session.set_result(result)
         session.set_record(record)
@@ -61,10 +72,9 @@ class HexagramController:
         number : 1~64
         """
 
-        lines = HexagramLookup.number_to_lines(number)
+        self._validate_number(number)
 
-        if lines is None:
-            raise ValueError(f"無效的卦序：{number}")
+        lines = HexagramLookup.number_to_lines(number)
 
         return self.calculate(lines, question)
 
@@ -76,6 +86,11 @@ class HexagramController:
         """
         依卦名排卦
         """
+
+        name = name.strip()
+
+        if not name:
+            raise ValueError("請輸入卦名。")
 
         number = HexagramLookup.name_to_number(name)
 
@@ -93,6 +108,12 @@ class HexagramController:
         依上下卦排卦
         """
 
+        upper = upper.strip()
+        lower = lower.strip()
+
+        if not upper or not lower:
+            raise ValueError("請選擇上卦與下卦。")
+
         number = HexagramLookup.trigrams_to_number(
             upper,
             lower
@@ -107,4 +128,3 @@ class HexagramController:
             number,
             question
         )
-        

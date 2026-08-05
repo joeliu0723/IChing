@@ -16,23 +16,23 @@ Project IChing 是一套使用 Python + PySide6 開發的本機易經研究工�
 
 Current Version
 
-V1.1
+V1.3
 
 Current Progress
 
-- ✓ 六爻輸入
-- ✓ 卦序輸入
-- □ 卦名輸入
-- □ 上下卦輸入
-- □ 輸入模式切換
+- ✓ V1.1 四種輸入方式
+- ✓ V1.2 共用起卦流程、輸入驗證
+- ✓ 排卦、本卦、變卦、動爻顯示
+- ✓ 解卦頁（本卦經文）
+- ✓ 歷史紀錄（自動儲存、列表顯示）
 
 Current Task
 
-完成「卦名輸入」。
+V1.3：變卦經文、爻辭、History 詳情。
 
 Next Task
 
-完成「上下卦輸入」。
+V1.4：心得編輯與儲存。
 
 ---
 
@@ -54,13 +54,34 @@ Windows
 
 # Project Structure
 
-core/
-controller/
-presenter/
-ui/
-data/
-tests/
-docs/
+```
+IChing/
+├── main.py
+├── ForAI/              # AI 交接文件（本目錄）
+├── core/               # 核心邏輯（含 Controller、Presenter、Engine）
+│   ├── hexagram.py
+│   ├── hexagram_lookup.py
+│   ├── controller.py
+│   ├── presenter.py
+│   ├── result.py
+│   ├── history.py
+│   ├── history_manager.py
+│   └── session.py
+├── ui/
+│   ├── main_window.py
+│   ├── main_window.ui
+│   ├── ui_mainwindow.py
+│   └── history_page.py
+├── data/
+│   ├── hexagrams.json
+│   ├── hexagram_map.py
+│   └── history.json
+├── tests/
+├── tools/
+└── docs/               # 另一套規格文件（V1.0 路線）
+```
+
+注意：`controller/`、`presenter/` 不在獨立目錄，而是放在 `core/` 內。
 
 ---
 
@@ -91,6 +112,16 @@ Presenter 不可運算。
 Controller 不可存取 Widget。
 
 View 不可包含商業邏輯。
+
+---
+
+# UI Tabs（目前）
+
+- 起卦（tabDivination）
+- 解卦（tab_interpretation）
+- 歷史紀錄（tab_history）
+
+設定頁尚未建立（規格中有，UI 尚無）。
 
 ---
 

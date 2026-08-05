@@ -58,19 +58,14 @@ Feature
 
 Modified Files
 
-core/
-
-controller/
-
-presenter/
-
-ui/
+- core/
+- ui/
 
 Description
 
 - 建立 MVC 架構
 - 建立專案目錄
-- 建立主要模組
+- Controller、Presenter、Engine 皆置於 core/
 
 ---
 
@@ -127,27 +122,13 @@ Description
 
 Feature
 
-Controller
+Controller / Presenter
 
 Description
 
-完成：
+完成 MVC 完整流程。
 
-Controller
-
-↓
-
-Engine
-
-↓
-
-Presenter
-
-↓
-
-UI
-
-完整流程。
+Controller → Engine → Presenter → UI
 
 完成排卦。
 
@@ -170,11 +151,44 @@ Description
 
 ---
 
+# V1.0
+
+Date
+
+2026-07
+
+Feature
+
+核心功能與歷史紀錄
+
+Modified Files
+
+- core/controller.py
+- core/presenter.py
+- core/history.py
+- core/history_manager.py
+- core/session.py
+- ui/main_window.py
+- ui/history_page.py
+
+Description
+
+完成：
+
+- HexagramResult 資料模型
+- 解卦頁顯示卦辭、彖傳、象傳、文言、白話翻譯
+- HistoryRecord / HistoryManager
+- 排卦後自動寫入 history.json
+- HistoryPage 列表顯示
+- Session 工作階段管理
+
+---
+
 # V1.1
 
 Status
 
-Development
+Completed
 
 ---
 
@@ -188,12 +202,10 @@ Completed
 
 Description
 
-完成：
-
-- 六爻輸入
+- 六爻輸入 UI（groupLinesInput）
 - 動爻判定
-- 本卦
-- 變卦
+- 本卦 / 變卦計算
+- 排卦完成自動切換解卦頁
 
 ---
 
@@ -205,33 +217,110 @@ Completed
 
 Description
 
-完成：
-
-- 1~64 卦序輸入
-- 自動取得本卦
+- spinHexagramNumber + btnNumberCalculate
+- HexagramLookup.number_to_lines()
+- Controller.calculate_by_number()
+- 排卦完成自動切換解卦頁
 
 ---
-
-## In Progress
 
 ### 卦名輸入
 
 Status
 
-Working
+Completed
 
 Description
 
-目前正在開發。
-
-尚未完成。
+- ComboBox 選擇 / 手動輸入
+- hexagrams.json 正式卦名查詢
+- 依卦名排卦並切換解卦頁
 
 ---
 
-## Todo
+### 輸入模式切換
 
-- 上下卦輸入
-- 輸入模式切換
+Status
+
+Completed
+
+Description
+
+- 四種 RadioButton 切換
+- 僅顯示目前輸入區塊
+
+---
+
+## V1.1.2
+
+Date
+
+2026-07-26
+
+Feature
+
+上下卦輸入 UI 串接、輸入模式切換完成
+
+Modified Files
+
+- ui/main_window.py
+
+Description
+
+- 建立上下卦 ComboBox 輸入區
+- 串接 calculate_by_trigrams()
+- 完成四種輸入模式 RadioButton 切換
+- 抽出 show_result() 共用排卦後流程
+
+---
+
+## V1.1.1
+
+Date
+
+2026-07-26
+
+Feature
+
+卦名輸入 UI 串接
+
+Modified Files
+
+- core/hexagram_lookup.py
+- ui/main_window.py
+
+Description
+
+- 從 hexagrams.json 載入正式卦名與簡稱查詢
+- 建立卦名 ComboBox 輸入區
+- 串接依卦名排卦
+- 六爻 / 卦名 RadioButton 切換顯示對應輸入區
+- 無效卦名顯示錯誤提示
+
+---
+
+## V1.2
+
+Date
+
+2026-07-26
+
+Feature
+
+起卦功能完善
+
+Modified Files
+
+- core/controller.py
+- core/history_manager.py
+- ui/main_window.py
+
+Description
+
+- Controller 新增六爻 / 卦序 / 卦名 / 上下卦輸入驗證
+- 移除 Controller、HistoryManager debug print
+- main_window 抽出 run_cast() 共用起卦流程
+- 四種輸入方式統一錯誤提示與結果顯示
 
 ---
 
@@ -239,15 +328,19 @@ Description
 
 ## V1.2
 
-- 起卦流程完善
+- 共用起卦流程
+- 輸入驗證與錯誤提示
 
 ## V1.3
 
-- 解卦頁
+- 變卦經文顯示
+- 爻辭
+- History 詳情
 
 ## V1.4
 
-- 研究功能
+- 心得編輯與儲存
+- 搜尋、收藏、編輯、刪除
 
 ## V1.5
 
@@ -280,32 +373,6 @@ Minor
 Major
 
 重大版本。
-
----
-
-# Example
-
-## V1.1.1
-
-Date
-
-YYYY-MM-DD
-
-Feature
-
-卦名輸入
-
-Modified Files
-
-- hexagram_engine.py
-- controller.py
-- main_window.py
-
-Description
-
-完成卦名輸入。
-
-可依卦名建立本卦資訊。
 
 ---
 

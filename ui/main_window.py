@@ -1,11 +1,24 @@
 import sys
 
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMessageBox,
+    QPushButton,
+)
 
 from ui.ui_mainwindow import Ui_MainWindow
 from core.controller import HexagramController
 from core.presenter import HexagramPresenter
+from core.hexagram_lookup import HexagramLookup
 from ui.history_page import HistoryPage
+
+
+TRIGRAM_NAMES = ["乾", "坤", "震", "巽", "坎", "離", "兌", "艮"]
 
 
 class MainWindow(QMainWindow):
@@ -41,6 +54,9 @@ class MainWindow(QMainWindow):
 
         self.init_buttons()
         self.init_number_input()
+        self.init_name_input()
+        self.init_trigrams_input()
+        self.init_input_mode_switching()
 
     def init_buttons(self):
         names = ["YoungYang", "YoungYin", "OldYang", "OldYin"]
@@ -60,12 +76,104 @@ class MainWindow(QMainWindow):
             self.buttons[line] = group
 
     def init_number_input(self):
-        """
-        初始化卦序輸入
-        """
+        """初始化卦序輸入"""
+
         self.ui.btnNumberCalculate.clicked.connect(
             self.calculate_by_number
         )
+
+    def init_name_input(self):
+        """初始化卦名輸入"""
+
+        group = QGroupBox("卦名輸入", self.ui.widget)
+        layout = QHBoxLayout(group)
+
+        layout.addWidget(QLabel("選擇卦名"))
+
+        self.comboHexagramName = QComboBox()
+        self.comboHexagramName.setEditable(True)
+
+        for number, name in HexagramLookup.hexagram_names():
+            self.comboHexagramName.addItem(
+                f"{number}. {name}",
+                number,
+            )
+
+        layout.addWidget(self.comboHexagramName, 1)
+
+        button = QPushButton("依卦名排卦")
+        button.clicked.connect(self.calculate_by_name)
+        layout.addWidget(button)
+
+        self.ui.verticalLayout_2.addWidget(group)
+        self.groupNameInput = group
+
+    def init_trigrams_input(self):
+        """初始化上下卦輸入"""
+
+        group = QGroupBox("上下卦輸入", self.ui.widget)
+        layout = QHBoxLayout(group)
+
+        layout.addWidget(QLabel("上卦"))
+        self.comboUpperTrigram = QComboBox()
+        self.comboUpperTrigram.addItems(TRIGRAM_NAMES)
+        layout.addWidget(self.comboUpperTrigram)
+
+        layout.addWidget(QLabel("下卦"))
+        self.comboLowerTrigram = QComboBox()
+        self.comboLowerTrigram.addItems(TRIGRAM_NAMES)
+        layout.addWidget(self.comboLowerTrigram)
+
+        button = QPushButton("依上下卦排卦")
+        button.clicked.connect(self.calculate_by_trigrams)
+        layout.addWidget(button)
+        layout.addStretch()
+
+        self.ui.verticalLayout_2.addWidget(group)
+        self.groupTrigramsInput = group
+
+    def init_input_mode_switching(self):
+        """依 RadioButton 切換輸入方式，僅顯示目前輸入區塊。"""
+
+        self.mode_groups = {
+            "six_lines": self.ui.groupLinesInput,
+            "name": self.groupNameInput,
+            "number": self.ui.horizontalLayoutWidget_8,
+            "trigrams": self.groupTrigramsInput,
+        }
+
+        self.ui.rbSixLines.toggled.connect(
+            lambda checked: checked and self.show_input_mode("six_lines")
+        )
+        self.ui.rbHexagramName.toggled.connect(
+            lambda checked: checked and self.show_input_mode("name")
+        )
+        self.ui.rbHexagramNumber.toggled.connect(
+            lambda checked: checked and self.show_input_mode("number")
+        )
+        self.ui.rbTrigrams.toggled.connect(
+            lambda checked: checked and self.show_input_mode("trigrams")
+        )
+
+        self.show_input_mode("six_lines")
+
+    def show_input_mode(self, mode):
+        for name, group in self.mode_groups.items():
+            group.setVisible(name == mode)
+
+    def current_question(self):
+        return self.ui.editQuestion.text().strip()
+
+    def run_cast(self, calculate):
+        """共用起卦流程：計算、錯誤提示、顯示結果。"""
+
+        try:
+            result = calculate()
+        except ValueError as error:
+            self.show_input_error(str(error))
+            return
+
+        self.show_result(result)
 
     def select_line(self, line, name):
 
@@ -84,34 +192,73 @@ class MainWindow(QMainWindow):
         if None in self.lines:
             return
 
-        result = self.controller.calculate(
-            self.lines,
-            self.ui.editQuestion.text().strip()
-        )
+        lines = self.lines.copy()
+        question = self.current_question()
 
-        self.presenter.show(result)
-        self.history_page.refresh()
-        self.ui.tabWidget.setCurrentWidget(
-            self.ui.tab_interpretation
+        self.run_cast(
+            lambda: self.controller.calculate(lines, question)
         )
 
     def calculate_by_number(self):
-
         number = self.ui.spinHexagramNumber.value()
+        question = self.current_question()
 
-        question = self.ui.editQuestion.text().strip()
-
-        result = self.controller.calculate_by_number(
-            number,
-            question
+        self.run_cast(
+            lambda: self.controller.calculate_by_number(number, question)
         )
 
+    def calculate_by_name(self):
+        name = self.resolve_hexagram_name()
+
+        if name is None:
+            self.show_input_error("請輸入或選擇有效的卦名。")
+            return
+
+        question = self.current_question()
+
+        self.run_cast(
+            lambda: self.controller.calculate_by_name(name, question)
+        )
+
+    def resolve_hexagram_name(self):
+        selected_text = self.comboHexagramName.currentText().strip()
+
+        if not selected_text:
+            return None
+
+        selected_index = self.comboHexagramName.findText(selected_text)
+
+        if selected_index >= 0:
+            number = self.comboHexagramName.itemData(selected_index)
+            return HexagramLookup.number_to_name(number)
+
+        if HexagramLookup.name_to_number(selected_text) is not None:
+            return selected_text
+
+        return None
+
+    def calculate_by_trigrams(self):
+        upper = self.comboUpperTrigram.currentText()
+        lower = self.comboLowerTrigram.currentText()
+        question = self.current_question()
+
+        self.run_cast(
+            lambda: self.controller.calculate_by_trigrams(
+                upper,
+                lower,
+                question,
+            )
+        )
+
+    def show_result(self, result):
         self.presenter.show(result)
         self.history_page.refresh()
-
         self.ui.tabWidget.setCurrentWidget(
             self.ui.tab_interpretation
         )
+
+    def show_input_error(self, message):
+        QMessageBox.warning(self, "輸入錯誤", message)
 
 
 def run_app():

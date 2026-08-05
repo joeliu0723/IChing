@@ -14,6 +14,9 @@ Hexagram Lookup
 只負責資料查詢。
 """
 
+import json
+from pathlib import Path
+
 from data.hexagram_map import HEXAGRAM_MAP
 from core.trigrams import TRIGRAMS
 
@@ -36,6 +39,58 @@ for (upper, lower), number in HEXAGRAM_MAP.items():
     NAME_TO_NUMBER[NAME] = number
 
     NUMBER_TO_NAME[number] = NAME
+
+
+def _short_hexagram_name(full_name: str) -> str:
+    """取得卦名簡稱，例如「䷁ 坤」->「坤」。"""
+
+    name = full_name.strip()
+
+    if " " in name:
+        return name.split(" ", 1)[1].strip()
+
+    return name
+
+
+def _load_hexagram_names():
+    """以 hexagrams.json 的正式卦名覆蓋暫用的上下卦組合名稱。"""
+
+    data_path = Path(__file__).parent.parent / "data" / "hexagrams.json"
+
+    try:
+        with open(data_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+    except (OSError, ValueError):
+        return
+
+    if isinstance(data, dict):
+        entries = data.get("value", [])
+    elif isinstance(data, list):
+        entries = data
+    else:
+        return
+
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+
+        number = entry.get("number")
+        name = entry.get("name")
+
+        if not isinstance(number, int) or not isinstance(name, str):
+            continue
+
+        full_name = name.strip()
+        short_name = _short_hexagram_name(full_name)
+
+        NUMBER_TO_NAME[number] = full_name
+        NAME_TO_NUMBER[full_name] = number
+
+        if short_name and short_name not in NAME_TO_NUMBER:
+            NAME_TO_NUMBER[short_name] = number
+
+
+_load_hexagram_names()
 
 
 # -------------------------------------------------
@@ -108,7 +163,29 @@ class HexagramLookup:
     @staticmethod
     def name_to_number(name: str):
 
-        return NAME_TO_NUMBER.get(name)
+        key = name.strip()
+
+        if not key:
+            return None
+
+        if ". " in key:
+            prefix, suffix = key.split(". ", 1)
+            if prefix.isdigit():
+                number = int(prefix)
+                if 1 <= number <= 64:
+                    return number
+                key = suffix.strip()
+
+        return NAME_TO_NUMBER.get(key)
+
+    @staticmethod
+    def hexagram_names():
+        """回傳依卦序排序的正式卦名，供 UI 選擇。"""
+
+        return [
+            (number, NUMBER_TO_NAME[number])
+            for number in sorted(NUMBER_TO_NAME)
+        ]
 
     @staticmethod
     def trigrams_to_number(upper: str, lower: str):

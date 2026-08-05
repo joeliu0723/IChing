@@ -36,6 +36,21 @@ Reason
 
 Decision
 
+Controller、Presenter、Engine 皆置於 core/ 目錄。
+
+Status
+
+Fixed
+
+Reason
+
+- 現有程式結構
+- 不另建 controller/、presenter/ 獨立目錄
+
+---
+
+Decision
+
 Engine 不得操作 UI。
 
 Status

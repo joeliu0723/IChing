@@ -20,7 +20,7 @@ Status: Development
 
 # Current Version
 
-V1.1
+V1.3
 
 ---
 
@@ -28,7 +28,7 @@ V1.1
 
 ## Current Task
 
-完成「卦名輸入」。
+V1.3 解卦頁完善。
 
 Priority
 
@@ -36,114 +36,56 @@ Priority
 
 Status
 
-In Progress
+Todo
 
 ---
 
 # High Priority
 
-## V1.1 輸入方式完善
-
-### 卦名輸入
+## V1.2 起卦功能完善
 
 Status
 
-In Progress
+Completed
 
-Description
+Tasks
 
-- 建立卦名輸入介面
-- 支援 64 卦名稱
-- 自動轉換為 Hexagram
-- 顯示本卦資訊
-
----
-
-### 上下卦輸入
-
-Status
-
-Todo
-
-Description
-
-- 選擇上卦
-- 選擇下卦
-- 自動查詢六十四卦
-- 顯示本卦資訊
-
----
-
-### 輸入模式切換
-
-Status
-
-Todo
-
-Description
-
-建立四種輸入模式：
-
-- 六爻
-- 卦序
-- 卦名
-- 上下卦
-
-切換後：
-
-僅顯示目前輸入介面。
+- ✓ 共用起卦流程（run_cast）
+- ✓ Controller 輸入驗證
+- ✓ 錯誤提示（QMessageBox）
+- ✓ 移除 debug print
 
 ---
 
 # Medium Priority
 
-## V1.2 起卦功能完善
-
-Status
-
-Todo
-
-Tasks
-
-- 共用起卦流程
-- Controller 整理
-- Presenter 整理
-- Engine 整理
-- UI 整理
-- 輸入驗證
-- 錯誤提示
-
-Goal
-
-所有輸入方式皆使用同一套起卦流程。
-
----
-
 ## V1.3 解卦頁
 
 Status
 
-Todo
+Partial
 
 Tasks
 
 本卦
 
-- 卦辭
-- 彖傳
-- 象傳
-- 文言
+- ✓ 卦辭
+- ✓ 彖傳
+- ✓ 象傳
+- ✓ 文言
+- ✓ 白話翻譯
 
 變卦
 
-- 卦辭
-- 彖傳
-- 象傳
-- 文言
+- □ 卦辭
+- □ 彖傳
+- □ 象傳
+- □ 文言
 
-白話翻譯
+其他
 
-研究資料
+- □ 爻辭顯示
+- □ 點選 History 顯示完整內容
 
 ---
 
@@ -151,20 +93,24 @@ Tasks
 
 Status
 
-Todo
+Partial（History 列表已有，其餘待完成）
 
 Tasks
 
-- 我的心得
-- 收藏
-- 驗證內容
-- 驗證結果
-- 存檔
-- 歷史紀錄
-- 搜尋
-- 排序
-- 編輯
-- 刪除
+- □ 我的心得（txtNotes 編輯與儲存）
+- □ 收藏
+- □ 驗證內容
+- □ 驗證結果
+- □ 搜尋
+- □ 排序
+- □ 編輯
+- □ 刪除
+
+已有
+
+- ✓ HistoryManager（add / load / save / get / update / delete）
+- ✓ HistoryPage 列表顯示
+- ✓ 排卦後自動寫入 history.json
 
 ---
 
@@ -176,11 +122,9 @@ Todo
 
 Tasks
 
-- AI 解卦
+- AI 解卦（txtAIAnalysis 已有 UI 占位，尚未串接）
 - AI 問答
 - AI 研究助手
-- AI 摘要
-- AI 搜尋研究資料
 
 ---
 

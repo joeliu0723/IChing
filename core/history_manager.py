@@ -37,8 +37,6 @@ class HistoryManager:
             self.records = []
 
     def save(self):
-        print("save()")
-        print(self.file_path)
         data = [
             record.to_dict()
             for record in self.records
