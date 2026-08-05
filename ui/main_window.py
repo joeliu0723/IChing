@@ -11,12 +11,14 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QPushButton,
     QVBoxLayout,
+    QWidget,
 )
 
 from ui.ui_mainwindow import Ui_MainWindow
 from core.controller import HexagramController
 from core.presenter import HexagramPresenter
 from core.hexagram_lookup import HexagramLookup
+from core.session import session
 from ui.history_page import HistoryPage
 from ui.widgets.collapsible_groupbox import CollapsibleGroupBox
 
@@ -56,6 +58,7 @@ class MainWindow(QMainWindow):
         self.history_page = HistoryPage(
             self.ui,
             on_select=self.show_history_record,
+            on_delete=self.delete_history_record,
         )
 
         self.init_interpretation_widgets()
@@ -99,11 +102,12 @@ class MainWindow(QMainWindow):
             (self.ui.grp_txtWenyan, "文言"),
             (self.ui.grp_txtTranslation, "白話翻譯"),
             (self.ui.grp_txtAIAnalysis, "AI分析"),
-            (self.ui.grp_txtNotes, "我的心得"),
         ]
 
         for group_box, title in designer_groups:
             self._wrap_group_as_collapsible(layout, group_box, title)
+
+        self._wrap_notes_as_collapsible(layout, self.ui.grp_txtNotes)
 
     def _add_collapsible_editor(self, layout, index, title, attr_name):
         editor = QPlainTextEdit()
@@ -131,6 +135,37 @@ class MainWindow(QMainWindow):
 
         collapsible = CollapsibleGroupBox(title)
         collapsible.setContentWidget(editor)
+        layout.insertWidget(index, collapsible)
+
+    def _wrap_notes_as_collapsible(self, layout, group_box):
+        """心得區塊：可編輯文字 + 儲存按鈕，預設折疊。"""
+
+        index = layout.indexOf(group_box)
+        if index < 0:
+            return
+
+        editor = group_box.findChild(QPlainTextEdit)
+        if editor is None:
+            return
+
+        layout.removeWidget(group_box)
+        group_box.hide()
+
+        editor.setParent(None)
+        editor.setMinimumHeight(120)
+        self.ui.txtNotes = editor
+
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.addWidget(editor)
+
+        self.ui.btnSaveNotes = QPushButton("儲存心得")
+        self.ui.btnSaveNotes.clicked.connect(self.save_notes)
+        content_layout.addWidget(self.ui.btnSaveNotes)
+
+        collapsible = CollapsibleGroupBox("我的心得")
+        collapsible.setContentWidget(content)
         layout.insertWidget(index, collapsible)
 
     def init_start_button(self):
@@ -355,7 +390,58 @@ class MainWindow(QMainWindow):
             return
 
         result.notes = record.notes
+        session.set_result(result)
+        session.set_record(record)
         self.show_result(result, refresh_history=False)
+
+    def save_notes(self):
+        notes = self.ui.txtNotes.toPlainText()
+
+        try:
+            self.controller.save_notes(notes)
+        except ValueError as error:
+            self.show_input_error(str(error))
+            return
+
+        self.history_page.refresh_and_keep_selection()
+        QMessageBox.information(self, "儲存成功", "心得已儲存。")
+
+    def delete_history_record(self, record_ids):
+        if isinstance(record_ids, str):
+            record_ids = [record_ids]
+
+        if not record_ids:
+            self.show_input_error("請先選擇要刪除的紀錄。")
+            return
+
+        count = len(record_ids)
+
+        if count == 1:
+            message = "確定要永久刪除此占卜紀錄？此操作無法復原。"
+        else:
+            message = (
+                f"確定要永久刪除 {count} 筆占卜紀錄？"
+                "此操作無法復原。"
+            )
+
+        reply = QMessageBox.question(
+            self,
+            "確認刪除",
+            message,
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+
+        if reply != QMessageBox.Yes:
+            return
+
+        try:
+            self.controller.delete_records(record_ids)
+        except ValueError as error:
+            self.show_input_error(str(error))
+            return
+
+        self.history_page.refresh()
 
     def show_result(self, result, refresh_history=True):
         self.presenter.show(result)

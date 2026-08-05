@@ -28,7 +28,7 @@ V1.4
 
 ## Current Task
 
-V1.4 研究功能。
+V1.4 研究功能（心得已完成，其餘進行中）。
 
 Priority
 
@@ -36,7 +36,7 @@ Priority
 
 Status
 
-Todo
+In Progress
 
 ---
 
@@ -56,25 +56,27 @@ Completed
 
 Status
 
-Partial（History 列表與點選詳情已有，其餘待完成）
+Partial
 
 Tasks
 
-- □ 我的心得（txtNotes 編輯與儲存）
+- ✓ 我的心得（txtNotes 編輯與儲存）
+- ✓ 刪除（UI + 確認；單擊選取／雙擊開啟／多選批次刪除）
 - □ 收藏
 - □ 驗證內容
 - □ 驗證結果
 - □ 搜尋
 - □ 排序
 - □ 編輯
-- □ 刪除（UI；HistoryManager.delete 後端已有）
 
 已有
 
-- ✓ HistoryManager（add / load / save / get / update / delete）
+- ✓ HistoryManager（add / load / save / get / update / delete / delete_many）
 - ✓ HistoryPage 列表顯示
 - ✓ 排卦後自動寫入 history.json
-- ✓ 點選 History 顯示完整解卦內容（V1.3）
+- ✓ 點選 History 顯示完整解卦內容（V1.3；現為雙擊開啟）
+- ✓ 心得儲存（save_notes / updated_at）
+- ✓ 歷史刪除（delete_records + 多選確認）
 
 ---
 

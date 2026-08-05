@@ -76,6 +76,22 @@ class HistoryManager:
 
         self.save()
 
+    def delete_many(self, record_ids):
+        """一次刪除多筆，只寫入檔案一次。"""
+
+        id_set = set(record_ids)
+
+        if not id_set:
+            return
+
+        self.records = [
+            item
+            for item in self.records
+            if item.id not in id_set
+        ]
+
+        self.save()
+
     def get(self, record_id: str):
         """取得單筆紀錄"""
 

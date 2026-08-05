@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from core.hexagram import HexagramEngine
 from core.history import HistoryRecord
@@ -69,6 +70,59 @@ class HexagramController:
         session.set_record(record)
 
         return result
+
+    def save_notes(self, notes: str):
+        """儲存目前紀錄的心得。"""
+
+        current = session.record
+
+        if current is None or not current.id:
+            raise ValueError("目前沒有可儲存的占卜紀錄，請先起卦或從歷史載入。")
+
+        self.history_manager.load()
+        record = self.history_manager.get(current.id)
+
+        if record is None:
+            raise ValueError("找不到對應的歷史紀錄。")
+
+        record.notes = notes
+        record.updated_at = datetime.now()
+        self.history_manager.update(record)
+        session.set_record(record)
+
+        return record
+
+    def delete_record(self, record_id: str):
+        """永久刪除歷史紀錄。"""
+
+        self.delete_records([record_id])
+
+    def delete_records(self, record_ids: list[str]):
+        """永久刪除多筆歷史紀錄。"""
+
+        ids = [record_id for record_id in record_ids if record_id]
+
+        if not ids:
+            raise ValueError("請先選擇要刪除的紀錄。")
+
+        self.history_manager.load()
+
+        missing = [
+            record_id
+            for record_id in ids
+            if self.history_manager.get(record_id) is None
+        ]
+
+        if missing:
+            raise ValueError("找不到部分要刪除的紀錄。")
+
+        self.history_manager.delete_many(ids)
+
+        if (
+            session.record is not None
+            and session.record.id in ids
+        ):
+            session.clear()
 
     # =======================================================
     # 卦序輸入

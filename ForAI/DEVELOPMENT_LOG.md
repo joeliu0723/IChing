@@ -375,12 +375,90 @@ Description
 
 ---
 
+---
+
+## V1.4.1
+
+Date
+
+2026-08-05
+
+Feature
+
+心得編輯與儲存
+
+Modified Files
+
+- core/history.py
+- core/controller.py
+- ui/main_window.py
+
+Description
+
+- HistoryRecord 新增 updated_at
+- Controller.save_notes() 寫回 history.json
+- 解卦頁「我的心得」新增「儲存心得」按鈕
+- 從歷史載入時同步 Session，方可儲存心得
+
+---
+
+---
+
+## V1.4.2
+
+Date
+
+2026-08-05
+
+Feature
+
+歷史紀錄刪除
+
+Modified Files
+
+- core/controller.py
+- ui/history_page.py
+- ui/main_window.py
+
+Description
+
+- 歷史頁新增「刪除選取紀錄」按鈕
+- 刪除前 QMessageBox 確認
+- Controller.delete_record()；若刪除目前 Session 紀錄則清空 Session
+
+---
+
+## V1.4.3
+
+Date
+
+2026-08-05
+
+Feature
+
+歷史多選刪除與開啟分離
+
+Modified Files
+
+- ui/history_page.py
+- ui/main_window.py
+- core/controller.py
+- core/history_manager.py
+
+Description
+
+- 單擊僅選取，雙擊才開啟解卦
+- ExtendedSelection 支援 Ctrl／Shift 多選
+- delete_records / delete_many 批次刪除，一次確認
+
+---
+
 # Future
 
 ## V1.4
 
-- 心得編輯與儲存
-- 搜尋、收藏、編輯、刪除
+- 搜尋、收藏、編輯
+- 驗證內容／結果
 
 ## V1.5
 

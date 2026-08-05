@@ -31,12 +31,16 @@ class HistoryRecord:
     # 使用者心得
     notes: str = ""
 
+    # 最後更新時間
+    updated_at: datetime = field(default_factory=datetime.now)
+
     def to_dict(self) -> dict:
         """轉成可儲存 JSON 的格式"""
 
         return {
             "id": self.id,
             "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
             "question": self.question,
             "lines": self.lines,
             "main_number": self.main_number,
@@ -54,9 +58,11 @@ class HistoryRecord:
         record = cls()
 
         record.id = data.get("id", "")
-        record.created_at = datetime.fromisoformat(
-            data.get("created_at", datetime.now().isoformat())
-        )
+        created = data.get("created_at", datetime.now().isoformat())
+        record.created_at = datetime.fromisoformat(created)
+
+        updated = data.get("updated_at", created)
+        record.updated_at = datetime.fromisoformat(updated)
 
         record.question = data.get("question", "")
         record.lines = data.get("lines", [])
