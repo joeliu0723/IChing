@@ -1,6 +1,6 @@
 IChing Research Workbench（易經研究工作台）
 
-Version：V1.3（Development）
+Version：V1.4（Development）
 
 最後同步：2026-07-26（依程式碼現況更新）
 
@@ -135,11 +135,7 @@ V1.2 起卦功能完善 — 已完成
 - 錯誤提示
 - 移除 debug print
 
-V1.3 解卦頁
-
-- 變卦經文
-- 爻辭
-- History 詳情顯示
+V1.3 解卦頁 — 已完成
 
 V1.4 研究功能
 
@@ -173,4 +169,4 @@ V1.5 AI 功能
 
 目前下一個工作為：
 
-V1.3：變卦經文、爻辭、History 詳情顯示。
+V1.4：心得編輯與儲存、搜尋、收藏、編輯、刪除。

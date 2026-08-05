@@ -27,6 +27,18 @@ class HexagramController:
         if not isinstance(number, int) or not 1 <= number <= 64:
             raise ValueError(f"卦序必須為 1 到 64，目前為：{number}")
 
+    def build_result(self, lines, question=""):
+        """只計算卦象，不寫入 History。"""
+
+        self._validate_lines(lines)
+
+        engine = HexagramEngine(lines)
+        result = engine.calculate()
+        result.question = question
+        result.lines = lines.copy()
+
+        return result
+
     def calculate(self, lines, question=""):
         """
         執行排卦
@@ -35,10 +47,7 @@ class HexagramController:
         更新 Session
         """
 
-        self._validate_lines(lines)
-
-        engine = HexagramEngine(lines)
-        result = engine.calculate()
+        result = self.build_result(lines, question)
 
         record = HistoryRecord()
 

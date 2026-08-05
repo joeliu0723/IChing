@@ -8,7 +8,9 @@ from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QMessageBox,
+    QPlainTextEdit,
     QPushButton,
+    QVBoxLayout,
 )
 
 from ui.ui_mainwindow import Ui_MainWindow
@@ -50,13 +52,51 @@ class MainWindow(QMainWindow):
 
         self.controller = HexagramController()
         self.presenter = HexagramPresenter(self.ui)
-        self.history_page = HistoryPage(self.ui)
+        self.history_page = HistoryPage(
+            self.ui,
+            on_select=self.show_history_record,
+        )
 
+        self.init_interpretation_widgets()
         self.init_buttons()
         self.init_number_input()
         self.init_name_input()
         self.init_trigrams_input()
         self.init_input_mode_switching()
+
+    def init_interpretation_widgets(self):
+        """補充解卦頁：問題、變卦經文、爻辭。"""
+
+        layout = self.ui.verticalLayoutInterpretation
+
+        self.ui.lblQuestion = QLabel("占卜問題：（未填寫）")
+        self.ui.lblQuestion.setWordWrap(True)
+        layout.insertWidget(0, self.ui.lblQuestion)
+
+        insert_at = layout.indexOf(self.ui.grp_txtAIAnalysis)
+        groups = [
+            ("txtChangedJudgment", "變卦卦辭"),
+            ("txtChangedTuan", "變卦彖傳"),
+            ("txtChangedXiang", "變卦象傳"),
+            ("txtChangedWenyan", "變卦文言"),
+            ("txtLineTexts", "爻辭"),
+        ]
+
+        for attr_name, title in reversed(groups):
+            self._add_interpretation_group(
+                layout,
+                insert_at,
+                title,
+                attr_name,
+            )
+
+    def _add_interpretation_group(self, layout, index, title, attr_name):
+        group = QGroupBox(title)
+        box_layout = QVBoxLayout(group)
+        editor = QPlainTextEdit()
+        box_layout.addWidget(editor)
+        layout.insertWidget(index, group)
+        setattr(self.ui, attr_name, editor)
 
     def init_buttons(self):
         names = ["YoungYang", "YoungYin", "OldYang", "OldYin"]
@@ -250,9 +290,30 @@ class MainWindow(QMainWindow):
             )
         )
 
-    def show_result(self, result):
+    def show_history_record(self, record_id):
+        record = self.history_page.get_record(record_id)
+
+        if record is None:
+            return
+
+        try:
+            result = self.controller.build_result(
+                record.lines,
+                record.question,
+            )
+        except ValueError as error:
+            self.show_input_error(str(error))
+            return
+
+        result.notes = record.notes
+        self.show_result(result, refresh_history=False)
+
+    def show_result(self, result, refresh_history=True):
         self.presenter.show(result)
-        self.history_page.refresh()
+
+        if refresh_history:
+            self.history_page.refresh()
+
         self.ui.tabWidget.setCurrentWidget(
             self.ui.tab_interpretation
         )

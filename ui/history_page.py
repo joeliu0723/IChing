@@ -2,7 +2,7 @@
 ==================================================
 Project IChing
 File : ui/history_page.py
-Version : V1.0.0
+Version : V1.3.0
 ==================================================
 """
 
@@ -16,14 +16,24 @@ from core.history import HistoryRecord
 class HistoryPage:
     """占卜紀錄頁"""
 
-    def __init__(self, window):
+    def __init__(self, window, on_select=None):
 
         self.window = window
         self.manager = HistoryManager()
+        self.on_select = on_select
 
         self.list_widget = self.window.listHistory
 
+        self.list_widget.itemClicked.connect(self._handle_item_clicked)
+
         self.refresh()
+
+    def _handle_item_clicked(self, item):
+        if self.on_select is None:
+            return
+
+        record_id = item.data(Qt.UserRole)
+        self.on_select(record_id)
 
     def refresh(self):
         """重新載入所有紀錄"""
@@ -87,4 +97,9 @@ class HistoryPage:
         if record_id is None:
             return None
 
+        return self.manager.get(record_id)
+
+    def get_record(self, record_id: str) -> HistoryRecord | None:
+
+        self.manager.load()
         return self.manager.get(record_id)

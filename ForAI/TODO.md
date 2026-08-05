@@ -20,7 +20,7 @@ Status: Development
 
 # Current Version
 
-V1.3
+V1.4
 
 ---
 
@@ -28,7 +28,7 @@ V1.3
 
 ## Current Task
 
-V1.3 解卦頁完善。
+V1.4 研究功能。
 
 Priority
 
@@ -42,24 +42,17 @@ Todo
 
 # High Priority
 
-## V1.2 起卦功能完善
+## V1.3 解卦頁
 
 Status
 
 Completed
 
-Tasks
-
-- ✓ 共用起卦流程（run_cast）
-- ✓ Controller 輸入驗證
-- ✓ 錯誤提示（QMessageBox）
-- ✓ 移除 debug print
-
 ---
 
 # Medium Priority
 
-## V1.3 解卦頁
+## V1.4 研究功能
 
 Status
 

@@ -16,23 +16,22 @@ Project IChing 是一套使用 Python + PySide6 開發的本機易經研究工�
 
 Current Version
 
-V1.3
+V1.4
 
 Current Progress
 
 - ✓ V1.1 四種輸入方式
 - ✓ V1.2 共用起卦流程、輸入驗證
-- ✓ 排卦、本卦、變卦、動爻顯示
-- ✓ 解卦頁（本卦經文）
-- ✓ 歷史紀錄（自動儲存、列表顯示）
+- ✓ V1.3 解卦頁（變卦經文、爻辭、History 詳情）
+- ✓ 歷史紀錄（自動儲存、列表、點選詳情）
 
 Current Task
 
-V1.3：變卦經文、爻辭、History 詳情。
+V1.4：心得編輯與儲存。
 
 Next Task
 
-V1.4：心得編輯與儲存。
+V1.4：搜尋、收藏、編輯、刪除。
 
 ---
 

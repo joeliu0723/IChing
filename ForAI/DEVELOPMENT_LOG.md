@@ -324,18 +324,35 @@ Description
 
 ---
 
-# Future
-
-## V1.2
-
-- 共用起卦流程
-- 輸入驗證與錯誤提示
-
 ## V1.3
 
-- 變卦經文顯示
-- 爻辭
-- History 詳情
+Date
+
+2026-07-26
+
+Feature
+
+解卦頁完善
+
+Modified Files
+
+- core/result.py
+- core/controller.py
+- core/presenter.py
+- ui/main_window.py
+- ui/history_page.py
+
+Description
+
+- 顯示占卜問題
+- 顯示變卦卦辭、彖傳、象傳、文言
+- 顯示爻辭（含動爻標記）
+- History 點選載入完整解卦內容
+- Controller 新增 build_result()
+
+---
+
+# Future
 
 ## V1.4
 

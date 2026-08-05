@@ -79,5 +79,7 @@ class HexagramResult:
 
     moving_lines: List[int] = field(default_factory=list)
 
+    lines: List[str] = field(default_factory=list)
+
     notes: str = ""
     ai_analysis: str = ""

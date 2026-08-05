@@ -2,7 +2,7 @@
 
 # Project IChing - Product Specification
 
-Version: V1.3
+Version: V1.4
 Status: Development
 
 ---
@@ -120,18 +120,12 @@ Status: Completed
 
 ## V1.3 解卦頁
 
-### 已完成
+Status: Completed
 
-- 本卦資訊（卦序、卦名）
-- 變卦資訊（卦序、卦名）
-- 動爻資訊
-- 本卦卦辭、彖傳、象傳、文言、白話翻譯
-
-### 待完成
-
-- 變卦卦辭、彖傳、象傳、文言
-- 爻辭顯示
-- 點選 History 顯示完整內容
+- 本卦 / 變卦資訊與經文
+- 動爻與爻辭顯示
+- 占卜問題顯示
+- History 點選顯示完整內容
 
 ---
 
