@@ -352,6 +352,29 @@ Description
 
 ---
 
+## V1.3.1
+
+Date
+
+2026-08-05
+
+Feature
+
+解卦欄位折疊與「開始解卦」流程
+
+Modified Files
+
+- ui/main_window.py
+- ui/widgets/collapsible_groupbox.py
+
+Description
+
+- 解卦頁各經文區塊改為 CollapsibleGroupBox，預設折疊
+- 輸入模式列新增「開始解卦」按鈕
+- 六爻選滿不再自動排卦；卦序／卦名／上下卦改由「開始解卦」統一觸發
+
+---
+
 # Future
 
 ## V1.4

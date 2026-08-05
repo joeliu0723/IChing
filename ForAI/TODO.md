@@ -2,7 +2,7 @@
 
 # Project IChing - TODO
 
-Version: V1.1
+Version: V1.4
 
 Status: Development
 
@@ -42,7 +42,7 @@ Todo
 
 # High Priority
 
-## V1.3 解卦頁
+## V1.3.1 解卦 UX 與起卦流程
 
 Status
 
@@ -56,37 +56,7 @@ Completed
 
 Status
 
-Partial
-
-Tasks
-
-本卦
-
-- ✓ 卦辭
-- ✓ 彖傳
-- ✓ 象傳
-- ✓ 文言
-- ✓ 白話翻譯
-
-變卦
-
-- □ 卦辭
-- □ 彖傳
-- □ 象傳
-- □ 文言
-
-其他
-
-- □ 爻辭顯示
-- □ 點選 History 顯示完整內容
-
----
-
-## V1.4 研究功能
-
-Status
-
-Partial（History 列表已有，其餘待完成）
+Partial（History 列表與點選詳情已有，其餘待完成）
 
 Tasks
 
@@ -97,13 +67,14 @@ Tasks
 - □ 搜尋
 - □ 排序
 - □ 編輯
-- □ 刪除
+- □ 刪除（UI；HistoryManager.delete 後端已有）
 
 已有
 
 - ✓ HistoryManager（add / load / save / get / update / delete）
 - ✓ HistoryPage 列表顯示
 - ✓ 排卦後自動寫入 history.json
+- ✓ 點選 History 顯示完整解卦內容（V1.3）
 
 ---
 

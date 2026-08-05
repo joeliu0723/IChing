@@ -35,9 +35,12 @@ class CollapsibleGroupBox(QFrame):
         self.toggleButton.setCheckable(True)
         self.toggleButton.setChecked(False)
         self.toggleButton.setToolButtonStyle(
-            self.toggleButton.toolButtonStyle()
+            Qt.ToolButtonTextBesideIcon
         )
         self.toggleButton.setArrowType(Qt.RightArrow)
+        self.toggleButton.setStyleSheet(
+            "QToolButton { border: none; text-align: left; font-weight: bold; }"
+        )
 
         self.contentArea = QWidget()
         self.contentArea.setMaximumHeight(0)
@@ -76,7 +79,11 @@ class CollapsibleGroupBox(QFrame):
         self.toggleButton.setChecked(True)
         self.toggleButton.setArrowType(Qt.DownArrow)
 
-        h = self.contentArea.layout().sizeHint().height()
+        content_layout = self.contentArea.layout()
+        if content_layout is None:
+            return
+
+        h = max(content_layout.sizeHint().height(), 120)
 
         self.contentAnimation.stop()
         self.contentAnimation.setStartValue(

@@ -18,6 +18,7 @@ from core.controller import HexagramController
 from core.presenter import HexagramPresenter
 from core.hexagram_lookup import HexagramLookup
 from ui.history_page import HistoryPage
+from ui.widgets.collapsible_groupbox import CollapsibleGroupBox
 
 
 TRIGRAM_NAMES = ["乾", "坤", "震", "巽", "坎", "離", "兌", "艮"]
@@ -58,6 +59,7 @@ class MainWindow(QMainWindow):
         )
 
         self.init_interpretation_widgets()
+        self.init_start_button()
         self.init_buttons()
         self.init_number_input()
         self.init_name_input()
@@ -65,7 +67,7 @@ class MainWindow(QMainWindow):
         self.init_input_mode_switching()
 
     def init_interpretation_widgets(self):
-        """補充解卦頁：問題、變卦經文、爻辭。"""
+        """補充解卦頁欄位，並將各經文區塊改為預設折疊。"""
 
         layout = self.ui.verticalLayoutInterpretation
 
@@ -83,20 +85,71 @@ class MainWindow(QMainWindow):
         ]
 
         for attr_name, title in reversed(groups):
-            self._add_interpretation_group(
+            self._add_collapsible_editor(
                 layout,
                 insert_at,
                 title,
                 attr_name,
             )
 
-    def _add_interpretation_group(self, layout, index, title, attr_name):
-        group = QGroupBox(title)
-        box_layout = QVBoxLayout(group)
+        designer_groups = [
+            (self.ui.grp_txtJudgment, "卦辭"),
+            (self.ui.grp_txtTuan, "彖傳"),
+            (self.ui.grp_txtXiang, "象傳"),
+            (self.ui.grp_txtWenyan, "文言"),
+            (self.ui.grp_txtTranslation, "白話翻譯"),
+            (self.ui.grp_txtAIAnalysis, "AI分析"),
+            (self.ui.grp_txtNotes, "我的心得"),
+        ]
+
+        for group_box, title in designer_groups:
+            self._wrap_group_as_collapsible(layout, group_box, title)
+
+    def _add_collapsible_editor(self, layout, index, title, attr_name):
         editor = QPlainTextEdit()
-        box_layout.addWidget(editor)
-        layout.insertWidget(index, group)
+        editor.setMinimumHeight(120)
         setattr(self.ui, attr_name, editor)
+
+        collapsible = CollapsibleGroupBox(title)
+        collapsible.setContentWidget(editor)
+        layout.insertWidget(index, collapsible)
+
+    def _wrap_group_as_collapsible(self, layout, group_box, title):
+        index = layout.indexOf(group_box)
+        if index < 0:
+            return
+
+        editor = group_box.findChild(QPlainTextEdit)
+        if editor is None:
+            return
+
+        layout.removeWidget(group_box)
+        group_box.hide()
+
+        editor.setParent(None)
+        editor.setMinimumHeight(120)
+
+        collapsible = CollapsibleGroupBox(title)
+        collapsible.setContentWidget(editor)
+        layout.insertWidget(index, collapsible)
+
+    def init_start_button(self):
+        """在「上下卦」右側新增「開始解卦」按鈕。"""
+
+        # Designer 內 layoutWidget 寬度不足，先加大以容納按鈕
+        geo = self.ui.layoutWidget.geometry()
+        self.ui.layoutWidget.setGeometry(
+            geo.x(),
+            geo.y(),
+            max(geo.width(), 520),
+            geo.height(),
+        )
+
+        self.ui.btnStartInterpretation = QPushButton("開始解卦")
+        self.ui.horizontalLayout.addWidget(self.ui.btnStartInterpretation)
+        self.ui.btnStartInterpretation.clicked.connect(
+            self.start_interpretation
+        )
 
     def init_buttons(self):
         names = ["YoungYang", "YoungYin", "OldYang", "OldYin"]
@@ -116,11 +169,9 @@ class MainWindow(QMainWindow):
             self.buttons[line] = group
 
     def init_number_input(self):
-        """初始化卦序輸入"""
+        """初始化卦序輸入（排卦改由「開始解卦」觸發）。"""
 
-        self.ui.btnNumberCalculate.clicked.connect(
-            self.calculate_by_number
-        )
+        self.ui.btnNumberCalculate.hide()
 
     def init_name_input(self):
         """初始化卦名輸入"""
@@ -141,10 +192,6 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.comboHexagramName, 1)
 
-        button = QPushButton("依卦名排卦")
-        button.clicked.connect(self.calculate_by_name)
-        layout.addWidget(button)
-
         self.ui.verticalLayout_2.addWidget(group)
         self.groupNameInput = group
 
@@ -163,10 +210,6 @@ class MainWindow(QMainWindow):
         self.comboLowerTrigram = QComboBox()
         self.comboLowerTrigram.addItems(TRIGRAM_NAMES)
         layout.addWidget(self.comboLowerTrigram)
-
-        button = QPushButton("依上下卦排卦")
-        button.clicked.connect(self.calculate_by_trigrams)
-        layout.addWidget(button)
         layout.addStretch()
 
         self.ui.verticalLayout_2.addWidget(group)
@@ -216,6 +259,7 @@ class MainWindow(QMainWindow):
         self.show_result(result)
 
     def select_line(self, line, name):
+        """只更新六爻選擇，不自動排卦。"""
 
         for btn in self.buttons[line]:
             btn.blockSignals(True)
@@ -229,36 +273,54 @@ class MainWindow(QMainWindow):
 
         self.lines[line - 1] = self.values[name]
 
-        if None in self.lines:
+    def start_interpretation(self):
+        """依目前輸入模式排卦並進入解卦頁。"""
+
+        question = self.current_question()
+
+        if self.ui.rbSixLines.isChecked():
+            if None in self.lines:
+                self.show_input_error("六爻輸入不完整，請選擇全部六爻。")
+                return
+
+            lines = self.lines.copy()
+            self.run_cast(
+                lambda: self.controller.calculate(lines, question)
+            )
             return
 
-        lines = self.lines.copy()
-        question = self.current_question()
-
-        self.run_cast(
-            lambda: self.controller.calculate(lines, question)
-        )
-
-    def calculate_by_number(self):
-        number = self.ui.spinHexagramNumber.value()
-        question = self.current_question()
-
-        self.run_cast(
-            lambda: self.controller.calculate_by_number(number, question)
-        )
-
-    def calculate_by_name(self):
-        name = self.resolve_hexagram_name()
-
-        if name is None:
-            self.show_input_error("請輸入或選擇有效的卦名。")
+        if self.ui.rbHexagramNumber.isChecked():
+            number = self.ui.spinHexagramNumber.value()
+            self.run_cast(
+                lambda: self.controller.calculate_by_number(
+                    number,
+                    question,
+                )
+            )
             return
 
-        question = self.current_question()
+        if self.ui.rbHexagramName.isChecked():
+            name = self.resolve_hexagram_name()
 
-        self.run_cast(
-            lambda: self.controller.calculate_by_name(name, question)
-        )
+            if name is None:
+                self.show_input_error("請輸入或選擇有效的卦名。")
+                return
+
+            self.run_cast(
+                lambda: self.controller.calculate_by_name(name, question)
+            )
+            return
+
+        if self.ui.rbTrigrams.isChecked():
+            upper = self.comboUpperTrigram.currentText()
+            lower = self.comboLowerTrigram.currentText()
+            self.run_cast(
+                lambda: self.controller.calculate_by_trigrams(
+                    upper,
+                    lower,
+                    question,
+                )
+            )
 
     def resolve_hexagram_name(self):
         selected_text = self.comboHexagramName.currentText().strip()
@@ -276,19 +338,6 @@ class MainWindow(QMainWindow):
             return selected_text
 
         return None
-
-    def calculate_by_trigrams(self):
-        upper = self.comboUpperTrigram.currentText()
-        lower = self.comboLowerTrigram.currentText()
-        question = self.current_question()
-
-        self.run_cast(
-            lambda: self.controller.calculate_by_trigrams(
-                upper,
-                lower,
-                question,
-            )
-        )
 
     def show_history_record(self, record_id):
         record = self.history_page.get_record(record_id)
