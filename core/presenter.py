@@ -11,8 +11,10 @@ class HexagramPresenter:
 
     def show(self, result: HexagramResult):
 
-        # ===== 問題 =====
-        if hasattr(self.ui, "lblQuestion"):
+        # ===== 問題（解卦頁可編輯欄位由 MainWindow 同步） =====
+        if hasattr(self.ui, "editInterpretationQuestion"):
+            self.ui.editInterpretationQuestion.setText(result.question)
+        elif hasattr(self.ui, "lblQuestion"):
             question = result.question.strip()
             if question:
                 self.ui.lblQuestion.setText(f"占卜問題：{question}")
@@ -47,11 +49,12 @@ class HexagramPresenter:
         self._set_text("txtChangedTuan", result.changed.tuan)
         self._set_text("txtChangedXiang", result.changed.xiang)
         self._set_text("txtChangedWenyan", result.changed.wenyan)
+        self._set_text("txtChangedTranslation", result.changed.translation)
 
         # ===== 爻辭 =====
         self._set_text("txtLineTexts", self._format_line_texts(result))
 
-        # ===== 心得（僅顯示，V1.4 再編輯） =====
+        # ===== 心得 =====
         if hasattr(self.ui, "txtNotes"):
             self.ui.txtNotes.setPlainText(result.notes)
 

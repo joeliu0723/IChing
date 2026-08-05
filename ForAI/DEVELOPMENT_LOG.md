@@ -530,15 +530,84 @@ Description
 
 ---
 
+## V1.4.7
+
+Date
+
+2026-08-05
+
+Feature
+
+編輯（占卜問題）
+
+Modified Files
+
+- core/controller.py
+- core/presenter.py
+- ui/main_window.py
+
+Description
+
+- 解卦頁問題改為可編輯 QLineEdit +「儲存問題」
+- Controller.save_question() 寫回 history.json，並同步 session.result
+- 規格可改欄位已齊：問題、心得、驗證內容／結果、收藏（id／created_at 不可改）
+
+---
+
+## V1.4.8
+
+Date
+
+2026-08-05
+
+Feature
+
+歷史紀錄排序
+
+Modified Files
+
+- core/history_manager.py
+- ui/history_page.py
+
+Description
+
+- HistoryManager.sort_records()：日期（新→舊）、本卦、收藏、驗證結果
+- 歷史頁新增排序下拉，與搜尋條件併用
+- V1.4 研究功能完成
+
+---
+
+## V1.4.9
+
+Date
+
+2026-08-06
+
+Feature
+
+UX 修正：排序升降、標題更名、變卦白話、輸入模式版面
+
+Modified Files
+
+- core/history_manager.py
+- core/presenter.py
+- ui/history_page.py
+- ui/main_window.py
+
+Description
+
+- 排序各欄位可切換小→大／大→小
+- 解卦「彖傳」顯示改為「大帥解釋」；「變卦彖傳」改為「變卦大帥解釋」（ObjectName／資料欄位不變）
+- 新增「變卦白話翻譯」，來源同本卦 translation（result.changed.translation）
+- 起卦四種輸入改 QStackedWidget 固定高度，切換時「輸入模式」位置不再跳動
+
+---
+
 # Future
-
-## V1.4
-
-- 編輯、排序
 
 ## V1.5
 
-- AI 功能
+- AI 功能（暫緩）
 
 ---
 

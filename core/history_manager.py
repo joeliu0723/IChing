@@ -4,6 +4,24 @@ from pathlib import Path
 from core.history import HistoryRecord, VERIFICATION_RESULTS
 
 
+SORT_BY_DATE = "date"
+SORT_BY_MAIN = "main"
+SORT_BY_FAVORITE = "favorite"
+SORT_BY_VERIFICATION = "verification"
+
+SORT_OPTIONS = (
+    (SORT_BY_DATE, "日期"),
+    (SORT_BY_MAIN, "本卦"),
+    (SORT_BY_FAVORITE, "收藏"),
+    (SORT_BY_VERIFICATION, "驗證結果"),
+)
+
+_VERIFICATION_ORDER = {
+    name: index
+    for index, name in enumerate(VERIFICATION_RESULTS)
+}
+
+
 class HistoryManager:
     """占卜紀錄管理"""
 
@@ -139,6 +157,62 @@ class HistoryManager:
                 results.append(record)
 
         return results
+
+    def sort_records(
+        self,
+        records,
+        sort_by: str = SORT_BY_DATE,
+        ascending: bool = False,
+    ):
+        """
+        排序紀錄。
+
+        支援：日期、本卦、收藏、驗證結果。
+        ascending=True：小→大／舊→新；False：大→小／新→舊。
+        """
+
+        items = list(records)
+        key = (sort_by or SORT_BY_DATE).strip().lower()
+
+        if key == SORT_BY_MAIN:
+            items.sort(
+                key=lambda record: (
+                    record.main_number,
+                    record.created_at,
+                ),
+                reverse=not ascending,
+            )
+            return items
+
+        if key == SORT_BY_FAVORITE:
+            # ascending：未收藏在前；descending：收藏在前
+            items.sort(
+                key=lambda record: (
+                    record.favorite if ascending else not record.favorite,
+                    -record.created_at.timestamp(),
+                )
+            )
+            return items
+
+        if key == SORT_BY_VERIFICATION:
+            items.sort(
+                key=lambda record: (
+                    _VERIFICATION_ORDER.get(
+                        record.verification_result,
+                        0,
+                    ),
+                    -record.created_at.timestamp(),
+                ),
+                reverse=not ascending,
+            )
+            return items
+
+        # 日期：ascending=舊→新；預設 descending=新→舊
+        items.sort(
+            key=lambda record: record.created_at,
+            reverse=not ascending,
+        )
+        return items
 
     def _matches(self, record: HistoryRecord, keyword: str) -> bool:
         fields = [

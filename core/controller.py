@@ -71,6 +71,31 @@ class HexagramController:
 
         return result
 
+    def save_question(self, question: str):
+        """儲存目前紀錄的占卜問題。"""
+
+        current = session.record
+
+        if current is None or not current.id:
+            raise ValueError("目前沒有可儲存的占卜紀錄，請先起卦或從歷史載入。")
+
+        self.history_manager.load()
+        record = self.history_manager.get(current.id)
+
+        if record is None:
+            raise ValueError("找不到對應的歷史紀錄。")
+
+        question = (question or "").strip()
+        record.question = question
+        record.updated_at = datetime.now()
+        self.history_manager.update(record)
+        session.set_record(record)
+
+        if session.result is not None:
+            session.result.question = question
+
+        return record
+
     def save_notes(self, notes: str):
         """儲存目前紀錄的心得。"""
 

@@ -28,7 +28,7 @@ V1.4
 
 ## Current Task
 
-V1.4：編輯、排序。
+V1.5：AI 功能（暫緩）。
 
 Priority
 
@@ -36,7 +36,7 @@ Priority
 
 Status
 
-In Progress
+Deferred
 
 ---
 
@@ -56,7 +56,7 @@ Completed
 
 Status
 
-Partial
+Completed
 
 Tasks
 
@@ -65,12 +65,12 @@ Tasks
 - ✓ 搜尋（問題、卦名、卦序、收藏、驗證）
 - ✓ 收藏（favorite Checkbox）
 - ✓ 驗證內容／驗證結果
-- □ 排序
-- □ 編輯
+- ✓ 編輯（問題／心得／驗證／收藏）
+- ✓ 排序（日期、本卦、收藏、驗證結果；可切換升降）
 
 已有
 
-- ✓ HistoryManager（add / load / save / get / update / delete / delete_many / search）
+- ✓ HistoryManager（add / load / save / get / update / delete / delete_many / search / sort_records）
 - ✓ HistoryPage 列表顯示
 - ✓ 排卦後自動寫入 history.json
 - ✓ 點選 History 顯示完整解卦內容（V1.3；現為雙擊開啟）
@@ -79,6 +79,10 @@ Tasks
 - ✓ 歷史搜尋
 - ✓ 收藏（chkFavorite / set_favorite）
 - ✓ 驗證（save_verification；列表顯示驗證結果）
+- ✓ 問題編輯（save_question）
+- ✓ 歷史排序（combo_sort + 升降切換）
+- ✓ 變卦白話翻譯（txtChangedTranslation）
+- ✓ 輸入模式 QStackedWidget（位置固定）
 
 ---
 
@@ -86,7 +90,7 @@ Tasks
 
 Status
 
-Todo
+Deferred
 
 Tasks
 

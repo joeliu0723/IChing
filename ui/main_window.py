@@ -7,10 +7,12 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QMainWindow,
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
+    QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -80,9 +82,15 @@ class MainWindow(QMainWindow):
         header_layout = QHBoxLayout(header)
         header_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.ui.lblQuestion = QLabel("占卜問題：（未填寫）")
-        self.ui.lblQuestion.setWordWrap(True)
-        header_layout.addWidget(self.ui.lblQuestion, 1)
+        header_layout.addWidget(QLabel("占卜問題"))
+
+        self.ui.editInterpretationQuestion = QLineEdit()
+        self.ui.editInterpretationQuestion.setPlaceholderText("（未填寫）")
+        header_layout.addWidget(self.ui.editInterpretationQuestion, 1)
+
+        self.ui.btnSaveQuestion = QPushButton("儲存問題")
+        self.ui.btnSaveQuestion.clicked.connect(self.save_question)
+        header_layout.addWidget(self.ui.btnSaveQuestion)
 
         self.ui.chkFavorite = QCheckBox("收藏")
         self.ui.chkFavorite.toggled.connect(self.on_favorite_toggled)
@@ -93,9 +101,10 @@ class MainWindow(QMainWindow):
         insert_at = layout.indexOf(self.ui.grp_txtAIAnalysis)
         groups = [
             ("txtChangedJudgment", "變卦卦辭"),
-            ("txtChangedTuan", "變卦彖傳"),
+            ("txtChangedTuan", "變卦大帥解釋"),
             ("txtChangedXiang", "變卦象傳"),
             ("txtChangedWenyan", "變卦文言"),
+            ("txtChangedTranslation", "變卦白話翻譯"),
             ("txtLineTexts", "爻辭"),
         ]
 
@@ -109,7 +118,7 @@ class MainWindow(QMainWindow):
 
         designer_groups = [
             (self.ui.grp_txtJudgment, "卦辭"),
-            (self.ui.grp_txtTuan, "彖傳"),
+            (self.ui.grp_txtTuan, "大帥解釋"),
             (self.ui.grp_txtXiang, "象傳"),
             (self.ui.grp_txtWenyan, "文言"),
             (self.ui.grp_txtTranslation, "白話翻譯"),
@@ -248,10 +257,22 @@ class MainWindow(QMainWindow):
 
         self.ui.btnNumberCalculate.hide()
 
+        # 從絕對座標改掛入 GroupBox，稍後與其他模式一併放入 Stack
+        number_widget = self.ui.horizontalLayoutWidget_8
+        number_widget.setParent(None)
+
+        group = QGroupBox("卦序輸入")
+        layout = QHBoxLayout(group)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.addWidget(number_widget)
+        layout.addStretch()
+
+        self.groupNumberInput = group
+
     def init_name_input(self):
         """初始化卦名輸入"""
 
-        group = QGroupBox("卦名輸入", self.ui.widget)
+        group = QGroupBox("卦名輸入")
         layout = QHBoxLayout(group)
 
         layout.addWidget(QLabel("選擇卦名"))
@@ -267,13 +288,12 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.comboHexagramName, 1)
 
-        self.ui.verticalLayout_2.addWidget(group)
         self.groupNameInput = group
 
     def init_trigrams_input(self):
         """初始化上下卦輸入"""
 
-        group = QGroupBox("上下卦輸入", self.ui.widget)
+        group = QGroupBox("上下卦輸入")
         layout = QHBoxLayout(group)
 
         layout.addWidget(QLabel("上卦"))
@@ -287,18 +307,38 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.comboLowerTrigram)
         layout.addStretch()
 
-        self.ui.verticalLayout_2.addWidget(group)
         self.groupTrigramsInput = group
 
     def init_input_mode_switching(self):
-        """依 RadioButton 切換輸入方式，僅顯示目前輸入區塊。"""
+        """依 RadioButton 切換輸入方式；固定區域高度避免跳動。"""
 
-        self.mode_groups = {
-            "six_lines": self.ui.groupLinesInput,
-            "name": self.groupNameInput,
-            "number": self.ui.horizontalLayoutWidget_8,
-            "trigrams": self.groupTrigramsInput,
-        }
+        layout = self.ui.verticalLayout_2
+
+        # 六爻原本在 layout 內，先取出再放入 stack
+        lines_group = self.ui.groupLinesInput
+        layout.removeWidget(lines_group)
+
+        self.input_mode_stack = QStackedWidget()
+        self.input_mode_stack.setMinimumHeight(420)
+
+        pages = [
+            ("six_lines", lines_group),
+            ("name", self.groupNameInput),
+            ("number", self.groupNumberInput),
+            ("trigrams", self.groupTrigramsInput),
+        ]
+
+        self.mode_page_index = {}
+        for key, page in pages:
+            index = self.input_mode_stack.addWidget(page)
+            self.mode_page_index[key] = index
+
+        # 插在「輸入模式」Radio 區塊正下方
+        mode_index = layout.indexOf(self.ui.groupInputMode)
+        if mode_index < 0:
+            layout.insertWidget(0, self.input_mode_stack)
+        else:
+            layout.insertWidget(mode_index + 1, self.input_mode_stack)
 
         self.ui.rbSixLines.toggled.connect(
             lambda checked: checked and self.show_input_mode("six_lines")
@@ -316,8 +356,10 @@ class MainWindow(QMainWindow):
         self.show_input_mode("six_lines")
 
     def show_input_mode(self, mode):
-        for name, group in self.mode_groups.items():
-            group.setVisible(name == mode)
+        index = self.mode_page_index.get(mode)
+        if index is None:
+            return
+        self.input_mode_stack.setCurrentIndex(index)
 
     def current_question(self):
         return self.ui.editQuestion.text().strip()
@@ -434,6 +476,16 @@ class MainWindow(QMainWindow):
         session.set_record(record)
         self.show_result(result, refresh_history=False)
 
+    def sync_question_field(self):
+        if session.record is not None:
+            question = session.record.question
+        elif session.result is not None:
+            question = session.result.question
+        else:
+            question = ""
+
+        self.ui.editInterpretationQuestion.setText(question)
+
     def sync_favorite_checkbox(self):
         favorite = bool(session.record and session.record.favorite)
 
@@ -470,6 +522,18 @@ class MainWindow(QMainWindow):
             return
 
         self.history_page.refresh_and_keep_selection()
+
+    def save_question(self):
+        question = self.ui.editInterpretationQuestion.text()
+
+        try:
+            self.controller.save_question(question)
+        except ValueError as error:
+            self.show_input_error(str(error))
+            return
+
+        self.history_page.refresh_and_keep_selection()
+        QMessageBox.information(self, "儲存成功", "占卜問題已儲存。")
 
     def save_notes(self):
         notes = self.ui.txtNotes.toPlainText()
@@ -532,11 +596,13 @@ class MainWindow(QMainWindow):
             return
 
         self.history_page.refresh()
+        self.sync_question_field()
         self.sync_favorite_checkbox()
         self.sync_verification_fields()
 
     def show_result(self, result, refresh_history=True):
         self.presenter.show(result)
+        self.sync_question_field()
         self.sync_favorite_checkbox()
         self.sync_verification_fields()
 

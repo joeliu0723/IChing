@@ -2,13 +2,14 @@
 ==================================================
 Project IChing
 File : ui/history_page.py
-Version : V1.4.6
+Version : V1.4.9
 ==================================================
 """
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
+    QComboBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -17,8 +18,24 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core.history_manager import HistoryManager
+from core.history_manager import (
+    HistoryManager,
+    SORT_BY_DATE,
+    SORT_BY_FAVORITE,
+    SORT_BY_MAIN,
+    SORT_BY_VERIFICATION,
+    SORT_OPTIONS,
+)
 from core.history import HistoryRecord
+
+
+# 各排序欄位的預設方向（維持既有行為）
+_DEFAULT_ASCENDING = {
+    SORT_BY_DATE: False,
+    SORT_BY_MAIN: True,
+    SORT_BY_FAVORITE: False,
+    SORT_BY_VERIFICATION: True,
+}
 
 
 class HistoryPage:
@@ -30,6 +47,7 @@ class HistoryPage:
         self.manager = HistoryManager()
         self.on_select = on_select
         self.on_delete = on_delete
+        self.sort_ascending = _DEFAULT_ASCENDING[SORT_BY_DATE]
 
         self.list_widget = self.window.listHistory
         self.list_widget.setSelectionMode(
@@ -42,6 +60,7 @@ class HistoryPage:
         )
 
         self._init_search_bar()
+        self._init_sort_bar()
 
         self.btn_delete = QPushButton("刪除選取紀錄")
         self.window.verticalLayout_3.addWidget(self.btn_delete)
@@ -69,7 +88,45 @@ class HistoryPage:
 
         self.window.verticalLayout_3.insertWidget(0, bar)
 
+    def _init_sort_bar(self):
+        bar = QWidget()
+        layout = QHBoxLayout(bar)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        layout.addWidget(QLabel("排序"))
+
+        self.combo_sort = QComboBox()
+        for key, label in SORT_OPTIONS:
+            self.combo_sort.addItem(label, key)
+
+        self.combo_sort.currentIndexChanged.connect(self._on_sort_changed)
+        layout.addWidget(self.combo_sort, 1)
+
+        self.btn_sort_order = QPushButton()
+        self.btn_sort_order.clicked.connect(self._toggle_sort_order)
+        layout.addWidget(self.btn_sort_order)
+        self._update_sort_order_button()
+
+        self.window.verticalLayout_3.insertWidget(1, bar)
+
+    def _update_sort_order_button(self):
+        if self.sort_ascending:
+            self.btn_sort_order.setText("小→大")
+        else:
+            self.btn_sort_order.setText("大→小")
+
+    def _toggle_sort_order(self):
+        self.sort_ascending = not self.sort_ascending
+        self._update_sort_order_button()
+        self.refresh()
+
     def _on_search_changed(self, _text):
+        self.refresh()
+
+    def _on_sort_changed(self, _index):
+        sort_key = self.current_sort()
+        self.sort_ascending = _DEFAULT_ASCENDING.get(sort_key, False)
+        self._update_sort_order_button()
         self.refresh()
 
     def clear_search(self):
@@ -103,16 +160,24 @@ class HistoryPage:
     def current_query(self) -> str:
         return self.edit_search.text().strip()
 
+    def current_sort(self) -> str:
+        key = self.combo_sort.currentData()
+        return key if key else SORT_BY_DATE
+
     def refresh(self):
-        """重新載入紀錄（套用目前搜尋條件）。"""
+        """重新載入紀錄（套用目前搜尋與排序）。"""
 
         selected_ids = set(self.selected_record_ids())
 
         self.manager.load()
         self.list_widget.clear()
 
-        query = self.current_query()
-        records = self.manager.search(query)
+        records = self.manager.search(self.current_query())
+        records = self.manager.sort_records(
+            records,
+            self.current_sort(),
+            ascending=self.sort_ascending,
+        )
 
         for record in records:
 
