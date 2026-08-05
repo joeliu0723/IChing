@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from core.hexagram import HexagramEngine
-from core.history import HistoryRecord
+from core.history import HistoryRecord, VERIFICATION_RESULTS
 from core.history_manager import HistoryManager
 from core.session import session
 from core.hexagram_lookup import HexagramLookup
@@ -86,6 +86,53 @@ class HexagramController:
             raise ValueError("找不到對應的歷史紀錄。")
 
         record.notes = notes
+        record.updated_at = datetime.now()
+        self.history_manager.update(record)
+        session.set_record(record)
+
+        return record
+
+    def set_favorite(self, favorite: bool):
+        """設定目前紀錄是否收藏。"""
+
+        current = session.record
+
+        if current is None or not current.id:
+            raise ValueError("目前沒有可收藏的占卜紀錄，請先起卦或從歷史載入。")
+
+        self.history_manager.load()
+        record = self.history_manager.get(current.id)
+
+        if record is None:
+            raise ValueError("找不到對應的歷史紀錄。")
+
+        record.favorite = bool(favorite)
+        record.updated_at = datetime.now()
+        self.history_manager.update(record)
+        session.set_record(record)
+
+        return record
+
+    def save_verification(self, content: str, result: str):
+        """儲存目前紀錄的驗證內容與驗證結果。"""
+
+        current = session.record
+
+        if current is None or not current.id:
+            raise ValueError("目前沒有可儲存的占卜紀錄，請先起卦或從歷史載入。")
+
+        result = (result or "").strip()
+        if result not in VERIFICATION_RESULTS:
+            raise ValueError(f"無效的驗證結果：{result}")
+
+        self.history_manager.load()
+        record = self.history_manager.get(current.id)
+
+        if record is None:
+            raise ValueError("找不到對應的歷史紀錄。")
+
+        record.verification_content = content
+        record.verification_result = result
         record.updated_at = datetime.now()
         self.history_manager.update(record)
         session.set_record(record)

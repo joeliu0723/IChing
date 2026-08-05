@@ -28,7 +28,7 @@ V1.4
 
 ## Current Task
 
-V1.4 研究功能（心得已完成，其餘進行中）。
+V1.4：編輯、排序。
 
 Priority
 
@@ -62,21 +62,23 @@ Tasks
 
 - ✓ 我的心得（txtNotes 編輯與儲存）
 - ✓ 刪除（UI + 確認；單擊選取／雙擊開啟／多選批次刪除）
-- □ 收藏
-- □ 驗證內容
-- □ 驗證結果
-- □ 搜尋
+- ✓ 搜尋（問題、卦名、卦序、收藏、驗證）
+- ✓ 收藏（favorite Checkbox）
+- ✓ 驗證內容／驗證結果
 - □ 排序
 - □ 編輯
 
 已有
 
-- ✓ HistoryManager（add / load / save / get / update / delete / delete_many）
+- ✓ HistoryManager（add / load / save / get / update / delete / delete_many / search）
 - ✓ HistoryPage 列表顯示
 - ✓ 排卦後自動寫入 history.json
 - ✓ 點選 History 顯示完整解卦內容（V1.3；現為雙擊開啟）
 - ✓ 心得儲存（save_notes / updated_at）
 - ✓ 歷史刪除（delete_records + 多選確認）
+- ✓ 歷史搜尋
+- ✓ 收藏（chkFavorite / set_favorite）
+- ✓ 驗證（save_verification；列表顯示驗證結果）
 
 ---
 

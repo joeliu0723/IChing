@@ -453,12 +453,88 @@ Description
 
 ---
 
+## V1.4.4
+
+Date
+
+2026-08-05
+
+Feature
+
+歷史紀錄搜尋
+
+Modified Files
+
+- core/history_manager.py
+- ui/history_page.py
+
+Description
+
+- HistoryManager.search()：問題、卦名、卦序
+- 歷史頁搜尋列即時過濾 + 清除按鈕
+- 姓名／收藏／驗證搜尋待欄位完成後擴充
+
+---
+
+## V1.4.5
+
+Date
+
+2026-08-05
+
+Feature
+
+收藏
+
+Modified Files
+
+- core/history.py
+- core/history_manager.py
+- core/controller.py
+- ui/main_window.py
+- ui/history_page.py
+
+Description
+
+- HistoryRecord.favorite 寫入 JSON
+- 解卦頁「收藏」Checkbox，切換即儲存
+- 歷史列表收藏顯示 ★
+- 搜尋關鍵字「收藏」可篩選已收藏紀錄
+
+---
+
+## V1.4.6
+
+Date
+
+2026-08-05
+
+Feature
+
+驗證內容與驗證結果
+
+Modified Files
+
+- core/history.py
+- core/history_manager.py
+- core/controller.py
+- ui/main_window.py
+- ui/history_page.py
+
+Description
+
+- HistoryRecord 新增 verification_content / verification_result（固定四值）
+- 解卦頁「事後驗證」折疊區塊：下拉結果 + 內容 + 儲存驗證
+- Controller.save_verification 寫入 JSON 並更新 updated_at
+- 歷史列表顯示非「未驗證」的驗證結果；搜尋可篩選驗證結果／內容
+
+---
+
 # Future
 
 ## V1.4
 
-- 搜尋、收藏、編輯
-- 驗證內容／結果
+- 編輯、排序
 
 ## V1.5
 

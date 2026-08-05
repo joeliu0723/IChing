@@ -3,6 +3,14 @@ from datetime import datetime
 from typing import List
 
 
+VERIFICATION_RESULTS = (
+    "未驗證",
+    "符合",
+    "部分符合",
+    "不符合",
+)
+
+
 @dataclass
 class HistoryRecord:
     """單筆占卜紀錄"""
@@ -31,6 +39,13 @@ class HistoryRecord:
     # 使用者心得
     notes: str = ""
 
+    # 收藏
+    favorite: bool = False
+
+    # 事後驗證
+    verification_content: str = ""
+    verification_result: str = "未驗證"
+
     # 最後更新時間
     updated_at: datetime = field(default_factory=datetime.now)
 
@@ -49,6 +64,9 @@ class HistoryRecord:
             "changed_name": self.changed_name,
             "moving_lines": self.moving_lines,
             "notes": self.notes,
+            "favorite": self.favorite,
+            "verification_content": self.verification_content,
+            "verification_result": self.verification_result,
         }
 
     @classmethod
@@ -76,5 +94,16 @@ class HistoryRecord:
         record.moving_lines = data.get("moving_lines", [])
 
         record.notes = data.get("notes", "")
+        record.favorite = bool(data.get("favorite", False))
+
+        record.verification_content = data.get(
+            "verification_content",
+            "",
+        )
+
+        result = data.get("verification_result", "未驗證")
+        if result not in VERIFICATION_RESULTS:
+            result = "未驗證"
+        record.verification_result = result
 
         return record

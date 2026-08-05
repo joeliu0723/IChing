@@ -2,6 +2,7 @@ import sys
 
 from PySide6.QtWidgets import (
     QApplication,
+    QCheckBox,
     QComboBox,
     QGroupBox,
     QHBoxLayout,
@@ -18,6 +19,7 @@ from ui.ui_mainwindow import Ui_MainWindow
 from core.controller import HexagramController
 from core.presenter import HexagramPresenter
 from core.hexagram_lookup import HexagramLookup
+from core.history import VERIFICATION_RESULTS
 from core.session import session
 from ui.history_page import HistoryPage
 from ui.widgets.collapsible_groupbox import CollapsibleGroupBox
@@ -74,9 +76,19 @@ class MainWindow(QMainWindow):
 
         layout = self.ui.verticalLayoutInterpretation
 
+        header = QWidget()
+        header_layout = QHBoxLayout(header)
+        header_layout.setContentsMargins(0, 0, 0, 0)
+
         self.ui.lblQuestion = QLabel("占卜問題：（未填寫）")
         self.ui.lblQuestion.setWordWrap(True)
-        layout.insertWidget(0, self.ui.lblQuestion)
+        header_layout.addWidget(self.ui.lblQuestion, 1)
+
+        self.ui.chkFavorite = QCheckBox("收藏")
+        self.ui.chkFavorite.toggled.connect(self.on_favorite_toggled)
+        header_layout.addWidget(self.ui.chkFavorite)
+
+        layout.insertWidget(0, header)
 
         insert_at = layout.indexOf(self.ui.grp_txtAIAnalysis)
         groups = [
@@ -108,6 +120,7 @@ class MainWindow(QMainWindow):
             self._wrap_group_as_collapsible(layout, group_box, title)
 
         self._wrap_notes_as_collapsible(layout, self.ui.grp_txtNotes)
+        self._add_verification_section(layout)
 
     def _add_collapsible_editor(self, layout, index, title, attr_name):
         editor = QPlainTextEdit()
@@ -167,6 +180,33 @@ class MainWindow(QMainWindow):
         collapsible = CollapsibleGroupBox("我的心得")
         collapsible.setContentWidget(content)
         layout.insertWidget(index, collapsible)
+
+    def _add_verification_section(self, layout):
+        """事後驗證：驗證結果 + 驗證內容 + 儲存。"""
+
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+
+        result_row = QHBoxLayout()
+        result_row.addWidget(QLabel("驗證結果"))
+        self.ui.comboVerificationResult = QComboBox()
+        self.ui.comboVerificationResult.addItems(list(VERIFICATION_RESULTS))
+        result_row.addWidget(self.ui.comboVerificationResult, 1)
+        content_layout.addLayout(result_row)
+
+        content_layout.addWidget(QLabel("驗證內容"))
+        self.ui.txtVerificationContent = QPlainTextEdit()
+        self.ui.txtVerificationContent.setMinimumHeight(100)
+        content_layout.addWidget(self.ui.txtVerificationContent)
+
+        self.ui.btnSaveVerification = QPushButton("儲存驗證")
+        self.ui.btnSaveVerification.clicked.connect(self.save_verification)
+        content_layout.addWidget(self.ui.btnSaveVerification)
+
+        collapsible = CollapsibleGroupBox("事後驗證")
+        collapsible.setContentWidget(content)
+        layout.addWidget(collapsible)
 
     def init_start_button(self):
         """在「上下卦」右側新增「開始解卦」按鈕。"""
@@ -394,6 +434,43 @@ class MainWindow(QMainWindow):
         session.set_record(record)
         self.show_result(result, refresh_history=False)
 
+    def sync_favorite_checkbox(self):
+        favorite = bool(session.record and session.record.favorite)
+
+        self.ui.chkFavorite.blockSignals(True)
+        self.ui.chkFavorite.setChecked(favorite)
+        self.ui.chkFavorite.blockSignals(False)
+
+    def sync_verification_fields(self):
+        if session.record is None:
+            content = ""
+            result = "未驗證"
+        else:
+            content = session.record.verification_content
+            result = session.record.verification_result or "未驗證"
+
+        self.ui.txtVerificationContent.setPlainText(content)
+
+        index = self.ui.comboVerificationResult.findText(result)
+        if index < 0:
+            index = 0
+
+        self.ui.comboVerificationResult.blockSignals(True)
+        self.ui.comboVerificationResult.setCurrentIndex(index)
+        self.ui.comboVerificationResult.blockSignals(False)
+
+    def on_favorite_toggled(self, checked):
+        try:
+            self.controller.set_favorite(checked)
+        except ValueError as error:
+            self.ui.chkFavorite.blockSignals(True)
+            self.ui.chkFavorite.setChecked(False)
+            self.ui.chkFavorite.blockSignals(False)
+            self.show_input_error(str(error))
+            return
+
+        self.history_page.refresh_and_keep_selection()
+
     def save_notes(self):
         notes = self.ui.txtNotes.toPlainText()
 
@@ -405,6 +482,19 @@ class MainWindow(QMainWindow):
 
         self.history_page.refresh_and_keep_selection()
         QMessageBox.information(self, "儲存成功", "心得已儲存。")
+
+    def save_verification(self):
+        content = self.ui.txtVerificationContent.toPlainText()
+        result = self.ui.comboVerificationResult.currentText()
+
+        try:
+            self.controller.save_verification(content, result)
+        except ValueError as error:
+            self.show_input_error(str(error))
+            return
+
+        self.history_page.refresh_and_keep_selection()
+        QMessageBox.information(self, "儲存成功", "驗證資料已儲存。")
 
     def delete_history_record(self, record_ids):
         if isinstance(record_ids, str):
@@ -442,9 +532,13 @@ class MainWindow(QMainWindow):
             return
 
         self.history_page.refresh()
+        self.sync_favorite_checkbox()
+        self.sync_verification_fields()
 
     def show_result(self, result, refresh_history=True):
         self.presenter.show(result)
+        self.sync_favorite_checkbox()
+        self.sync_verification_fields()
 
         if refresh_history:
             self.history_page.refresh()

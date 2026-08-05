@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from core.history import HistoryRecord
+from core.history import HistoryRecord, VERIFICATION_RESULTS
 
 
 class HistoryManager:
@@ -105,6 +105,57 @@ class HistoryManager:
         """取得所有紀錄"""
 
         return self.records.copy()
+
+    def search(self, keyword: str):
+        """
+        搜尋紀錄。
+
+        可搜尋：問題、卦名、卦序、收藏、驗證結果、驗證內容
+        """
+
+        text = (keyword or "").strip().lower()
+
+        if not text:
+            return self.get_all()
+
+        if text in ("收藏", "★", "favorite"):
+            return [
+                record
+                for record in self.records
+                if record.favorite
+            ]
+
+        if text in {item.lower() for item in VERIFICATION_RESULTS}:
+            return [
+                record
+                for record in self.records
+                if record.verification_result.lower() == text
+            ]
+
+        results = []
+
+        for record in self.records:
+            if self._matches(record, text):
+                results.append(record)
+
+        return results
+
+    def _matches(self, record: HistoryRecord, keyword: str) -> bool:
+        fields = [
+            record.question,
+            record.main_name,
+            record.changed_name,
+            str(record.main_number) if record.main_number else "",
+            str(record.changed_number) if record.changed_number else "",
+            record.verification_content,
+            record.verification_result,
+        ]
+
+        return any(
+            keyword in field.lower()
+            for field in fields
+            if field
+        )
 
     def clear(self):
         """清空所有紀錄"""
