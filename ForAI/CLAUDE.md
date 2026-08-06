@@ -32,6 +32,7 @@ Current Progress
 - ✓ V1.4.9 UX 修正（排序升降、大帥解釋、變卦白話、輸入模式固定）
 - ✓ V1.4.10 Data Editor（64 卦編輯／欄位匯入）
 - ✓ V1.4.11 Data Editor UX（捲動、Win+H 語音、隱藏匯入）
+- ✓ V1.4.12 數字卦（梅花易數三數起卦）
 
 Current Task
 

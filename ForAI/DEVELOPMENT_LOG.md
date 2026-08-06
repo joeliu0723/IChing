@@ -656,6 +656,30 @@ Description
 
 ---
 
+## V1.4.12
+
+Date
+
+2026-08-06
+
+Feature
+
+梅花易數「數字卦」輸入模式（使用者指定；SPEC 列為 Out of Scope，未改 PRODUCT_SPEC）
+
+Modified Files
+
+- core/meihua.py（新增）
+- core/controller.py
+- ui/main_window.py
+
+Description
+
+- 輸入模式新增「數字卦」Radio + 三數 SpinBox
+- 經典三數法：上卦／下卦 ÷8 餘、動爻 ÷6 餘（餘0作8／6）；先天序1乾…8坤
+- Controller.calculate_by_meihua → 既有 calculate(lines) 流程
+
+---
+
 # Future
 
 ## Packaging（暫緩）

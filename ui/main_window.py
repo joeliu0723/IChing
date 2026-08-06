@@ -12,6 +12,8 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
+    QRadioButton,
+    QSpinBox,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
@@ -71,6 +73,7 @@ class MainWindow(QMainWindow):
         self.init_number_input()
         self.init_name_input()
         self.init_trigrams_input()
+        self.init_meihua_input()
         self.init_input_mode_switching()
 
     def init_interpretation_widgets(self):
@@ -220,14 +223,19 @@ class MainWindow(QMainWindow):
     def init_start_button(self):
         """在「上下卦」右側新增「開始解卦」按鈕。"""
 
-        # Designer 內 layoutWidget 寬度不足，先加大以容納按鈕
+        # Designer 內 layoutWidget 寬度不足，先加大以容納按鈕與「數字卦」
         geo = self.ui.layoutWidget.geometry()
         self.ui.layoutWidget.setGeometry(
             geo.x(),
             geo.y(),
-            max(geo.width(), 520),
+            max(geo.width(), 620),
             geo.height(),
         )
+
+        self.ui.rbMeihuaNumbers = QRadioButton("數字卦")
+        self.ui.rbMeihuaNumbers.setObjectName("rbMeihuaNumbers")
+        # 插在「開始解卦」之前（若尚未加入則加在末尾）
+        self.ui.horizontalLayout.addWidget(self.ui.rbMeihuaNumbers)
 
         self.ui.btnStartInterpretation = QPushButton("開始解卦")
         self.ui.horizontalLayout.addWidget(self.ui.btnStartInterpretation)
@@ -309,6 +317,42 @@ class MainWindow(QMainWindow):
 
         self.groupTrigramsInput = group
 
+    def init_meihua_input(self):
+        """初始化梅花易數數字卦輸入（三數）。"""
+
+        group = QGroupBox("數字卦（梅花易數）")
+        layout = QVBoxLayout(group)
+
+        hint = QLabel(
+            "第1數→上卦（÷8 餘）、第2數→下卦（÷8 餘）、"
+            "第3數→動爻（÷6 餘；餘0作8／6）"
+        )
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+
+        row = QHBoxLayout()
+        row.addWidget(QLabel("第1數"))
+        self.spinMeihua1 = QSpinBox()
+        self.spinMeihua1.setRange(1, 99999)
+        self.spinMeihua1.setValue(1)
+        row.addWidget(self.spinMeihua1)
+
+        row.addWidget(QLabel("第2數"))
+        self.spinMeihua2 = QSpinBox()
+        self.spinMeihua2.setRange(1, 99999)
+        self.spinMeihua2.setValue(1)
+        row.addWidget(self.spinMeihua2)
+
+        row.addWidget(QLabel("第3數"))
+        self.spinMeihua3 = QSpinBox()
+        self.spinMeihua3.setRange(1, 99999)
+        self.spinMeihua3.setValue(1)
+        row.addWidget(self.spinMeihua3)
+        row.addStretch()
+        layout.addLayout(row)
+
+        self.groupMeihuaInput = group
+
     def init_input_mode_switching(self):
         """依 RadioButton 切換輸入方式；固定區域高度避免跳動。"""
 
@@ -326,6 +370,7 @@ class MainWindow(QMainWindow):
             ("name", self.groupNameInput),
             ("number", self.groupNumberInput),
             ("trigrams", self.groupTrigramsInput),
+            ("meihua", self.groupMeihuaInput),
         ]
 
         self.mode_page_index = {}
@@ -351,6 +396,9 @@ class MainWindow(QMainWindow):
         )
         self.ui.rbTrigrams.toggled.connect(
             lambda checked: checked and self.show_input_mode("trigrams")
+        )
+        self.ui.rbMeihuaNumbers.toggled.connect(
+            lambda checked: checked and self.show_input_mode("meihua")
         )
 
         self.show_input_mode("six_lines")
@@ -435,6 +483,20 @@ class MainWindow(QMainWindow):
                 lambda: self.controller.calculate_by_trigrams(
                     upper,
                     lower,
+                    question,
+                )
+            )
+            return
+
+        if self.ui.rbMeihuaNumbers.isChecked():
+            n1 = self.spinMeihua1.value()
+            n2 = self.spinMeihua2.value()
+            n3 = self.spinMeihua3.value()
+            self.run_cast(
+                lambda: self.controller.calculate_by_meihua(
+                    n1,
+                    n2,
+                    n3,
                     question,
                 )
             )

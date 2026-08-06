@@ -263,3 +263,19 @@ class HexagramController:
             number,
             question
         )
+
+    # =======================================================
+    # 梅花易數數字卦
+    # =======================================================
+
+    def calculate_by_meihua(self, n1, n2, n3, question=""):
+        """
+        依梅花易數三數起卦。
+
+        n1 → 上卦，n2 → 下卦，n3 → 動爻
+        """
+
+        from core.meihua import meihua_numbers_to_lines
+
+        lines = meihua_numbers_to_lines(n1, n2, n3)
+        return self.calculate(lines, question)

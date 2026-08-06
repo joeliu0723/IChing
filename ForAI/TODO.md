@@ -83,6 +83,7 @@ Tasks
 - ✓ 歷史排序（combo_sort + 升降切換）
 - ✓ 變卦白話翻譯（txtChangedTranslation）
 - ✓ 輸入模式 QStackedWidget（位置固定）
+- ✓ 數字卦／梅花三數（rbMeihuaNumbers；使用者指定）
 
 ---
 

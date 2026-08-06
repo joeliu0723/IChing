@@ -178,4 +178,4 @@ V1.5 AI 功能
 
 Windows 安裝包與 V1.5 AI 暫緩。
 
-已完成：V1.4 研究功能；V1.4.9 UX；V1.4.10 Data Editor；V1.4.11 Data Editor UX（捲動／語音 Win+H／隱藏匯入）。
+已完成：V1.4 研究功能；V1.4.9–11；V1.4.12 數字卦（梅花三數，`rbMeihuaNumbers`）。
