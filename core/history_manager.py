@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from core.history import HistoryRecord, VERIFICATION_RESULTS
+from core.paths import history_path, user_data_dir
 
 
 SORT_BY_DATE = "date"
@@ -26,10 +27,10 @@ class HistoryManager:
     """占卜紀錄管理"""
 
     def __init__(self):
-        self.data_dir = Path(__file__).parent.parent / "data"
+        self.data_dir = user_data_dir()
         self.data_dir.mkdir(exist_ok=True)
 
-        self.file_path = self.data_dir / "history.json"
+        self.file_path = history_path()
 
         self.records = []
 

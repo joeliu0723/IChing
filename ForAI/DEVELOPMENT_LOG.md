@@ -603,7 +603,65 @@ Description
 
 ---
 
+## V1.4.10
+
+Date
+
+2026-08-06
+
+Feature
+
+獨立 Data Editor（64 卦資料編輯與欄位匯入）
+
+Modified Files
+
+- core/paths.py（新增）
+- core/hexagram.py
+- core/hexagram_lookup.py
+- core/history_manager.py
+- tools/data_editor/（新增）
+- tools/__init__.py
+- data/__init__.py
+- requirements.txt
+
+Description
+
+- 共用路徑：開發用專案 data/；打包後用 %APPDATA%\\IChing\\data\\（首次從內建預設複製）
+- 獨立工具 `python -m tools.data_editor`：編輯卦辭／大帥解釋／象傳／文言／白話翻譯／爻辭
+- 依欄位一鍵匯入（JSON 現有鍵／文字檔／資料夾），預設不覆蓋非空，可強制覆蓋
+- 可儲存、重新載入、匯出備份
+- Windows 安裝包（PyInstaller／Inno）已草稿於 packaging/，**建置與驗證暫緩**
+
+---
+
+## V1.4.11
+
+Date
+
+2026-08-06
+
+Feature
+
+Data Editor UX：捲動、語音輸入、隱藏匯入
+
+Modified Files
+
+- tools/data_editor/main_window.py
+
+Description
+
+- 右側編輯區包 QScrollArea，可垂直捲動到底部
+- 「語音輸入」按鈕：聚焦欄位並送出 Win+H（需系統中文台灣語音）
+- 「依欄位匯入」暫時隱藏（邏輯保留）
+
+---
+
 # Future
+
+## Packaging（暫緩）
+
+- PyInstaller 產 exe
+- Inno Setup 安裝程式
 
 ## V1.5
 

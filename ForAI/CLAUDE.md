@@ -30,14 +30,16 @@ Current Progress
 - ✓ V1.4 編輯（問題／心得／驗證／收藏）
 - ✓ V1.4 排序
 - ✓ V1.4.9 UX 修正（排序升降、大帥解釋、變卦白話、輸入模式固定）
+- ✓ V1.4.10 Data Editor（64 卦編輯／欄位匯入）
+- ✓ V1.4.11 Data Editor UX（捲動、Win+H 語音、隱藏匯入）
 
 Current Task
 
-V1.5：AI 功能（暫緩）。
+資料補齊（可用 Data Editor 分批輸入）。
 
 Next Task
 
-（待定）
+Windows 安裝包（暫緩）；V1.5 AI（暫緩）。
 
 ---
 
@@ -71,7 +73,8 @@ IChing/
 │   ├── result.py
 │   ├── history.py
 │   ├── history_manager.py
-│   └── session.py
+│   ├── session.py
+│   └── paths.py
 ├── ui/
 │   ├── main_window.py
 │   ├── main_window.ui
@@ -81,8 +84,10 @@ IChing/
 │   ├── hexagrams.json
 │   ├── hexagram_map.py
 │   └── history.json
-├── tests/
 ├── tools/
+│   └── data_editor/    # 獨立 64 卦資料編輯器
+├── packaging/          # Windows 安裝包草稿（暫緩）
+├── tests/
 └── docs/               # 另一套規格文件（V1.0 路線）
 ```
 

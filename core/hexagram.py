@@ -11,6 +11,7 @@ from pathlib import Path
 
 from core.trigrams import TRIGRAMS
 from core.result import HexagramInfo, HexagramResult
+from core.paths import hexagrams_path
 
 
 class HexagramEngine:
@@ -19,11 +20,7 @@ class HexagramEngine:
 
         self.lines = lines
 
-        json_path = (
-            Path(__file__).parent.parent
-            / "data"
-            / "hexagrams.json"
-        )
+        json_path = hexagrams_path()
 
         with open(json_path, "r", encoding="utf-8") as f:
             self.hexagrams = json.load(f)

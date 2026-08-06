@@ -19,6 +19,7 @@ from pathlib import Path
 
 from data.hexagram_map import HEXAGRAM_MAP
 from core.trigrams import TRIGRAMS
+from core.paths import hexagrams_path
 
 
 # -------------------------------------------------
@@ -55,7 +56,7 @@ def _short_hexagram_name(full_name: str) -> str:
 def _load_hexagram_names():
     """以 hexagrams.json 的正式卦名覆蓋暫用的上下卦組合名稱。"""
 
-    data_path = Path(__file__).parent.parent / "data" / "hexagrams.json"
+    data_path = hexagrams_path()
 
     try:
         with open(data_path, "r", encoding="utf-8") as file:

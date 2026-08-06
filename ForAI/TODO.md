@@ -28,15 +28,15 @@ V1.4
 
 ## Current Task
 
-V1.5：AI 功能（暫緩）。
+資料補齊（Data Editor）。
 
 Priority
 
-★★★★★
+★★★★☆
 
 Status
 
-Deferred
+In Progress
 
 ---
 
@@ -83,6 +83,39 @@ Tasks
 - ✓ 歷史排序（combo_sort + 升降切換）
 - ✓ 變卦白話翻譯（txtChangedTranslation）
 - ✓ 輸入模式 QStackedWidget（位置固定）
+
+---
+
+## Data Editor
+
+Status
+
+Completed
+
+啟動
+
+```
+python -m tools.data_editor
+```
+
+備註
+
+- 右側可捲動；語音輸入用 Win+H（中文台灣）
+- 「依欄位匯入」暫時隱藏
+
+---
+
+## Windows 安裝包
+
+Status
+
+Deferred
+
+Tasks
+
+- PyInstaller 產 IChing.exe / IChingDataEditor.exe（packaging/ 草稿已有）
+- Inno Setup 安裝程式
+- 實機安裝驗證
 
 ---
 
