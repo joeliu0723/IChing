@@ -2,7 +2,7 @@ IChing Research Workbench（易經研究工作台）
 
 Version：V1.4（Development）
 
-最後同步：2026-08-12（V1.4.13 起卦首頁 UI 改版）
+最後同步：2026-08-12（V1.4.15 全站 UI 對齊）
 
 ---
 
@@ -178,4 +178,4 @@ V1.5 AI 功能
 
 Windows 安裝包與 V1.5 AI 暫緩。
 
-已完成：V1.4 研究功能；V1.4.9–11；V1.4.12 數字卦（梅花三數，`rbMeihuaNumbers`）；V1.4.13 起卦首頁 UI 改版。
+已完成：V1.4 研究功能；V1.4.9–11；V1.4.12 數字卦（梅花三數，`rbMeihuaNumbers`）；V1.4.13 起卦首頁 UI 改版；V1.4.14 CTA 精修；V1.4.15 全站 UI 對齊 Layout。

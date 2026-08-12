@@ -709,6 +709,57 @@ Description
 
 ---
 
+## V1.4.14
+
+Date
+
+2026-08-12
+
+Feature
+
+起卦 CTA 精修
+
+Modified Files
+
+- ui/main_window.py（`_PrimaryCtaButton`）
+
+Description
+
+- 「開始解卦」改為深藍底＋內縮金色邊框主按鈕
+- 保留 hover／focus 回饋，不影響排卦流程
+
+---
+
+## V1.4.15
+
+Date
+
+2026-08-12
+
+Feature
+
+全站 UI 對齊 Layout（起卦／解卦／歷史）
+
+Modified Files
+
+- ui/theme/tokens.py、ui/theme/app_stylesheet.py（新增）
+- ui/pages/interpretation_page.py（新增）
+- ui/widgets/app_nav_bar.py、nav_icons.py、hexagram_glyph.py、hexagram_card.py、history_record_row.py、content_viewer.py、segmented_tabs.py（新增）
+- ui/widgets/brand_hero.py、mode_selector.py、collapsible_groupbox.py
+- ui/main_window.py、ui/history_page.py
+- core/controller.py、core/history.py、core/result.py（`cast_method`／占卜時間寫入）
+
+Description
+
+- 抽出共享 theme tokens／stylesheet；寬屏頂 Tab＋窄屏底部導航（圖示與分隔線）
+- Hero：Cover 滿版、寬屏加高與頂部深藍→透明漸層；起卦首頁不顯示底欄
+- 解卦頁：本卦／變卦卡、內容分頁、心得／驗證預設摺疊；顯示占卜時間／占卜方式（寬屏橫排）
+- 歷史頁：解卦時間、本卦／變卦、問題、收藏、驗證；每頁 5–8 筆依可視高度均分行高
+- 選取色：歷史列與本卦／變卦卡＝淺紙／暖紙＋金邊；六爻選項與模式列＝深藍底白字；卦名等輸入控件 focus＝暖紙＋金邊
+- 起卦紀錄寫入 `cast_method`；移除暫用 Layout 參考圖與預覽截圖
+
+---
+
 # Future
 
 ## Packaging（暫緩）
