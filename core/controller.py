@@ -40,7 +40,7 @@ class HexagramController:
 
         return result
 
-    def calculate(self, lines, question=""):
+    def calculate(self, lines, question="", cast_method=""):
         """
         執行排卦
 
@@ -55,6 +55,7 @@ class HexagramController:
         record.id = str(uuid.uuid4())
         record.question = question
         record.lines = lines.copy()
+        record.cast_method = (cast_method or "").strip()
 
         record.main_number = result.main.number
         record.main_name = result.main.name
@@ -65,6 +66,9 @@ class HexagramController:
         record.moving_lines = result.moving_lines.copy()
 
         self.history_manager.add(record)
+
+        result.datetime = record.created_at.strftime("%Y-%m-%d %H:%M")
+        result.cast_method = record.cast_method
 
         session.set_result(result)
         session.set_record(record)
@@ -200,7 +204,7 @@ class HexagramController:
     # 卦序輸入
     # =======================================================
 
-    def calculate_by_number(self, number, question=""):
+    def calculate_by_number(self, number, question="", cast_method=""):
         """
         依卦序排卦
 
@@ -211,13 +215,13 @@ class HexagramController:
 
         lines = HexagramLookup.number_to_lines(number)
 
-        return self.calculate(lines, question)
+        return self.calculate(lines, question, cast_method=cast_method)
 
     # =======================================================
     # 卦名輸入
     # =======================================================
 
-    def calculate_by_name(self, name, question=""):
+    def calculate_by_name(self, name, question="", cast_method=""):
         """
         依卦名排卦
         """
@@ -232,13 +236,13 @@ class HexagramController:
         if number is None:
             raise ValueError(f"找不到卦名：{name}")
 
-        return self.calculate_by_number(number, question)
+        return self.calculate_by_number(number, question, cast_method=cast_method)
 
     # =======================================================
     # 上下卦輸入
     # =======================================================
 
-    def calculate_by_trigrams(self, upper, lower, question=""):
+    def calculate_by_trigrams(self, upper, lower, question="", cast_method=""):
         """
         依上下卦排卦
         """
@@ -261,14 +265,15 @@ class HexagramController:
 
         return self.calculate_by_number(
             number,
-            question
+            question,
+            cast_method=cast_method,
         )
 
     # =======================================================
     # 梅花易數數字卦
     # =======================================================
 
-    def calculate_by_meihua(self, n1, n2, n3, question=""):
+    def calculate_by_meihua(self, n1, n2, n3, question="", cast_method=""):
         """
         依梅花易數三數起卦。
 
@@ -278,4 +283,4 @@ class HexagramController:
         from core.meihua import meihua_numbers_to_lines
 
         lines = meihua_numbers_to_lines(n1, n2, n3)
-        return self.calculate(lines, question)
+        return self.calculate(lines, question, cast_method=cast_method)

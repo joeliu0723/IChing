@@ -28,6 +28,9 @@ _COLOR_INK = QColor("#2B2E34")
 _COLOR_ACTIVE_ICON = QColor("#F7F4EC")
 
 
+from ui.widgets.hexagram_glyph import draw_yao as _draw_yao_shared
+
+
 def _pen(color: QColor, width: float = 1.2) -> QPen:
     pen = QPen(color)
     pen.setWidthF(width)
@@ -38,13 +41,7 @@ def _pen(color: QColor, width: float = 1.2) -> QPen:
 
 def _draw_yao(painter: QPainter, x: float, y: float, w: float, broken: bool = False):
     """畫一爻：陽＝實線，陰＝中斷線。"""
-    if not broken:
-        painter.drawLine(QPointF(x, y), QPointF(x + w, y))
-        return
-    gap = w * 0.36
-    mid = x + w * 0.5
-    painter.drawLine(QPointF(x, y), QPointF(mid - gap * 0.5, y))
-    painter.drawLine(QPointF(mid + gap * 0.5, y), QPointF(x + w, y))
+    _draw_yao_shared(painter, x, y, w, broken=broken, moving=False, color=painter.pen().color(), width=painter.pen().widthF() or 1.2)
 
 
 def _make_icon(mode: str, color: QColor, size: int = _ICON_SIZE) -> QIcon:

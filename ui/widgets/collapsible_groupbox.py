@@ -8,6 +8,7 @@ from PySide6.QtCore import (
 )
 from PySide6.QtWidgets import (
     QFrame,
+    QSizePolicy,
     QToolButton,
     QVBoxLayout,
     QWidget,
@@ -31,6 +32,7 @@ class CollapsibleGroupBox(QFrame):
         self.setFrameShape(QFrame.StyledPanel)
 
         self.toggleButton = QToolButton()
+        self.toggleButton.setObjectName("collapseToggle")
         self.toggleButton.setText(title)
         self.toggleButton.setCheckable(True)
         self.toggleButton.setChecked(False)
@@ -38,8 +40,11 @@ class CollapsibleGroupBox(QFrame):
             Qt.ToolButtonTextBesideIcon
         )
         self.toggleButton.setArrowType(Qt.RightArrow)
-        self.toggleButton.setStyleSheet(
-            "QToolButton { border: none; text-align: left; font-weight: bold; }"
+        self.toggleButton.setCursor(Qt.PointingHandCursor)
+        self.toggleButton.setStyleSheet("")
+        self.toggleButton.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Fixed,
         )
 
         self.contentArea = QWidget()
@@ -67,10 +72,13 @@ class CollapsibleGroupBox(QFrame):
         self.animation.addAnimation(self.contentAnimation)
 
         self.toggleButton.clicked.connect(self.toggle)
+        # 預設摺疊（不播放動畫）
+        self.contentArea.setMaximumHeight(0)
 
     def setContentWidget(self, widget):
         layout = QVBoxLayout()
-        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setContentsMargins(12, 0, 12, 12)
+        layout.setSpacing(8)
         layout.addWidget(widget)
 
         self.contentArea.setLayout(layout)
@@ -83,7 +91,7 @@ class CollapsibleGroupBox(QFrame):
         if content_layout is None:
             return
 
-        h = max(content_layout.sizeHint().height(), 120)
+        h = max(content_layout.sizeHint().height(), 80)
 
         self.contentAnimation.stop()
         self.contentAnimation.setStartValue(
@@ -108,3 +116,6 @@ class CollapsibleGroupBox(QFrame):
             self.expand()
         else:
             self.collapse()
+
+    def isExpanded(self) -> bool:
+        return self.toggleButton.isChecked()

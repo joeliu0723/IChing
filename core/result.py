@@ -73,6 +73,7 @@ class HexagramInfo:
 class HexagramResult:
     question: str = ""
     datetime: str = ""
+    cast_method: str = ""
 
     main: HexagramInfo = field(default_factory=HexagramInfo)
     changed: HexagramInfo = field(default_factory=HexagramInfo)

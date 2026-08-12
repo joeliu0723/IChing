@@ -33,288 +33,30 @@ from ui.ui_mainwindow import Ui_MainWindow
 from core.controller import HexagramController
 from core.presenter import HexagramPresenter
 from core.hexagram_lookup import HexagramLookup
-from core.history import VERIFICATION_RESULTS
 from core.session import session
 from ui.history_page import HistoryPage
+from ui.pages.interpretation_page import InterpretationPage
+from ui.theme import build_app_stylesheet
+from ui.theme import tokens as T
+from ui.widgets.app_nav_bar import AppNavBar
 from ui.widgets.brand_hero import BrandHero
-from ui.widgets.collapsible_groupbox import CollapsibleGroupBox
 from ui.widgets.mode_selector import ModeSelector
+from ui.widgets.nav_icons import icon_book, icon_list, icon_taiji
 
 
 TRIGRAM_NAMES = ["乾", "坤", "震", "巽", "坎", "離", "兌", "艮"]
 
+CAST_METHOD_LABELS = {
+    "six_lines": "六爻輸入",
+    "name": "卦名輸入",
+    "number": "卦序輸入",
+    "trigrams": "上下卦",
+    "meihua": "梅花易數",
+}
+
 _ASSETS_UI = Path(__file__).resolve().parents[1] / "assets" / "ui"
 
-CAST_HOME_STYLE = """
-QMainWindow, QWidget#castHomeRoot, QWidget#castHomeBody, QWidget#tabDivination {
-    background-color: #F7F4EC;
-    color: #2B2E34;
-}
-QTabWidget::pane {
-    border: none;
-    top: 0px;
-    background-color: #F7F4EC;
-}
-QWidget#brandHero {
-    background-color: #0D1B2A;
-    border: none;
-}
-QLabel#brandHeroTitleZh {
-    color: #D4AF37;
-    background: transparent;
-}
-QLabel#brandHeroTitleEn {
-    color: #D4AF37;
-    background: transparent;
-    letter-spacing: 4px;
-}
-QWidget#modeSelector QPushButton#modeSelectButton {
-    background-color: #F7F4EC;
-    color: #2B2E34;
-    border: 1px solid #C9B896;
-    border-radius: 4px;
-    padding: 0px 8px;
-    font-size: 13px;
-    font-weight: 500;
-}
-QWidget#modeSelector QPushButton#modeSelectButton:hover:!checked {
-    background-color: #F1E8D6;
-    border: 1px solid #D4AF37;
-}
-QWidget#modeSelector QPushButton#modeSelectButton:checked {
-    background-color: #0D1B2A;
-    color: #F7F4EC;
-    border: 1px solid #D4AF37;
-    font-weight: 600;
-}
-QFrame#questionCard {
-    background-color: #F1E6D5;
-    border: 1px solid #C9B896;
-    border-radius: 8px;
-}
-QFrame#inputCard {
-    background-color: #F7F4EC;
-    border: 1px solid #D4C7B0;
-    border-radius: 8px;
-}
-QLabel#sectionLabel, QLabel#inputCardTitle {
-    color: #2B2E34;
-    font-size: 13px;
-    font-weight: 600;
-}
-QLabel#questionCardTitle {
-    color: #0D1B2A;
-    font-size: 14px;
-    font-weight: 600;
-    background: transparent;
-}
-QLabel#inputCardTitle {
-    font-size: 15px;
-    color: #2B2E34;
-    qproperty-alignment: AlignCenter;
-}
-QLabel#lineRowLabel {
-    color: #2B2E34;
-    font-size: 13px;
-    font-weight: 600;
-    background: transparent;
-}
-QLineEdit#editQuestionHome {
-    background-color: #F7F4EC;
-    border: 1px solid #C9B896;
-    border-radius: 6px;
-    padding: 0px 16px;
-    font-size: 13px;
-    min-height: 54px;
-    max-height: 54px;
-    color: #0D1B2A;
-    selection-background-color: #0D1B2A;
-    selection-color: #F7F4EC;
-}
-QLineEdit#editQuestionHome::placeholder {
-    color: #8A8478;
-}
-QLineEdit#editQuestionHome:focus {
-    border: 1px solid #D4AF37;
-    background-color: #F7F4EC;
-    outline: none;
-}
-QLineEdit#editQuestionHome:hover:!focus {
-    border: 1px solid #D4C7B0;
-    background-color: #F7F4EC;
-}
-QPushButton#btnStartInterpretation {
-    background-color: transparent;
-    border: none;
-    padding: 0px 24px;
-    font-size: 16px;
-    font-weight: 700;
-    min-height: 52px;
-    max-height: 52px;
-    color: #F7F4EC;
-}
-QPushButton#btnStartInterpretation:focus {
-    outline: none;
-}
-QTabBar::tab {
-    background: #EFE7DA;
-    color: #6B7280;
-    padding: 6px 14px;
-    margin-right: 2px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-}
-QTabBar::tab:selected {
-    background: #0D1B2A;
-    color: #D4AF37;
-}
-QGroupBox#groupLinesInput {
-    border: none;
-    margin-top: 0px;
-    background: transparent;
-}
-QGroupBox#groupLinesInput::title {
-    height: 0px;
-    width: 0px;
-    color: transparent;
-}
-QWidget#sixLinesBody QRadioButton {
-    background-color: #F1E8D6;
-    color: #2B2E34;
-    border: 1px solid #C9B896;
-    border-radius: 5px;
-    padding: 0px 8px 0px 6px;
-    font-size: 13px;
-    font-weight: 500;
-    min-height: 34px;
-    max-height: 34px;
-    spacing: 7px;
-}
-QWidget#sixLinesBody QRadioButton::indicator {
-    width: 14px;
-    height: 14px;
-    border-radius: 8px;
-    border: 1.5px solid #B8A88A;
-    background-color: #F1E8D6;
-    margin-right: 1px;
-}
-QWidget#sixLinesBody QRadioButton::indicator:unchecked {
-    border: 1.5px solid #B8A88A;
-    background-color: #F1E8D6;
-}
-QWidget#sixLinesBody QRadioButton::indicator:unchecked:hover {
-    border: 1.5px solid #D4AF37;
-    background-color: #EDE4D0;
-}
-QWidget#sixLinesBody QRadioButton::indicator:checked {
-    border: 1.5px solid #D4AF37;
-    background-color: #F1E8D6;
-    background: qradialgradient(
-        cx:0.5, cy:0.5, radius:0.5,
-        fx:0.5, fy:0.5,
-        stop:0 #0D1B2A,
-        stop:0.36 #0D1B2A,
-        stop:0.37 #F1E8D6,
-        stop:1 #F1E8D6
-    );
-}
-QWidget#sixLinesBody QRadioButton:hover:!checked {
-    background-color: #EDE4D0;
-    border: 1px solid #D4AF37;
-    color: #2B2E34;
-}
-QWidget#sixLinesBody QRadioButton:checked {
-    background-color: #0D1B2A;
-    color: #F7F4EC;
-    border: 1px solid #D4AF37;
-    font-weight: 600;
-}
-QWidget#sixLinesBody QRadioButton:checked:hover {
-    background-color: #152536;
-    color: #F7F4EC;
-    border: 1px solid #E0C15A;
-}
-QWidget#sixLinesBody QRadioButton:checked::indicator {
-    border: 1.5px solid #D4AF37;
-    background-color: #0D1B2A;
-    background: qradialgradient(
-        cx:0.5, cy:0.5, radius:0.5,
-        fx:0.5, fy:0.5,
-        stop:0 #F7F4EC,
-        stop:0.36 #F7F4EC,
-        stop:0.37 #0D1B2A,
-        stop:1 #0D1B2A
-    );
-}
-QWidget#sixLinesBody QRadioButton:focus {
-    outline: none;
-}
-QWidget#modeInputBody {
-    background: transparent;
-}
-QWidget#modeInputBody QLabel#fieldLabel {
-    color: #2B2E34;
-    font-size: 13px;
-    font-weight: 600;
-    background: transparent;
-}
-QWidget#modeInputBody QLabel#sectionHint {
-    color: #8A8478;
-    font-size: 12px;
-    font-weight: 400;
-    background: transparent;
-}
-QWidget#modeInputBody QComboBox#modeInputControl,
-QWidget#modeInputBody QSpinBox#modeInputControl {
-    background-color: #F1E8D6;
-    color: #0D1B2A;
-    border: 1px solid #C9B896;
-    border-radius: 5px;
-    padding: 0px 10px;
-    font-size: 13px;
-    font-weight: 500;
-    selection-background-color: #0D1B2A;
-    selection-color: #F7F4EC;
-}
-QWidget#modeInputBody QComboBox#modeInputControl:hover,
-QWidget#modeInputBody QSpinBox#modeInputControl:hover {
-    background-color: #EDE4D0;
-    border: 1px solid #D4C7B0;
-}
-QWidget#modeInputBody QComboBox#modeInputControl:focus,
-QWidget#modeInputBody QSpinBox#modeInputControl:focus {
-    border: 1px solid #D4AF37;
-    background-color: #F7F4EC;
-    outline: none;
-}
-QWidget#modeInputBody QComboBox#modeInputControl::drop-down {
-    border: none;
-    width: 22px;
-    background: transparent;
-}
-QWidget#modeInputBody QComboBox#modeInputControl::down-arrow {
-    width: 10px;
-    height: 10px;
-}
-QWidget#modeInputBody QSpinBox#modeInputControl::up-button,
-QWidget#modeInputBody QSpinBox#modeInputControl::down-button {
-    width: 18px;
-    border: none;
-    background: transparent;
-}
-QWidget#modeInputBody QSpinBox#modeInputControl::up-arrow,
-QWidget#modeInputBody QSpinBox#modeInputControl::down-arrow {
-    width: 8px;
-    height: 8px;
-}
-QGroupBox {
-    background: transparent;
-    border: none;
-    margin-top: 4px;
-    font-weight: 600;
-    color: #2B2E34;
-}
-"""
+CAST_HOME_STYLE = build_app_stylesheet()
 
 
 class _PrimaryCtaButton(QPushButton):
@@ -368,24 +110,26 @@ class _CtaElevationFilter(QObject):
     def __init__(self, button: QPushButton):
         super().__init__(button)
         self._button = button
-        self._rest_shadow = self._make_shadow(12, 2, 52)
-        self._hover_shadow = self._make_shadow(18, 4, 88)
-        button.setGraphicsEffect(self._rest_shadow)
+        self._shadow = QGraphicsDropShadowEffect(button)
+        self._apply_rest()
+        button.setGraphicsEffect(self._shadow)
 
-    @staticmethod
-    def _make_shadow(blur: int, offset_y: int, alpha: int) -> QGraphicsDropShadowEffect:
-        shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(blur)
-        shadow.setOffset(0, offset_y)
-        shadow.setColor(QColor(212, 175, 55, alpha))
-        return shadow
+    def _apply_rest(self):
+        self._shadow.setBlurRadius(12)
+        self._shadow.setOffset(0, 2)
+        self._shadow.setColor(QColor(212, 175, 55, 52))
+
+    def _apply_hover(self):
+        self._shadow.setBlurRadius(18)
+        self._shadow.setOffset(0, 4)
+        self._shadow.setColor(QColor(212, 175, 55, 88))
 
     def eventFilter(self, obj, event):
         if obj is self._button:
             if event.type() == QEvent.Type.Enter:
-                self._button.setGraphicsEffect(self._hover_shadow)
+                self._apply_hover()
             elif event.type() in (QEvent.Type.Leave, QEvent.Type.Hide):
-                self._button.setGraphicsEffect(self._rest_shadow)
+                self._apply_rest()
         return super().eventFilter(obj, event)
 
 
@@ -404,7 +148,7 @@ class _PaperBody(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor("#F7F4EC"))
+        painter.fillRect(self.rect(), QColor(T.PAPER))
         painter.end()
 
 
@@ -418,6 +162,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("易經占卜 — I Ching")
         self.setStyleSheet(CAST_HOME_STYLE)
+        self.setMinimumWidth(480)
 
         self.lines = [None] * 6
 
@@ -435,13 +180,17 @@ class MainWindow(QMainWindow):
 
         self.controller = HexagramController()
         self.presenter = HexagramPresenter(self.ui)
+        self.interpretation_page = None
+        self.app_nav = None
+        self._narrow_shell = False
+
+        self.init_interpretation_widgets()
         self.history_page = HistoryPage(
             self.ui,
             on_select=self.show_history_record,
             on_delete=self.delete_history_record,
+            on_favorite=self.toggle_history_favorite,
         )
-
-        self.init_interpretation_widgets()
         self.init_start_button()
         self.init_buttons()
         self.init_number_input()
@@ -451,150 +200,136 @@ class MainWindow(QMainWindow):
         self.init_input_mode_switching()
         self.init_cast_home_redesign()
         self.init_cast_page_navigation()
+        self.init_app_shell()
 
     def init_interpretation_widgets(self):
-        """補充解卦頁欄位，並將各經文區塊改為預設折疊。"""
+        """Mount redesigned interpretation page into the 解卦 tab."""
 
-        layout = self.ui.verticalLayoutInterpretation
+        page = InterpretationPage(self.ui)
+        page.mount_into_tab(self.ui.tab_interpretation)
+        page.saveQuestionRequested.connect(self.save_question)
+        page.saveNotesRequested.connect(self.save_notes)
+        page.saveVerificationRequested.connect(self.save_verification)
+        page.favoriteToggled.connect(self.on_favorite_toggled)
+        self.interpretation_page = page
 
-        header = QWidget()
-        header_layout = QHBoxLayout(header)
-        header_layout.setContentsMargins(0, 0, 0, 0)
+    def init_app_shell(self):
+        """Wide: top tabs. Narrow: bottom AppNavBar."""
 
-        header_layout.addWidget(QLabel("占卜問題"))
+        central = self.centralWidget()
+        layout = central.layout()
+        if layout is None:
+            layout = QVBoxLayout(central)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(0)
+            layout.addWidget(self.ui.tabWidget)
 
-        self.ui.editInterpretationQuestion = QLineEdit()
-        self.ui.editInterpretationQuestion.setPlaceholderText("（未填寫）")
-        header_layout.addWidget(self.ui.editInterpretationQuestion, 1)
+        self.app_nav = AppNavBar()
+        self.app_nav.navigated.connect(self._on_app_nav)
+        layout.addWidget(self.app_nav)
+        self.app_nav.hide()
+        self._decorate_main_tabs()
+        self.ui.tabWidget.currentChanged.connect(self._sync_shell_chrome)
+        self._sync_shell_chrome()
 
-        self.ui.btnSaveQuestion = QPushButton("儲存問題")
-        self.ui.btnSaveQuestion.clicked.connect(self.save_question)
-        header_layout.addWidget(self.ui.btnSaveQuestion)
+    def _decorate_main_tabs(self):
+        """Top tab bar: icons + separators (via stylesheet border-right)."""
 
-        self.ui.chkFavorite = QCheckBox("收藏")
-        self.ui.chkFavorite.toggled.connect(self.on_favorite_toggled)
-        header_layout.addWidget(self.ui.chkFavorite)
+        from PySide6.QtCore import QSize
 
-        layout.insertWidget(0, header)
+        tabs = self.ui.tabWidget
+        tabs.setIconSize(QSize(16, 16))
+        tabs.setTabIcon(tabs.indexOf(self.ui.tabDivination), icon_taiji(T.GOLD, 16))
+        tabs.setTabIcon(
+            tabs.indexOf(self.ui.tab_interpretation), icon_book(T.GOLD, 16)
+        )
+        tabs.setTabIcon(tabs.indexOf(self.ui.tab_history), icon_list(T.GOLD, 16))
+        bar = tabs.tabBar()
+        bar.setExpanding(True)
+        bar.setDocumentMode(True)
 
-        insert_at = layout.indexOf(self.ui.grp_txtAIAnalysis)
-        groups = [
-            ("txtChangedJudgment", "變卦卦辭"),
-            ("txtChangedTuan", "變卦大帥解釋"),
-            ("txtChangedXiang", "變卦象傳"),
-            ("txtChangedWenyan", "變卦文言"),
-            ("txtChangedTranslation", "變卦白話翻譯"),
-            ("txtLineTexts", "爻辭"),
-        ]
+    def _return_to_cast_home(self):
+        self.ui.tabWidget.setCurrentWidget(self.ui.tabDivination)
 
-        for attr_name, title in reversed(groups):
-            self._add_collapsible_editor(
-                layout,
-                insert_at,
-                title,
-                attr_name,
-            )
+    def _is_cast_home(self) -> bool:
+        return self.ui.tabWidget.currentWidget() is self.ui.tabDivination
 
-        designer_groups = [
-            (self.ui.grp_txtJudgment, "卦辭"),
-            (self.ui.grp_txtTuan, "大帥解釋"),
-            (self.ui.grp_txtXiang, "象傳"),
-            (self.ui.grp_txtWenyan, "文言"),
-            (self.ui.grp_txtTranslation, "白話翻譯"),
-            (self.ui.grp_txtAIAnalysis, "AI分析"),
-        ]
+    def _on_app_nav(self, key: str):
+        if key == "cast":
+            self.ui.tabWidget.setCurrentWidget(self.ui.tabDivination)
+            self.history_page.set_favorites_filter(False)
+        elif key == "interpretation":
+            # 起卦首頁不可由此跳轉；須按「開始解卦」
+            if session.result is None:
+                return
+            self.ui.tabWidget.setCurrentWidget(self.ui.tab_interpretation)
+            self.history_page.set_favorites_filter(False)
+        elif key == "history":
+            self.history_page.set_favorites_filter(False)
+            self.ui.tabWidget.setCurrentWidget(self.ui.tab_history)
+            self.history_page.refresh()
+        elif key == "favorites":
+            self.history_page.set_favorites_filter(True)
+            self.ui.tabWidget.setCurrentWidget(self.ui.tab_history)
+            self.history_page.refresh()
 
-        for group_box, title in designer_groups:
-            self._wrap_group_as_collapsible(layout, group_box, title)
-
-        self._wrap_notes_as_collapsible(layout, self.ui.grp_txtNotes)
-        self._add_verification_section(layout)
-
-    def _add_collapsible_editor(self, layout, index, title, attr_name):
-        editor = QPlainTextEdit()
-        editor.setMinimumHeight(120)
-        setattr(self.ui, attr_name, editor)
-
-        collapsible = CollapsibleGroupBox(title)
-        collapsible.setContentWidget(editor)
-        layout.insertWidget(index, collapsible)
-
-    def _wrap_group_as_collapsible(self, layout, group_box, title):
-        index = layout.indexOf(group_box)
-        if index < 0:
+    def _sync_app_nav_from_tab(self, *_args):
+        if self.app_nav is None or not self.app_nav.isVisible():
             return
+        current = self.ui.tabWidget.currentWidget()
+        if current is self.ui.tabDivination:
+            self.app_nav.set_active("cast")
+        elif current is self.ui.tab_interpretation:
+            self.app_nav.set_active("interpretation")
+        elif current is self.ui.tab_history:
+            query = self.history_page.current_query()
+            if query in {"收藏", "★", "favorite"}:
+                self.app_nav.set_active("favorites")
+            else:
+                self.app_nav.set_active("history")
 
-        editor = group_box.findChild(QPlainTextEdit)
-        if editor is None:
+    def _sync_shell_chrome(self, *_args):
+        """寬屏用頂 Tab（首頁隱藏）；窄屏底欄僅在解卦／歷史顯示，起卦首頁不顯示。"""
+
+        narrow = self.width() < T.BREAKPOINT_WIDE
+        self._narrow_shell = narrow
+        on_home = self._is_cast_home()
+
+        if self.app_nav is not None:
+            show_nav = narrow and not on_home
+            self.app_nav.setVisible(show_nav)
+            if show_nav:
+                self._sync_app_nav_from_tab()
+
+        bar = self.ui.tabWidget.tabBar()
+        if narrow or on_home:
+            bar.hide()
+            bar.setMaximumHeight(0)
+        else:
+            bar.setVisible(True)
+            bar.setMaximumHeight(16777215)
+
+        if self.interpretation_page is not None:
+            self.interpretation_page.set_narrow(narrow)
+
+    def _update_shell_for_width(self, width: int):
+        self._sync_shell_chrome()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._sync_shell_chrome()
+        self._sync_six_lines_spacing(self.width())
+
+    def toggle_history_favorite(self, record_id: str):
+        record = self.history_page.get_record(record_id)
+        if record is None:
             return
-
-        layout.removeWidget(group_box)
-        group_box.hide()
-
-        editor.setParent(None)
-        editor.setMinimumHeight(120)
-
-        collapsible = CollapsibleGroupBox(title)
-        collapsible.setContentWidget(editor)
-        layout.insertWidget(index, collapsible)
-
-    def _wrap_notes_as_collapsible(self, layout, group_box):
-        """心得區塊：可編輯文字 + 儲存按鈕，預設折疊。"""
-
-        index = layout.indexOf(group_box)
-        if index < 0:
-            return
-
-        editor = group_box.findChild(QPlainTextEdit)
-        if editor is None:
-            return
-
-        layout.removeWidget(group_box)
-        group_box.hide()
-
-        editor.setParent(None)
-        editor.setMinimumHeight(120)
-        self.ui.txtNotes = editor
-
-        content = QWidget()
-        content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.addWidget(editor)
-
-        self.ui.btnSaveNotes = QPushButton("儲存心得")
-        self.ui.btnSaveNotes.clicked.connect(self.save_notes)
-        content_layout.addWidget(self.ui.btnSaveNotes)
-
-        collapsible = CollapsibleGroupBox("我的心得")
-        collapsible.setContentWidget(content)
-        layout.insertWidget(index, collapsible)
-
-    def _add_verification_section(self, layout):
-        """事後驗證：驗證結果 + 驗證內容 + 儲存。"""
-
-        content = QWidget()
-        content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-
-        result_row = QHBoxLayout()
-        result_row.addWidget(QLabel("驗證結果"))
-        self.ui.comboVerificationResult = QComboBox()
-        self.ui.comboVerificationResult.addItems(list(VERIFICATION_RESULTS))
-        result_row.addWidget(self.ui.comboVerificationResult, 1)
-        content_layout.addLayout(result_row)
-
-        content_layout.addWidget(QLabel("驗證內容"))
-        self.ui.txtVerificationContent = QPlainTextEdit()
-        self.ui.txtVerificationContent.setMinimumHeight(100)
-        content_layout.addWidget(self.ui.txtVerificationContent)
-
-        self.ui.btnSaveVerification = QPushButton("儲存驗證")
-        self.ui.btnSaveVerification.clicked.connect(self.save_verification)
-        content_layout.addWidget(self.ui.btnSaveVerification)
-
-        collapsible = CollapsibleGroupBox("事後驗證")
-        collapsible.setContentWidget(content)
-        layout.addWidget(collapsible)
+        record.favorite = not record.favorite
+        self.history_page.manager.update(record)
+        if session.record is not None and session.record.id == record_id:
+            session.set_record(record)
+            self.sync_favorite_checkbox()
+        self.history_page.refresh_and_keep_selection()
 
     def init_start_button(self):
         """在「上下卦」右側新增「開始解卦」按鈕。"""
@@ -1013,15 +748,48 @@ class MainWindow(QMainWindow):
             "OldYang": "老陽",
             "OldYin": "老陰",
         }
-        _opt_w = 128
-        _opt_h = 34
-        _col_gap = 12
-        _row_gap = 8
+        _opt_w = 120
+        _opt_h = 36
+        _col_gap = 20
+        _row_gap = 10
 
         body = QWidget()
         body.setObjectName("sixLinesBody")
+        # 本地再掛一份選項樣式，避免被平台原生 QPushButton checked 繪製蓋掉
+        body.setStyleSheet(
+            f"""
+            QPushButton#yaoOption {{
+                background-color: {T.PAPER_SOFT};
+                color: {T.INK};
+                border: 1px solid {T.BORDER};
+                border-radius: 5px;
+                padding: 0px 14px 0px 12px;
+                font-size: 13px;
+                font-weight: 500;
+                min-height: 36px;
+                max-height: 36px;
+                min-width: 96px;
+            }}
+            QPushButton#yaoOption:hover:!checked {{
+                background-color: #EDE4D0;
+                border: 1px solid {T.GOLD};
+                color: {T.INK};
+            }}
+            QPushButton#yaoOption:checked {{
+                background-color: {T.NAVY};
+                color: {T.IVORY};
+                border: 1px solid {T.GOLD};
+                font-weight: 600;
+            }}
+            QPushButton#yaoOption:checked:hover {{
+                background-color: {T.NAVY_HOVER};
+                color: {T.IVORY};
+                border: 1px solid {T.GOLD_BRIGHT};
+            }}
+            """
+        )
         body_layout = QVBoxLayout(body)
-        body_layout.setContentsMargins(0, 4, 0, 4)
+        body_layout.setContentsMargins(0, 4, 0, 0)
         body_layout.setSpacing(0)
 
         grid_row = QHBoxLayout()
@@ -1030,9 +798,14 @@ class MainWindow(QMainWindow):
 
         grid_host = QWidget()
         grid_host.setObjectName("sixLinesContent")
-        grid_host.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        grid_host.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        grid_host.setMinimumWidth(0)
+        self._six_lines_grid_host = grid_host
+        self._six_lines_grid = None
+        self._six_lines_opt_buttons: list = []
 
         grid = QGridLayout(grid_host)
+        self._six_lines_grid = grid
         grid.setContentsMargins(0, 0, 0, 0)
         grid.setHorizontalSpacing(_col_gap)
         grid.setVerticalSpacing(_row_gap)
@@ -1054,13 +827,20 @@ class MainWindow(QMainWindow):
                 button = getattr(self.ui, f"rb{line_no}{key}")
                 button.setParent(None)
                 button.setAutoExclusive(False)
-                button.setFixedSize(_opt_w, _opt_h)
+                button.setObjectName("yaoOption")
+                button.setMinimumSize(_opt_w, _opt_h)
+                button.setMaximumHeight(_opt_h)
+                button.setFixedHeight(_opt_h)
                 button.setCursor(Qt.PointingHandCursor)
                 button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 button.setAttribute(Qt.WA_StyledBackground, True)
+                button.setFlat(False)
+                button.setAutoFillBackground(False)
+                # 清掉控件自身 stylesheet，改吃全域／父層 #yaoOption 規則
                 button.setStyleSheet("")
                 self._refresh_yao_option_label(button, key, checked=button.isChecked())
                 grid.addWidget(button, row_idx, col_idx, Qt.AlignVCenter)
+                self._six_lines_opt_buttons.append(button)
 
         grid_row.addStretch(1)
         grid_row.addWidget(grid_host, 0, Qt.AlignHCenter)
@@ -1096,13 +876,39 @@ class MainWindow(QMainWindow):
         group.setMinimumHeight(0)
         group.setMaximumHeight(16777215)
         group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self._sync_six_lines_spacing(self.width())
+
+    def _sync_six_lines_spacing(self, window_width: int):
+        """寬屏拉開少陽／少陰／老陽／老陰間距，避免中央擠成一團。"""
+
+        grid = getattr(self, "_six_lines_grid", None)
+        buttons = getattr(self, "_six_lines_opt_buttons", None)
+        if grid is None or not buttons:
+            return
+
+        if window_width >= 1600:
+            opt_w, gap = 160, 36
+        elif window_width >= 1200:
+            opt_w, gap = 140, 26
+        elif window_width >= 900:
+            opt_w, gap = 120, 18
+        else:
+            opt_w, gap = 100, 12
+
+        grid.setHorizontalSpacing(gap)
+        for col in range(1, 5):
+            grid.setColumnMinimumWidth(col, opt_w)
+        for button in buttons:
+            button.setMinimumWidth(opt_w)
+            button.setFixedWidth(opt_w)
 
     def _refresh_yao_option_label(self, button, key: str, checked: bool):
-        """選項卡片文字；圓點由 QRadioButton::indicator 呈現。"""
+        """選項卡片文字（控件為 checkable QPushButton）。"""
 
         del checked
         label = self._yao_option_labels.get(key, button.text())
         button.setText(label)
+
     def _sync_yao_option_labels(self, line: int):
         value_keys = ("YoungYang", "YoungYin", "OldYang", "OldYin")
         for key in value_keys:
@@ -1141,7 +947,8 @@ class MainWindow(QMainWindow):
 
         self.input_mode_stack.setParent(None)
         self.input_mode_stack.setMinimumHeight(0)
-        self.input_mode_stack.setMaximumHeight(228)
+        # 六列 ×36 + 五間距 ×10 + 上下緩衝，避免初爻被裁切
+        self.input_mode_stack.setMaximumHeight(268)
         self.input_mode_stack.setSizePolicy(
             QSizePolicy.Expanding,
             QSizePolicy.Preferred,
@@ -1197,10 +1004,10 @@ class MainWindow(QMainWindow):
         input_card = QFrame()
         input_card.setObjectName("inputCard")
         input_card.setAttribute(Qt.WA_StyledBackground, True)
-        input_card.setFixedHeight(270)
+        input_card.setFixedHeight(330)
         input_card_layout = QVBoxLayout(input_card)
-        input_card_layout.setContentsMargins(16, 8, 16, 13)
-        input_card_layout.setSpacing(8)
+        input_card_layout.setContentsMargins(16, 8, 16, 10)
+        input_card_layout.setSpacing(6)
 
         title_row = QHBoxLayout()
         title_row.setSpacing(10)
@@ -1224,7 +1031,7 @@ class MainWindow(QMainWindow):
 
         input_card_wrap = QWidget()
         input_card_wrap.setObjectName("inputCardWrap")
-        input_card_wrap.setFixedHeight(270)
+        input_card_wrap.setFixedHeight(330)
         input_card_wrap.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         wrap_layout = QVBoxLayout(input_card_wrap)
         wrap_layout.setContentsMargins(0, 0, 0, 0)
@@ -1327,10 +1134,7 @@ class MainWindow(QMainWindow):
         self._sync_cast_tab_bar()
 
     def _sync_cast_tab_bar(self, *_args):
-        on_home = self.ui.tabWidget.currentWidget() is self.ui.tabDivination
-        bar = self.ui.tabWidget.tabBar()
-        bar.setVisible(not on_home)
-        bar.setMaximumHeight(0 if on_home else 16777215)
+        self._sync_shell_chrome()
 
     def _flatten_mode_groups(self):
         """其他模式輸入區去掉傳統 GroupBox 外框感。"""
@@ -1401,10 +1205,24 @@ class MainWindow(QMainWindow):
         self.lines[line - 1] = self.values[name]
         self._sync_yao_option_labels(line)
 
+    def _current_cast_method_label(self) -> str:
+        if self.ui.rbSixLines.isChecked():
+            return CAST_METHOD_LABELS["six_lines"]
+        if self.ui.rbHexagramName.isChecked():
+            return CAST_METHOD_LABELS["name"]
+        if self.ui.rbHexagramNumber.isChecked():
+            return CAST_METHOD_LABELS["number"]
+        if self.ui.rbTrigrams.isChecked():
+            return CAST_METHOD_LABELS["trigrams"]
+        if self.ui.rbMeihuaNumbers.isChecked():
+            return CAST_METHOD_LABELS["meihua"]
+        return CAST_METHOD_LABELS["six_lines"]
+
     def start_interpretation(self):
         """依目前輸入模式排卦並進入解卦頁。"""
 
         question = self.current_question()
+        method = self._current_cast_method_label()
 
         if self.ui.rbSixLines.isChecked():
             if None in self.lines:
@@ -1413,7 +1231,9 @@ class MainWindow(QMainWindow):
 
             lines = self.lines.copy()
             self.run_cast(
-                lambda: self.controller.calculate(lines, question)
+                lambda: self.controller.calculate(
+                    lines, question, cast_method=method
+                )
             )
             return
 
@@ -1423,6 +1243,7 @@ class MainWindow(QMainWindow):
                 lambda: self.controller.calculate_by_number(
                     number,
                     question,
+                    cast_method=method,
                 )
             )
             return
@@ -1435,7 +1256,9 @@ class MainWindow(QMainWindow):
                 return
 
             self.run_cast(
-                lambda: self.controller.calculate_by_name(name, question)
+                lambda: self.controller.calculate_by_name(
+                    name, question, cast_method=method
+                )
             )
             return
 
@@ -1447,6 +1270,7 @@ class MainWindow(QMainWindow):
                     upper,
                     lower,
                     question,
+                    cast_method=method,
                 )
             )
             return
@@ -1461,6 +1285,7 @@ class MainWindow(QMainWindow):
                     n2,
                     n3,
                     question,
+                    cast_method=method,
                 )
             )
 
@@ -1504,6 +1329,8 @@ class MainWindow(QMainWindow):
             return
 
         result.notes = record.notes
+        result.datetime = record.created_at.strftime("%Y-%m-%d %H:%M")
+        result.cast_method = getattr(record, "cast_method", "") or ""
         session.set_result(result)
         session.set_record(record)
         self.show_result(result, refresh_history=False)
@@ -1634,6 +1461,17 @@ class MainWindow(QMainWindow):
 
     def show_result(self, result, refresh_history=True):
         self.presenter.show(result)
+        if self.interpretation_page is not None:
+            self.interpretation_page.apply_result_visuals(result)
+            record = session.record
+            time_text = getattr(result, "datetime", "") or ""
+            method_text = getattr(result, "cast_method", "") or ""
+            if record is not None:
+                if not time_text:
+                    time_text = record.created_at.strftime("%Y-%m-%d %H:%M")
+                if not method_text:
+                    method_text = getattr(record, "cast_method", "") or ""
+            self.interpretation_page.set_cast_meta(time_text, method_text)
         self.sync_question_field()
         self.sync_favorite_checkbox()
         self.sync_verification_fields()
@@ -1644,6 +1482,7 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget.setCurrentWidget(
             self.ui.tab_interpretation
         )
+        self._sync_shell_chrome()
 
     def show_input_error(self, message):
         QMessageBox.warning(self, "輸入錯誤", message)

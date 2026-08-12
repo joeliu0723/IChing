@@ -22,6 +22,9 @@ class HistoryRecord:
     # 占問問題
     question: str = ""
 
+    # 占卜方式（六爻輸入／卦名／卦序／上下卦／梅花易數…）
+    cast_method: str = ""
+
     # 六爻（由下往上）
     lines: List[str] = field(default_factory=list)
 
@@ -57,6 +60,7 @@ class HistoryRecord:
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
             "question": self.question,
+            "cast_method": self.cast_method,
             "lines": self.lines,
             "main_number": self.main_number,
             "main_name": self.main_name,
@@ -83,6 +87,7 @@ class HistoryRecord:
         record.updated_at = datetime.fromisoformat(updated)
 
         record.question = data.get("question", "")
+        record.cast_method = data.get("cast_method", "")
         record.lines = data.get("lines", [])
 
         record.main_number = data.get("main_number", 0)
