@@ -680,6 +680,35 @@ Description
 
 ---
 
+## V1.4.13
+
+Date
+
+2026-08-12
+
+Feature
+
+起卦首頁 UI 視覺改版（Desktop 1200×800）
+
+Modified Files
+
+- ui/main_window.py
+- ui/widgets/brand_hero.py（新增）
+- ui/widgets/mode_selector.py（新增）
+- assets/ui/（Hero 完成稿與視覺資產）
+- docs/CURSOR_UI_HANDOFF.md
+
+Description
+
+- Hero 改為單一完成稿 `assets/ui/hero_banner_desktop.png`（等比例縮放，不裁切、無 SVG／文字疊加；檔案更新後依 mtime 自動重載）
+- 五模式選擇列：等寬按鈕、深藍＋金邊 Active 態
+- 六爻輸入改為宣紙色選項卡片＋ radio 指示器；選取態深藍＋金邊
+- 卦名／卦序／上下卦／數字卦輸入頁對齊同一張 Input Card 與置中表單
+- 卦名可輸入簡稱（如「坤」）正確查詢；ComboBox 禁止插入無效項目、補全改為包含比對
+- 未改 Core／Controller／Presenter／Engine 排卦規則
+
+---
+
 # Future
 
 ## Packaging（暫緩）

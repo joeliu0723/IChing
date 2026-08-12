@@ -1,9 +1,17 @@
 import sys
+from pathlib import Path
 
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QPainter
+from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
+    QCompleter,
+    QFrame,
+    QGraphicsDropShadowEffect,
+    QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
@@ -13,6 +21,8 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QPushButton,
     QRadioButton,
+    QScrollArea,
+    QSizePolicy,
     QSpinBox,
     QStackedWidget,
     QVBoxLayout,
@@ -26,10 +36,313 @@ from core.hexagram_lookup import HexagramLookup
 from core.history import VERIFICATION_RESULTS
 from core.session import session
 from ui.history_page import HistoryPage
+from ui.widgets.brand_hero import BrandHero
 from ui.widgets.collapsible_groupbox import CollapsibleGroupBox
+from ui.widgets.mode_selector import ModeSelector
 
 
 TRIGRAM_NAMES = ["乾", "坤", "震", "巽", "坎", "離", "兌", "艮"]
+
+_ASSETS_UI = Path(__file__).resolve().parents[1] / "assets" / "ui"
+
+CAST_HOME_STYLE = """
+QMainWindow, QWidget#castHomeRoot, QWidget#castHomeBody, QWidget#tabDivination {
+    background-color: #F7F4EC;
+    color: #2B2E34;
+}
+QTabWidget::pane {
+    border: none;
+    top: 0px;
+    background-color: #F7F4EC;
+}
+QWidget#brandHero {
+    background-color: #0D1B2A;
+    border: none;
+}
+QLabel#brandHeroTitleZh {
+    color: #D4AF37;
+    background: transparent;
+}
+QLabel#brandHeroTitleEn {
+    color: #D4AF37;
+    background: transparent;
+    letter-spacing: 4px;
+}
+QWidget#modeSelector QPushButton#modeSelectButton {
+    background-color: #F7F4EC;
+    color: #2B2E34;
+    border: 1px solid #C9B896;
+    border-radius: 4px;
+    padding: 0px 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+QWidget#modeSelector QPushButton#modeSelectButton:hover:!checked {
+    background-color: #F1E8D6;
+    border: 1px solid #D4AF37;
+}
+QWidget#modeSelector QPushButton#modeSelectButton:checked {
+    background-color: #0D1B2A;
+    color: #F7F4EC;
+    border: 1px solid #D4AF37;
+    font-weight: 600;
+}
+QFrame#questionCard {
+    background-color: #F1E6D5;
+    border: 1px solid #C9B896;
+    border-radius: 8px;
+}
+QFrame#inputCard {
+    background-color: #F7F4EC;
+    border: 1px solid #D4C7B0;
+    border-radius: 8px;
+}
+QLabel#sectionLabel, QLabel#inputCardTitle {
+    color: #2B2E34;
+    font-size: 13px;
+    font-weight: 600;
+}
+QLabel#questionCardTitle {
+    color: #0D1B2A;
+    font-size: 14px;
+    font-weight: 600;
+    background: transparent;
+}
+QLabel#inputCardTitle {
+    font-size: 15px;
+    color: #2B2E34;
+    qproperty-alignment: AlignCenter;
+}
+QLabel#lineRowLabel {
+    color: #2B2E34;
+    font-size: 13px;
+    font-weight: 600;
+    background: transparent;
+}
+QLineEdit#editQuestionHome {
+    background-color: #F7F4EC;
+    border: 1px solid #C9B896;
+    border-radius: 6px;
+    padding: 0px 16px;
+    font-size: 13px;
+    min-height: 54px;
+    max-height: 54px;
+    color: #0D1B2A;
+    selection-background-color: #0D1B2A;
+    selection-color: #F7F4EC;
+}
+QLineEdit#editQuestionHome::placeholder {
+    color: #8A8478;
+}
+QLineEdit#editQuestionHome:focus {
+    border: 1px solid #D4AF37;
+    background-color: #F7F4EC;
+    outline: none;
+}
+QLineEdit#editQuestionHome:hover:!focus {
+    border: 1px solid #D4C7B0;
+    background-color: #F7F4EC;
+}
+QPushButton#btnStartInterpretation {
+    background-color: #0D1B2A;
+    color: #F7F4EC;
+    border: 1px solid #D4AF37;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 700;
+}
+QPushButton#btnStartInterpretation:hover {
+    background-color: #152536;
+    color: #F7F4EC;
+    border: 1px solid #E0C15A;
+}
+QPushButton#btnStartInterpretation:focus {
+    border: 1px solid #E0C15A;
+}
+QPushButton#btnStartInterpretation:pressed {
+    background-color: #08121C;
+    color: #D4AF37;
+    border: 1px solid #D4AF37;
+}
+QTabBar::tab {
+    background: #EFE7DA;
+    color: #6B7280;
+    padding: 6px 14px;
+    margin-right: 2px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+QTabBar::tab:selected {
+    background: #0D1B2A;
+    color: #D4AF37;
+}
+QGroupBox#groupLinesInput {
+    border: none;
+    margin-top: 0px;
+    background: transparent;
+}
+QGroupBox#groupLinesInput::title {
+    height: 0px;
+    width: 0px;
+    color: transparent;
+}
+QWidget#sixLinesBody QRadioButton {
+    background-color: #F1E8D6;
+    color: #2B2E34;
+    border: 1px solid #C9B896;
+    border-radius: 5px;
+    padding: 0px 8px 0px 6px;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 34px;
+    max-height: 34px;
+    spacing: 7px;
+}
+QWidget#sixLinesBody QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border-radius: 8px;
+    border: 1.5px solid #B8A88A;
+    background-color: #F1E8D6;
+    margin-right: 1px;
+}
+QWidget#sixLinesBody QRadioButton::indicator:unchecked {
+    border: 1.5px solid #B8A88A;
+    background-color: #F1E8D6;
+}
+QWidget#sixLinesBody QRadioButton::indicator:unchecked:hover {
+    border: 1.5px solid #D4AF37;
+    background-color: #EDE4D0;
+}
+QWidget#sixLinesBody QRadioButton::indicator:checked {
+    border: 1.5px solid #D4AF37;
+    background-color: #F1E8D6;
+    background: qradialgradient(
+        cx:0.5, cy:0.5, radius:0.5,
+        fx:0.5, fy:0.5,
+        stop:0 #0D1B2A,
+        stop:0.36 #0D1B2A,
+        stop:0.37 #F1E8D6,
+        stop:1 #F1E8D6
+    );
+}
+QWidget#sixLinesBody QRadioButton:hover:!checked {
+    background-color: #EDE4D0;
+    border: 1px solid #D4AF37;
+    color: #2B2E34;
+}
+QWidget#sixLinesBody QRadioButton:checked {
+    background-color: #0D1B2A;
+    color: #F7F4EC;
+    border: 1px solid #D4AF37;
+    font-weight: 600;
+}
+QWidget#sixLinesBody QRadioButton:checked:hover {
+    background-color: #152536;
+    color: #F7F4EC;
+    border: 1px solid #E0C15A;
+}
+QWidget#sixLinesBody QRadioButton:checked::indicator {
+    border: 1.5px solid #D4AF37;
+    background-color: #0D1B2A;
+    background: qradialgradient(
+        cx:0.5, cy:0.5, radius:0.5,
+        fx:0.5, fy:0.5,
+        stop:0 #F7F4EC,
+        stop:0.36 #F7F4EC,
+        stop:0.37 #0D1B2A,
+        stop:1 #0D1B2A
+    );
+}
+QWidget#sixLinesBody QRadioButton:focus {
+    outline: none;
+}
+QWidget#modeInputBody {
+    background: transparent;
+}
+QWidget#modeInputBody QLabel#fieldLabel {
+    color: #2B2E34;
+    font-size: 13px;
+    font-weight: 600;
+    background: transparent;
+}
+QWidget#modeInputBody QLabel#sectionHint {
+    color: #8A8478;
+    font-size: 12px;
+    font-weight: 400;
+    background: transparent;
+}
+QWidget#modeInputBody QComboBox#modeInputControl,
+QWidget#modeInputBody QSpinBox#modeInputControl {
+    background-color: #F1E8D6;
+    color: #0D1B2A;
+    border: 1px solid #C9B896;
+    border-radius: 5px;
+    padding: 0px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    selection-background-color: #0D1B2A;
+    selection-color: #F7F4EC;
+}
+QWidget#modeInputBody QComboBox#modeInputControl:hover,
+QWidget#modeInputBody QSpinBox#modeInputControl:hover {
+    background-color: #EDE4D0;
+    border: 1px solid #D4C7B0;
+}
+QWidget#modeInputBody QComboBox#modeInputControl:focus,
+QWidget#modeInputBody QSpinBox#modeInputControl:focus {
+    border: 1px solid #D4AF37;
+    background-color: #F7F4EC;
+    outline: none;
+}
+QWidget#modeInputBody QComboBox#modeInputControl::drop-down {
+    border: none;
+    width: 22px;
+    background: transparent;
+}
+QWidget#modeInputBody QComboBox#modeInputControl::down-arrow {
+    width: 10px;
+    height: 10px;
+}
+QWidget#modeInputBody QSpinBox#modeInputControl::up-button,
+QWidget#modeInputBody QSpinBox#modeInputControl::down-button {
+    width: 18px;
+    border: none;
+    background: transparent;
+}
+QWidget#modeInputBody QSpinBox#modeInputControl::up-arrow,
+QWidget#modeInputBody QSpinBox#modeInputControl::down-arrow {
+    width: 8px;
+    height: 8px;
+}
+QGroupBox {
+    background: transparent;
+    border: none;
+    margin-top: 4px;
+    font-weight: 600;
+    color: #2B2E34;
+}
+"""
+
+
+class _PaperBody(QWidget):
+    """Hero 以下內容區：宣紙米白底（#F7F4EC）。
+
+    paper_texture.svg 含 feTurbulence，Qt Svg 會渲成灰塊，
+    故此處採用資產色票實心米白，避免 CTA 下方出現 #A19F9A。
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("castHomeBody")
+        self.setAttribute(Qt.WA_OpaquePaintEvent, True)
+        self.setAutoFillBackground(False)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.fillRect(self.rect(), QColor("#F7F4EC"))
+        painter.end()
 
 
 class MainWindow(QMainWindow):
@@ -40,13 +353,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.setStyleSheet("""
-        QPushButton:checked {
-            background-color: #4CAF50;
-            color: white;
-            font-weight: bold;
-        }
-        """)
+        self.setWindowTitle("易經占卜 — I Ching")
+        self.setStyleSheet(CAST_HOME_STYLE)
 
         self.lines = [None] * 6
 
@@ -58,6 +366,9 @@ class MainWindow(QMainWindow):
         }
 
         self.buttons = {}
+        self.mode_selector = None
+        self._input_card_title = None
+        self._input_scroll = None
 
         self.controller = HexagramController()
         self.presenter = HexagramPresenter(self.ui)
@@ -75,6 +386,8 @@ class MainWindow(QMainWindow):
         self.init_trigrams_input()
         self.init_meihua_input()
         self.init_input_mode_switching()
+        self.init_cast_home_redesign()
+        self.init_cast_page_navigation()
 
     def init_interpretation_widgets(self):
         """補充解卦頁欄位，並將各經文區塊改為預設折疊。"""
@@ -403,11 +716,589 @@ class MainWindow(QMainWindow):
 
         self.show_input_mode("six_lines")
 
+    @staticmethod
+    def _prepare_mode_group(group: QGroupBox):
+        """清空 GroupBox 外框，供 modeInputBody 重掛控件。"""
+
+        group.setTitle("")
+        group.setFlat(True)
+        group.setStyleSheet(
+            "QGroupBox { border: none; margin-top: 0; background: transparent; }"
+        )
+        if group.layout() is None:
+            return
+        layout = group.layout()
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+            sub = item.layout()
+            if sub is not None:
+                while sub.count():
+                    sub_item = sub.takeAt(0)
+                    sub_widget = sub_item.widget()
+                    if sub_widget is not None:
+                        sub_widget.setParent(None)
+
+    def _build_mode_input_body(self, control_width: int = 200):
+        """置中 modeInputBody + grid（左標籤欄 + 右控件欄）。"""
+
+        body = QWidget()
+        body.setObjectName("modeInputBody")
+        body_outer = QVBoxLayout(body)
+        body_outer.setContentsMargins(0, 4, 0, 4)
+        body_outer.setSpacing(0)
+        body_outer.addStretch(1)
+
+        row = QHBoxLayout()
+        row.setContentsMargins(0, 0, 0, 0)
+        row.setSpacing(0)
+        row.addStretch(1)
+
+        grid_host = QWidget()
+        grid_host.setObjectName("modeInputContent")
+        grid = QGridLayout(grid_host)
+        grid.setContentsMargins(0, 0, 0, 0)
+        grid.setHorizontalSpacing(12)
+        grid.setVerticalSpacing(8)
+        grid.setColumnMinimumWidth(0, 72)
+        grid.setColumnStretch(0, 0)
+        grid.setColumnMinimumWidth(1, control_width)
+        grid.setColumnStretch(1, 0)
+
+        row.addWidget(grid_host, 0, Qt.AlignHCenter)
+        row.addStretch(1)
+        body_outer.addLayout(row)
+        body_outer.addStretch(1)
+        return body, grid
+
+    @staticmethod
+    def _add_field_label(grid: QGridLayout, row: int, text: str, height: int = 34):
+        label = QLabel(text)
+        label.setObjectName("fieldLabel")
+        label.setFixedWidth(72)
+        label.setFixedHeight(height)
+        label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        grid.addWidget(label, row, 0, Qt.AlignVCenter)
+        return label
+
+    @staticmethod
+    def _style_mode_spin(spin: QSpinBox, width: int = 140, height: int = 34):
+        spin.setObjectName("modeInputControl")
+        spin.setFixedSize(width, height)
+        spin.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        spin.setAlignment(Qt.AlignCenter)
+        spin.setButtonSymbols(QSpinBox.UpDownArrows)
+
+    @staticmethod
+    def _style_mode_combo(combo: QComboBox, width: int, height: int = 34):
+        combo.setObjectName("modeInputControl")
+        combo.setFixedSize(width, height)
+        combo.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        combo.setCursor(Qt.PointingHandCursor)
+
+    def _mount_mode_group(self, group: QGroupBox, body: QWidget):
+        if group.layout() is None:
+            group_layout = QVBoxLayout(group)
+        else:
+            group_layout = group.layout()
+        group_layout.setContentsMargins(0, 0, 0, 0)
+        group_layout.setSpacing(0)
+        group_layout.addWidget(body)
+        group.setMinimumHeight(0)
+        group.setMaximumHeight(16777215)
+        group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
+    def _restyle_name_input(self):
+        """卦名：置中單列 ComboBox。"""
+
+        group = self.groupNameInput
+        self._prepare_mode_group(group)
+
+        combo = self.comboHexagramName
+        combo.setParent(None)
+        self._style_mode_combo(combo, width=520, height=54)
+        combo.setInsertPolicy(QComboBox.NoInsert)
+        completer = QCompleter(combo.model(), combo)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchContains)
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        combo.setCompleter(completer)
+
+        body, grid = self._build_mode_input_body(control_width=520)
+        self._add_field_label(grid, 0, "卦名", height=54)
+        grid.addWidget(combo, 0, 1, Qt.AlignVCenter)
+        self._mount_mode_group(group, body)
+
+    def _restyle_number_input(self):
+        """卦序：置中單列 SpinBox。"""
+
+        group = self.groupNumberInput
+        self._prepare_mode_group(group)
+
+        spin = self.ui.spinHexagramNumber
+        spin.setParent(None)
+        self._style_mode_spin(spin, width=140, height=34)
+
+        body, grid = self._build_mode_input_body(control_width=140)
+        self._add_field_label(grid, 0, "卦序")
+        grid.addWidget(spin, 0, 1, Qt.AlignVCenter)
+        self._mount_mode_group(group, body)
+
+    def _restyle_trigrams_input(self):
+        """上下卦：置中兩列 ComboBox。"""
+
+        group = self.groupTrigramsInput
+        self._prepare_mode_group(group)
+
+        upper = self.comboUpperTrigram
+        lower = self.comboLowerTrigram
+        upper.setParent(None)
+        lower.setParent(None)
+        self._style_mode_combo(upper, width=200, height=34)
+        self._style_mode_combo(lower, width=200, height=34)
+
+        body, grid = self._build_mode_input_body(control_width=200)
+        self._add_field_label(grid, 0, "上卦")
+        grid.addWidget(upper, 0, 1, Qt.AlignVCenter)
+        self._add_field_label(grid, 1, "下卦")
+        grid.addWidget(lower, 1, 1, Qt.AlignVCenter)
+        self._mount_mode_group(group, body)
+
+    def _restyle_meihua_input(self):
+        """數字卦：hint + 三列 SpinBox。"""
+
+        group = self.groupMeihuaInput
+        self._prepare_mode_group(group)
+
+        for spin in (self.spinMeihua1, self.spinMeihua2, self.spinMeihua3):
+            spin.setParent(None)
+            self._style_mode_spin(spin, width=140, height=34)
+
+        body = QWidget()
+        body.setObjectName("modeInputBody")
+        body_outer = QVBoxLayout(body)
+        body_outer.setContentsMargins(0, 4, 0, 4)
+        body_outer.setSpacing(0)
+        body_outer.addStretch(1)
+
+        center_row = QHBoxLayout()
+        center_row.setContentsMargins(0, 0, 0, 0)
+        center_row.addStretch(1)
+
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(6)
+
+        hint = QLabel(
+            "第1數→上卦（÷8 餘）、第2數→下卦（÷8 餘）、"
+            "第3數→動爻（÷6 餘；餘0作8／6）"
+        )
+        hint.setObjectName("sectionHint")
+        hint.setWordWrap(True)
+        hint.setAlignment(Qt.AlignCenter)
+        content_layout.addWidget(hint)
+
+        grid_host = QWidget()
+        grid = QGridLayout(grid_host)
+        grid.setContentsMargins(0, 0, 0, 0)
+        grid.setHorizontalSpacing(12)
+        grid.setVerticalSpacing(8)
+        grid.setColumnMinimumWidth(0, 72)
+        grid.setColumnStretch(0, 0)
+        grid.setColumnMinimumWidth(1, 140)
+        grid.setColumnStretch(1, 0)
+
+        for row, (label_text, spin) in enumerate(
+            (
+                ("第1數", self.spinMeihua1),
+                ("第2數", self.spinMeihua2),
+                ("第3數", self.spinMeihua3),
+            )
+        ):
+            self._add_field_label(grid, row, label_text)
+            grid.addWidget(spin, row, 1, Qt.AlignVCenter)
+
+        content_layout.addWidget(grid_host)
+        center_row.addWidget(content, 0, Qt.AlignHCenter)
+        center_row.addStretch(1)
+        body_outer.addLayout(center_row)
+        body_outer.addStretch(1)
+        self._mount_mode_group(group, body)
+
+    def _restyle_six_lines_input(self):
+        """六爻選項卡片網格：左欄爻名＋四欄置中選項，保留既有按鈕綁定。"""
+
+        group = self.ui.groupLinesInput
+        group.setTitle("")
+        group.setFlat(True)
+
+        line_defs = (
+            (6, "上爻"),
+            (5, "五爻"),
+            (4, "四爻"),
+            (3, "三爻"),
+            (2, "二爻"),
+            (1, "初爻"),
+        )
+        value_keys = ("YoungYang", "YoungYin", "OldYang", "OldYin")
+        self._yao_option_labels = {
+            "YoungYang": "少陽",
+            "YoungYin": "少陰",
+            "OldYang": "老陽",
+            "OldYin": "老陰",
+        }
+        _opt_w = 128
+        _opt_h = 34
+        _col_gap = 12
+        _row_gap = 8
+
+        body = QWidget()
+        body.setObjectName("sixLinesBody")
+        body_layout = QVBoxLayout(body)
+        body_layout.setContentsMargins(0, 4, 0, 4)
+        body_layout.setSpacing(0)
+
+        grid_row = QHBoxLayout()
+        grid_row.setContentsMargins(0, 0, 0, 0)
+        grid_row.setSpacing(0)
+
+        grid_host = QWidget()
+        grid_host.setObjectName("sixLinesContent")
+        grid_host.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+
+        grid = QGridLayout(grid_host)
+        grid.setContentsMargins(0, 0, 0, 0)
+        grid.setHorizontalSpacing(_col_gap)
+        grid.setVerticalSpacing(_row_gap)
+        grid.setColumnMinimumWidth(0, 52)
+        grid.setColumnStretch(0, 0)
+        for col in range(1, 5):
+            grid.setColumnMinimumWidth(col, _opt_w)
+            grid.setColumnStretch(col, 0)
+
+        for row_idx, (line_no, line_label) in enumerate(line_defs):
+            label = QLabel(line_label)
+            label.setObjectName("lineRowLabel")
+            label.setFixedWidth(52)
+            label.setFixedHeight(_opt_h)
+            label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+            grid.addWidget(label, row_idx, 0, Qt.AlignVCenter)
+
+            for col_idx, key in enumerate(value_keys, start=1):
+                button = getattr(self.ui, f"rb{line_no}{key}")
+                button.setParent(None)
+                button.setAutoExclusive(False)
+                button.setFixedSize(_opt_w, _opt_h)
+                button.setCursor(Qt.PointingHandCursor)
+                button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+                button.setAttribute(Qt.WA_StyledBackground, True)
+                button.setStyleSheet("")
+                self._refresh_yao_option_label(button, key, checked=button.isChecked())
+                grid.addWidget(button, row_idx, col_idx, Qt.AlignVCenter)
+
+        grid_row.addStretch(1)
+        grid_row.addWidget(grid_host, 0, Qt.AlignHCenter)
+        grid_row.addStretch(1)
+        body_layout.addLayout(grid_row)
+
+        for attr in (
+            "horizontalLayoutWidget",
+            "horizontalLayoutWidget_2",
+            "horizontalLayoutWidget_3",
+            "horizontalLayoutWidget_4",
+            "horizontalLayoutWidget_5",
+            "horizontalLayoutWidget_6",
+        ):
+            widget = getattr(self.ui, attr, None)
+            if widget is not None:
+                widget.hide()
+                widget.setParent(None)
+
+        if group.layout() is None:
+            group_layout = QVBoxLayout(group)
+        else:
+            group_layout = group.layout()
+            while group_layout.count():
+                item = group_layout.takeAt(0)
+                child = item.widget()
+                if child is not None:
+                    child.setParent(None)
+
+        group_layout.setContentsMargins(0, 0, 0, 0)
+        group_layout.setSpacing(0)
+        group_layout.addWidget(body)
+        group.setMinimumHeight(0)
+        group.setMaximumHeight(16777215)
+        group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
+    def _refresh_yao_option_label(self, button, key: str, checked: bool):
+        """選項卡片文字；圓點由 QRadioButton::indicator 呈現。"""
+
+        del checked
+        label = self._yao_option_labels.get(key, button.text())
+        button.setText(label)
+    def _sync_yao_option_labels(self, line: int):
+        value_keys = ("YoungYang", "YoungYin", "OldYang", "OldYin")
+        for key in value_keys:
+            button = getattr(self.ui, f"rb{line}{key}")
+            self._refresh_yao_option_label(button, key, button.isChecked())
+
+    def init_cast_home_redesign(self):
+        """
+        Phase 1B / V4：依參考圖重建 Hero／Mode／六爻 Card 視覺。
+
+        Hero → Mode → Input Card → Question → CTA
+        Mode Button → 既有 Radio → stack → start_interpretation
+        """
+
+        self._mode_radios = {
+            "six_lines": self.ui.rbSixLines,
+            "name": self.ui.rbHexagramName,
+            "number": self.ui.rbHexagramNumber,
+            "trigrams": self.ui.rbTrigrams,
+            "meihua": self.ui.rbMeihuaNumbers,
+        }
+        self._mode_titles = {
+            "six_lines": "六爻輸入",
+            "name": "卦名",
+            "number": "卦序",
+            "trigrams": "上下卦",
+            "meihua": "數字卦",
+        }
+
+        self.ui.groupInputMode.hide()
+        self._restyle_six_lines_input()
+        self._restyle_name_input()
+        self._restyle_number_input()
+        self._restyle_trigrams_input()
+        self._restyle_meihua_input()
+
+        self.input_mode_stack.setParent(None)
+        self.input_mode_stack.setMinimumHeight(0)
+        self.input_mode_stack.setMaximumHeight(228)
+        self.input_mode_stack.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Preferred,
+        )
+
+        self.ui.editQuestion.setParent(None)
+        self.ui.editQuestion.setObjectName("editQuestionHome")
+        self.ui.editQuestion.setPlaceholderText("請輸入您想占卜的問題......")
+        self.ui.editQuestion.setFixedHeight(54)
+        self.ui.editQuestion.setAttribute(Qt.WA_StyledBackground, True)
+        self.ui.editQuestion.setCursor(Qt.IBeamCursor)
+
+        self.ui.btnStartInterpretation.setParent(None)
+        self.ui.btnStartInterpretation.setObjectName("btnStartInterpretation")
+        self.ui.btnStartInterpretation.setFixedHeight(54)
+        self.ui.btnStartInterpretation.setFixedWidth(300)
+        self.ui.btnStartInterpretation.setCursor(Qt.PointingHandCursor)
+
+        self.ui.horizontalLayoutWidget_7.hide()
+        self.ui.widget.hide()
+        self.ui.tabDivination.setAttribute(Qt.WA_StyledBackground, True)
+        self.ui.tabDivination.setAutoFillBackground(True)
+
+        central_layout = self.centralWidget().layout()
+        if central_layout is not None:
+            central_layout.setContentsMargins(0, 0, 0, 0)
+            central_layout.setSpacing(0)
+        self.ui.tabWidget.setDocumentMode(True)
+        self.ui.tabWidget.setContentsMargins(0, 0, 0, 0)
+
+        tab = self.ui.tabDivination
+        shell = QWidget()
+        shell.setObjectName("castHomeRoot")
+        shell_layout = QVBoxLayout(shell)
+        shell_layout.setContentsMargins(0, 0, 0, 0)
+        shell_layout.setSpacing(0)
+
+        self.brand_hero = BrandHero()
+        shell_layout.addWidget(self.brand_hero, 0)
+
+        body = _PaperBody()
+        body.setObjectName("castHomeBody")
+        body_layout = QVBoxLayout(body)
+        body_layout.setContentsMargins(32, 2, 32, 2)
+        body_layout.setSpacing(0)
+
+        self.mode_selector = ModeSelector()
+        self.mode_selector.modeSelected.connect(self._on_mode_button_selected)
+        body_layout.addWidget(self.mode_selector, 0)
+        body_layout.addSpacing(4)
+
+        input_card = QFrame()
+        input_card.setObjectName("inputCard")
+        input_card.setAttribute(Qt.WA_StyledBackground, True)
+        input_card.setFixedHeight(270)
+        input_card_layout = QVBoxLayout(input_card)
+        input_card_layout.setContentsMargins(16, 8, 16, 13)
+        input_card_layout.setSpacing(8)
+
+        title_row = QHBoxLayout()
+        title_row.setSpacing(10)
+        left_div = QSvgWidget(str(_ASSETS_UI / "ornamental_divider.svg"))
+        left_div.setFixedSize(72, 14)
+        left_div.setStyleSheet("background: transparent;")
+        right_div = QSvgWidget(str(_ASSETS_UI / "ornamental_divider.svg"))
+        right_div.setFixedSize(72, 14)
+        right_div.setStyleSheet("background: transparent;")
+        self._input_card_title = QLabel("六爻輸入")
+        self._input_card_title.setObjectName("inputCardTitle")
+        self._input_card_title.setAlignment(Qt.AlignCenter)
+        self._input_card_title.setFixedHeight(22)
+        title_row.addStretch(1)
+        title_row.addWidget(left_div, 0, Qt.AlignVCenter)
+        title_row.addWidget(self._input_card_title, 0, Qt.AlignVCenter)
+        title_row.addWidget(right_div, 0, Qt.AlignVCenter)
+        title_row.addStretch(1)
+        input_card_layout.addLayout(title_row)
+        input_card_layout.addWidget(self.input_mode_stack, 1)
+
+        input_card_wrap = QWidget()
+        input_card_wrap.setObjectName("inputCardWrap")
+        input_card_wrap.setFixedHeight(270)
+        input_card_wrap.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        wrap_layout = QVBoxLayout(input_card_wrap)
+        wrap_layout.setContentsMargins(0, 0, 0, 0)
+        wrap_layout.setSpacing(0)
+        wrap_layout.addWidget(input_card)
+
+        body_layout.addWidget(input_card_wrap, 0)
+        body_layout.addSpacing(16)
+
+        question_card = QFrame()
+        question_card.setObjectName("questionCard")
+        question_card.setAttribute(Qt.WA_StyledBackground, True)
+        question_card.setFixedHeight(108)
+        question_layout = QVBoxLayout(question_card)
+        question_layout.setContentsMargins(16, 12, 16, 12)
+        question_layout.setSpacing(8)
+        q_label = QLabel("占卜問題")
+        q_label.setObjectName("questionCardTitle")
+        q_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        q_label.setFixedHeight(20)
+        question_layout.addWidget(q_label)
+        question_layout.addWidget(self.ui.editQuestion)
+
+        question_card_wrap = QWidget()
+        question_card_wrap.setObjectName("questionCardWrap")
+        question_card_wrap.setFixedHeight(108)
+        question_card_wrap.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        q_wrap_layout = QVBoxLayout(question_card_wrap)
+        q_wrap_layout.setContentsMargins(0, 0, 0, 0)
+        q_wrap_layout.setSpacing(0)
+        q_wrap_layout.addWidget(question_card)
+
+        body_layout.addWidget(question_card_wrap, 0)
+        body_layout.addSpacing(10)
+
+        cta_row = QHBoxLayout()
+        cta_row.setContentsMargins(0, 0, 0, 0)
+        cta_row.addStretch(1)
+        cta_row.addWidget(self.ui.btnStartInterpretation)
+        cta_row.addStretch(1)
+        body_layout.addLayout(cta_row)
+
+        shell_layout.addWidget(body, 1)
+
+        if tab.layout() is None:
+            tab_layout = QVBoxLayout(tab)
+            tab_layout.setContentsMargins(0, 0, 0, 0)
+            tab_layout.setSpacing(0)
+        else:
+            tab_layout = tab.layout()
+            while tab_layout.count():
+                item = tab_layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+
+        tab_layout.addWidget(shell)
+
+        self.ui.tabWidget.setTabText(
+            self.ui.tabWidget.indexOf(self.ui.tabDivination),
+            "起卦",
+        )
+
+        self.mode_selector.set_active("six_lines")
+        self.ui.rbSixLines.setChecked(True)
+        self.show_input_mode("six_lines")
+        self._flatten_mode_groups()
+
+    @staticmethod
+    def _apply_subtle_card_shadow(widget: QWidget):
+        shadow = QGraphicsDropShadowEffect(widget)
+        shadow.setBlurRadius(8)
+        shadow.setOffset(0, 1)
+        shadow.setColor(QColor(43, 46, 52, 16))
+        widget.setGraphicsEffect(shadow)
+
+    @staticmethod
+    def _apply_card_shadow(widget: QWidget):
+        shadow = QGraphicsDropShadowEffect(widget)
+        shadow.setBlurRadius(10)
+        shadow.setOffset(0, 1)
+        shadow.setColor(QColor(43, 46, 52, 22))
+        widget.setGraphicsEffect(shadow)
+
+    def init_cast_page_navigation(self):
+        """
+        首頁不顯示導航（無底欄、無頂部 Tab）。
+        進入解卦／歷史後才顯示 Tab，以便返回起卦。
+        """
+
+        self.ui.tabWidget.tabBar().hide()
+        self.ui.tabWidget.currentChanged.connect(self._sync_cast_tab_bar)
+        self._sync_cast_tab_bar()
+
+    def _sync_cast_tab_bar(self, *_args):
+        on_home = self.ui.tabWidget.currentWidget() is self.ui.tabDivination
+        bar = self.ui.tabWidget.tabBar()
+        bar.setVisible(not on_home)
+        bar.setMaximumHeight(0 if on_home else 16777215)
+
+    def _flatten_mode_groups(self):
+        """其他模式輸入區去掉傳統 GroupBox 外框感。"""
+
+        for group in (
+            self.groupNameInput,
+            self.groupNumberInput,
+            self.groupTrigramsInput,
+            self.groupMeihuaInput,
+        ):
+            group.setFlat(True)
+            group.setTitle("")
+            group.setStyleSheet(
+                "QGroupBox { border: none; margin-top: 0; background: transparent; }"
+            )
+
+    def _on_mode_button_selected(self, mode: str):
+        """新按鈕 → 同步既有 Radio（由 Radio toggled 驅動 stack）。"""
+
+        radio = self._mode_radios.get(mode)
+        if radio is None:
+            return
+
+        if not radio.isChecked():
+            radio.setChecked(True)
+        else:
+            self.show_input_mode(mode)
+
     def show_input_mode(self, mode):
         index = self.mode_page_index.get(mode)
         if index is None:
             return
         self.input_mode_stack.setCurrentIndex(index)
+        if self.mode_selector is not None:
+            self.mode_selector.set_active(mode)
+        if self._input_card_title is not None:
+            self._input_card_title.setText(
+                self._mode_titles.get(mode, "起卦輸入")
+            )
 
     def current_question(self):
         return self.ui.editQuestion.text().strip()
@@ -437,6 +1328,7 @@ class MainWindow(QMainWindow):
         button.blockSignals(False)
 
         self.lines[line - 1] = self.values[name]
+        self._sync_yao_option_labels(line)
 
     def start_interpretation(self):
         """依目前輸入模式排卦並進入解卦頁。"""
@@ -507,14 +1399,21 @@ class MainWindow(QMainWindow):
         if not selected_text:
             return None
 
-        selected_index = self.comboHexagramName.findText(selected_text)
-
-        if selected_index >= 0:
-            number = self.comboHexagramName.itemData(selected_index)
-            return HexagramLookup.number_to_name(number)
+        combo = self.comboHexagramName
+        exact_index = combo.findText(selected_text, Qt.MatchExactly)
+        if exact_index >= 0:
+            number = combo.itemData(exact_index)
+            if isinstance(number, int):
+                return HexagramLookup.number_to_name(number)
 
         if HexagramLookup.name_to_number(selected_text) is not None:
             return selected_text
+
+        contains_index = combo.findText(selected_text, Qt.MatchContains)
+        if contains_index >= 0:
+            number = combo.itemData(contains_index)
+            if isinstance(number, int):
+                return HexagramLookup.number_to_name(number)
 
         return None
 

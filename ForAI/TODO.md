@@ -2,7 +2,7 @@
 
 # Project IChing - TODO
 
-Version: V1.4
+Version: V1.4.13
 
 Status: Development
 
@@ -20,7 +20,7 @@ Status: Development
 
 # Current Version
 
-V1.4
+V1.4.13
 
 ---
 

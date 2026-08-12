@@ -16,7 +16,7 @@ Project IChing 是一套使用 Python + PySide6 開發的本機易經研究工�
 
 Current Version
 
-V1.4
+V1.4.13
 
 Current Progress
 
@@ -33,6 +33,7 @@ Current Progress
 - ✓ V1.4.10 Data Editor（64 卦編輯／欄位匯入）
 - ✓ V1.4.11 Data Editor UX（捲動、Win+H 語音、隱藏匯入）
 - ✓ V1.4.12 數字卦（梅花易數三數起卦）
+- ✓ V1.4.13 起卦首頁 UI 改版（Hero 單圖、五模式列、六爻／卦名／卦序／上下卦／數字卦對齊）
 
 Current Task
 

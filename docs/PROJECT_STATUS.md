@@ -2,13 +2,13 @@
 
 # Project IChing — 開發狀態儀表板
 
-更新日期：2026-08-10
+更新日期：2026-08-12
 
 ---
 
 ## Current Version
 
-**V1.4.12**
+**V1.4.13**
 
 Status：**Active Development**
 
@@ -52,6 +52,7 @@ Status：**Active Development**
 - [x] 上下卦輸入
 - [x] 數字卦（梅花易數三數）
 - [x] 輸入模式切換（固定高度 Stack，不跳動）
+- [x] V1.4.13 起卦首頁視覺改版（Hero 單圖、五模式列、六爻卡片、問題卡）
 - [x] 「開始解卦」按鈕（不自動排卦）
 - [x] 占卜問題輸入
 - [x] 輸入驗證與錯誤提示
@@ -128,7 +129,7 @@ Presenter → UI
 
 ## Git（參考）
 
-- Branch：`main`
+- Branch：`ui-redesign`（V1.4.13 首頁改版；尚未合併 `main`）
 - 近期功能已分段 commit（含 Data Editor、梅花數字卦等）
 - 勿將個人 `history.json`／未定稿卦文內容隨意推送
 

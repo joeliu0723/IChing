@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700">
+<g fill="none" stroke="#D4AF37" opacity=".72">
+<circle cx="350" cy="350" r="300" stroke-width="3"/>
+<circle cx="350" cy="350" r="255" stroke-width="1.5"/>
+<circle cx="350" cy="350" r="205" stroke-width="1"/>
+</g>
+<g fill="#D4AF37" opacity=".72" font-family="serif" font-size="44" text-anchor="middle">
+<text x="350" y="75">☰</text><text x="545" y="155">☱</text><text x="625" y="370">☲</text>
+<text x="535" y="565">☳</text><text x="350" y="635">☴</text><text x="165" y="565">☵</text>
+<text x="75" y="370">☶</text><text x="155" y="155">☷</text>
+</g>
+</svg>
