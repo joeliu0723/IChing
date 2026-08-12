@@ -1,8 +1,8 @@
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QPainter
+from PySide6.QtCore import QEvent, QObject, Qt, QRectF
+from PySide6.QtGui import QColor, QFont, QPainter, QPen
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import (
     QApplication,
@@ -144,26 +144,17 @@ QLineEdit#editQuestionHome:hover:!focus {
     background-color: #F7F4EC;
 }
 QPushButton#btnStartInterpretation {
-    background-color: #0D1B2A;
-    color: #F7F4EC;
-    border: 1px solid #D4AF37;
-    border-radius: 8px;
-    padding: 10px 24px;
-    font-size: 15px;
+    background-color: transparent;
+    border: none;
+    padding: 0px 24px;
+    font-size: 16px;
     font-weight: 700;
-}
-QPushButton#btnStartInterpretation:hover {
-    background-color: #152536;
+    min-height: 52px;
+    max-height: 52px;
     color: #F7F4EC;
-    border: 1px solid #E0C15A;
 }
 QPushButton#btnStartInterpretation:focus {
-    border: 1px solid #E0C15A;
-}
-QPushButton#btnStartInterpretation:pressed {
-    background-color: #08121C;
-    color: #D4AF37;
-    border: 1px solid #D4AF37;
+    outline: none;
 }
 QTabBar::tab {
     background: #EFE7DA;
@@ -324,6 +315,78 @@ QGroupBox {
     color: #2B2E34;
 }
 """
+
+
+class _PrimaryCtaButton(QPushButton):
+    """Primary CTA with gold border inset 3px from the outer edge."""
+
+    _OUTER_RADIUS = 8
+    _INSET = 3
+    _BORDER_WIDTH = 1
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        bg, text_color, border_color = self._palette_for_state()
+        outer = QRectF(self.rect()).adjusted(0.5, 0.5, -1.0, -1.0)
+
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(bg))
+        painter.drawRoundedRect(outer, self._OUTER_RADIUS, self._OUTER_RADIUS)
+
+        inner = outer.adjusted(self._INSET, self._INSET, -self._INSET, -self._INSET)
+        inner_radius = max(0.0, self._OUTER_RADIUS - self._INSET + 0.5)
+        pen = QPen(QColor(border_color), self._BORDER_WIDTH)
+        painter.setPen(pen)
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawRoundedRect(inner, inner_radius, inner_radius)
+
+        font = self.font()
+        font.setPixelSize(16)
+        font.setWeight(QFont.Weight.Bold)
+        painter.setFont(font)
+        painter.setPen(QColor(text_color))
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self.text())
+        painter.end()
+
+    def _palette_for_state(self):
+        if not self.isEnabled():
+            return "#1A2838", "#8A8478", "#8A7A50"
+        if self.isDown():
+            return "#081018", "#F7F4EC", "#C9A032"
+        if self.underMouse():
+            return "#122233", "#FFFDF7", "#E8C96A"
+        if self.hasFocus():
+            return "#0D1B2A", "#F7F4EC", "#E8C96A"
+        return "#0D1B2A", "#F7F4EC", "#D4AF37"
+
+
+class _CtaElevationFilter(QObject):
+    """Primary CTA hover elevation without layout movement."""
+
+    def __init__(self, button: QPushButton):
+        super().__init__(button)
+        self._button = button
+        self._rest_shadow = self._make_shadow(12, 2, 52)
+        self._hover_shadow = self._make_shadow(18, 4, 88)
+        button.setGraphicsEffect(self._rest_shadow)
+
+    @staticmethod
+    def _make_shadow(blur: int, offset_y: int, alpha: int) -> QGraphicsDropShadowEffect:
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(blur)
+        shadow.setOffset(0, offset_y)
+        shadow.setColor(QColor(212, 175, 55, alpha))
+        return shadow
+
+    def eventFilter(self, obj, event):
+        if obj is self._button:
+            if event.type() == QEvent.Type.Enter:
+                self._button.setGraphicsEffect(self._hover_shadow)
+            elif event.type() in (QEvent.Type.Leave, QEvent.Type.Hide):
+                self._button.setGraphicsEffect(self._rest_shadow)
+        return super().eventFilter(obj, event)
 
 
 class _PaperBody(QWidget):
@@ -550,7 +613,7 @@ class MainWindow(QMainWindow):
         # 插在「開始解卦」之前（若尚未加入則加在末尾）
         self.ui.horizontalLayout.addWidget(self.ui.rbMeihuaNumbers)
 
-        self.ui.btnStartInterpretation = QPushButton("開始解卦")
+        self.ui.btnStartInterpretation = _PrimaryCtaButton("開始解卦")
         self.ui.horizontalLayout.addWidget(self.ui.btnStartInterpretation)
         self.ui.btnStartInterpretation.clicked.connect(
             self.start_interpretation
@@ -1096,6 +1159,7 @@ class MainWindow(QMainWindow):
         self.ui.btnStartInterpretation.setFixedHeight(54)
         self.ui.btnStartInterpretation.setFixedWidth(300)
         self.ui.btnStartInterpretation.setCursor(Qt.PointingHandCursor)
+        self._style_cta_button()
 
         self.ui.horizontalLayoutWidget_7.hide()
         self.ui.widget.hide()
@@ -1244,6 +1308,13 @@ class MainWindow(QMainWindow):
         shadow.setOffset(0, 1)
         shadow.setColor(QColor(43, 46, 52, 22))
         widget.setGraphicsEffect(shadow)
+
+    def _style_cta_button(self):
+        btn = self.ui.btnStartInterpretation
+        btn.setAttribute(Qt.WA_StyledBackground, True)
+        elevation = _CtaElevationFilter(btn)
+        btn.installEventFilter(elevation)
+        btn._cta_elevation_filter = elevation
 
     def init_cast_page_navigation(self):
         """
