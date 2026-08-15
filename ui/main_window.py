@@ -85,7 +85,7 @@ class _PrimaryCtaButton(QPushButton):
         painter.drawRoundedRect(inner, inner_radius, inner_radius)
 
         font = self.font()
-        font.setPixelSize(16)
+        font.setPixelSize(18)
         font.setWeight(QFont.Weight.Bold)
         painter.setFont(font)
         painter.setPen(QColor(text_color))
@@ -749,7 +749,7 @@ class MainWindow(QMainWindow):
             "OldYin": "老陰",
         }
         _opt_w = 120
-        _opt_h = 36
+        _opt_h = 40
         _col_gap = 20
         _row_gap = 10
 
@@ -764,10 +764,10 @@ class MainWindow(QMainWindow):
                 border: 1px solid {T.BORDER};
                 border-radius: 5px;
                 padding: 0px 14px 0px 12px;
-                font-size: 13px;
+                font-size: 15px;
                 font-weight: 500;
-                min-height: 36px;
-                max-height: 36px;
+                min-height: 40px;
+                max-height: 40px;
                 min-width: 96px;
             }}
             QPushButton#yaoOption:hover:!checked {{
@@ -947,8 +947,8 @@ class MainWindow(QMainWindow):
 
         self.input_mode_stack.setParent(None)
         self.input_mode_stack.setMinimumHeight(0)
-        # 六列 ×36 + 五間距 ×10 + 上下緩衝，避免初爻被裁切
-        self.input_mode_stack.setMaximumHeight(268)
+        # 六列 ×40 + 五間距 ×10 + 上下緩衝，避免初爻被裁切
+        self.input_mode_stack.setMaximumHeight(310)
         self.input_mode_stack.setSizePolicy(
             QSizePolicy.Expanding,
             QSizePolicy.Preferred,
@@ -1004,7 +1004,7 @@ class MainWindow(QMainWindow):
         input_card = QFrame()
         input_card.setObjectName("inputCard")
         input_card.setAttribute(Qt.WA_StyledBackground, True)
-        input_card.setFixedHeight(330)
+        input_card.setFixedHeight(360)
         input_card_layout = QVBoxLayout(input_card)
         input_card_layout.setContentsMargins(16, 8, 16, 10)
         input_card_layout.setSpacing(6)
@@ -1020,7 +1020,7 @@ class MainWindow(QMainWindow):
         self._input_card_title = QLabel("六爻輸入")
         self._input_card_title.setObjectName("inputCardTitle")
         self._input_card_title.setAlignment(Qt.AlignCenter)
-        self._input_card_title.setFixedHeight(22)
+        self._input_card_title.setFixedHeight(26)
         title_row.addStretch(1)
         title_row.addWidget(left_div, 0, Qt.AlignVCenter)
         title_row.addWidget(self._input_card_title, 0, Qt.AlignVCenter)
@@ -1031,7 +1031,7 @@ class MainWindow(QMainWindow):
 
         input_card_wrap = QWidget()
         input_card_wrap.setObjectName("inputCardWrap")
-        input_card_wrap.setFixedHeight(330)
+        input_card_wrap.setFixedHeight(360)
         input_card_wrap.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         wrap_layout = QVBoxLayout(input_card_wrap)
         wrap_layout.setContentsMargins(0, 0, 0, 0)
@@ -1044,20 +1044,20 @@ class MainWindow(QMainWindow):
         question_card = QFrame()
         question_card.setObjectName("questionCard")
         question_card.setAttribute(Qt.WA_StyledBackground, True)
-        question_card.setFixedHeight(108)
+        question_card.setFixedHeight(112)
         question_layout = QVBoxLayout(question_card)
         question_layout.setContentsMargins(16, 12, 16, 12)
         question_layout.setSpacing(8)
         q_label = QLabel("占卜問題")
         q_label.setObjectName("questionCardTitle")
         q_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        q_label.setFixedHeight(20)
+        q_label.setFixedHeight(24)
         question_layout.addWidget(q_label)
         question_layout.addWidget(self.ui.editQuestion)
 
         question_card_wrap = QWidget()
         question_card_wrap.setObjectName("questionCardWrap")
-        question_card_wrap.setFixedHeight(108)
+        question_card_wrap.setFixedHeight(112)
         question_card_wrap.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         q_wrap_layout = QVBoxLayout(question_card_wrap)
         q_wrap_layout.setContentsMargins(0, 0, 0, 0)

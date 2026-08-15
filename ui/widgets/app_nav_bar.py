@@ -29,7 +29,7 @@ class AppNavBar(QWidget):
         super().__init__(parent)
         self.setObjectName("appNavBar")
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setFixedHeight(58)
+        self.setFixedHeight(62)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self._buttons: dict[str, QToolButton] = {}
 

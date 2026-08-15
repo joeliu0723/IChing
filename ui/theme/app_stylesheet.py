@@ -34,7 +34,7 @@ QWidget#segmentedTabs QPushButton#segmentTab {{
     border: 1px solid {T.BORDER};
     border-radius: {T.RADIUS_PILL}px;
     padding: 0px 8px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
 }}
 QWidget#modeSelector QPushButton#modeSelectButton:hover:!checked,
@@ -58,7 +58,7 @@ QFrame#paperCard QToolButton#collapseToggle {{
     background: transparent;
     border: none;
     color: {T.NAVY};
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     padding: 10px 12px;
     text-align: left;
@@ -82,24 +82,24 @@ QFrame#hexCard[active="true"] {{
 }}
 QLabel#sectionLabel, QLabel#inputCardTitle, QLabel#cardTitle, QLabel#fieldLabel {{
     color: {T.INK};
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     background: transparent;
 }}
 QLabel#questionCardTitle, QLabel#hexCardTitle {{
     color: {T.NAVY};
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     background: transparent;
 }}
 QLabel#inputCardTitle {{
-    font-size: 15px;
+    font-size: 17px;
     color: {T.INK};
     qproperty-alignment: AlignCenter;
 }}
 QLabel#lineRowLabel, QLabel#metaLabel, QLabel#mutedLabel {{
     color: {T.INK};
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     background: transparent;
 }}
@@ -109,32 +109,32 @@ QLabel#mutedLabel {{
 }}
 QLabel#metaCaption {{
     color: {T.INK_MUTED};
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
 }}
 QLabel#metaValue {{
     color: {T.INK};
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
 }}
 QLabel#historyColCaption {{
     color: {T.INK_MUTED};
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
 }}
 QLabel#historyTimeValue {{
     color: {T.INK};
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
 }}
 QLabel#historyHexName {{
     color: {T.INK};
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
 }}
 QLabel#historyQuestion {{
     color: {T.INK};
-    font-size: 13px;
+    font-size: 15px;
 }}
 QListWidget#historyList {{
     background: transparent;
@@ -157,13 +157,13 @@ QPushButton#historyVerifyButton {{
 }}
 QLabel#hexCardName {{
     color: {T.NAVY};
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     background: transparent;
 }}
 QLabel#hexCardNumber {{
     color: {T.NAVY};
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     background: transparent;
 }}
@@ -173,7 +173,7 @@ QLineEdit#historySearch {{
     border: 1px solid {T.BORDER};
     border-radius: {T.RADIUS_CONTROL}px;
     padding: 0px 16px;
-    font-size: 13px;
+    font-size: 15px;
     min-height: 40px;
     color: {T.NAVY};
     selection-background-color: {T.NAVY};
@@ -201,7 +201,7 @@ QPushButton#btnStartInterpretation {{
     background-color: transparent;
     border: none;
     padding: 0px 24px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     min-height: 52px;
     max-height: 52px;
@@ -216,7 +216,7 @@ QPushButton#secondaryButton, QPushButton#historyActionButton {{
     border: 1px solid {T.GOLD};
     border-radius: {T.RADIUS_CONTROL}px;
     padding: 6px 14px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     min-height: 34px;
 }}
@@ -233,7 +233,7 @@ QPushButton#primaryNavButton {{
     border: 1px solid {T.GOLD};
     border-radius: {T.RADIUS_CONTROL}px;
     padding: 8px 16px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     min-height: 40px;
 }}
@@ -247,10 +247,10 @@ QPlainTextEdit#contentViewer, QPlainTextEdit#notesEditor, QPlainTextEdit#verific
     border: 1px solid {T.BORDER};
     border-radius: {T.RADIUS_CONTROL}px;
     padding: 10px;
-    font-size: 13px;
+    font-size: 15px;
 }}
 QPlainTextEdit#contentViewer {{
-    font-size: 14px;
+    font-size: 16px;
 }}
 QTabBar {{
     background: {T.NAVY};
@@ -264,10 +264,13 @@ QTabBar::tab {{
     border: none;
     border-right: 1px solid rgba(201, 184, 150, 0.35);
     min-width: 88px;
+    font-size: 15px;
+    font-weight: 500;
 }}
 QTabBar::tab:selected {{
     background: rgba(212, 175, 55, 0.12);
     color: {T.GOLD};
+    font-size: 15px;
     font-weight: 700;
 }}
 QTabBar::tab:hover:!selected {{
@@ -292,10 +295,10 @@ QWidget#sixLinesBody QPushButton#yaoOption {{
     border: 1px solid {T.BORDER};
     border-radius: 5px;
     padding: 0px 14px 0px 12px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
-    min-height: 36px;
-    max-height: 36px;
+    min-height: 40px;
+    max-height: 40px;
     min-width: 96px;
 }}
 QWidget#sixLinesBody QPushButton#yaoOption:hover:!checked {{
@@ -327,13 +330,13 @@ QWidget#modeInputBody {{
 }}
 QWidget#modeInputBody QLabel#fieldLabel {{
     color: {T.INK};
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     background: transparent;
 }}
 QWidget#modeInputBody QLabel#sectionHint {{
     color: {T.INK_MUTED};
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     background: transparent;
 }}
@@ -345,7 +348,7 @@ QComboBox#styledCombo {{
     border: 1px solid {T.BORDER};
     border-radius: 5px;
     padding: 0px 10px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     min-height: 34px;
     selection-background-color: {T.PAPER_WARM};
@@ -424,7 +427,7 @@ QLabel#verificationBadge {{
     border: 1px solid {T.GOLD};
     border-radius: 4px;
     padding: 2px 8px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
 }}
 QLabel#verificationBadge[tone="warn"] {{
@@ -447,11 +450,12 @@ QWidget#appNavBar QToolButton#appNavButton {{
     border: none;
     border-radius: 4px;
     padding: 4px 2px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 500;
 }}
 QWidget#appNavBar QToolButton#appNavButton:checked {{
     color: {T.GOLD};
+    font-size: 13px;
     font-weight: 700;
 }}
 QWidget#appNavBar QToolButton#appNavButton:hover {{
@@ -460,5 +464,27 @@ QWidget#appNavBar QToolButton#appNavButton:hover {{
 QCheckBox#styledCheck {{
     color: {T.INK};
     spacing: 8px;
+}}
+
+QPushButton#fontSizeButton {{
+    background-color: {T.PAPER};
+    color: {T.INK};
+    border: 1px solid {T.BORDER};
+    border-radius: {T.RADIUS_CONTROL}px;
+    padding: 0px 10px;
+    font-size: 15px;
+    font-weight: 500;
+    min-height: 30px;
+    max-height: 30px;
+}}
+QPushButton#fontSizeButton:hover:!checked {{
+    background-color: {T.PAPER_SOFT};
+    border: 1px solid {T.GOLD};
+}}
+QPushButton#fontSizeButton:checked {{
+    background-color: {T.NAVY};
+    color: {T.IVORY};
+    border: 1px solid {T.GOLD};
+    font-weight: 600;
 }}
 """

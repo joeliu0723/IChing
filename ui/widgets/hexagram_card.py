@@ -18,7 +18,7 @@ class HexagramSummaryCard(QFrame):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setCursor(Qt.PointingHandCursor)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.setMinimumHeight(148)
+        self.setMinimumHeight(156)
 
         root = QHBoxLayout(self)
         root.setContentsMargins(16, 12, 16, 12)

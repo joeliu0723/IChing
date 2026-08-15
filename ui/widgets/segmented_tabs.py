@@ -13,7 +13,7 @@ class SegmentedTabs(QWidget):
         super().__init__(parent)
         self.setObjectName("segmentedTabs")
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.setFixedHeight(36)
+        self.setFixedHeight(40)
         self._buttons: dict[str, QPushButton] = {}
         self._active = ""
         self._layout = QHBoxLayout(self)
@@ -33,7 +33,7 @@ class SegmentedTabs(QWidget):
             button.setObjectName("segmentTab")
             button.setCheckable(True)
             button.setCursor(Qt.PointingHandCursor)
-            button.setFixedHeight(36)
+            button.setFixedHeight(40)
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             button.clicked.connect(lambda checked=False, k=key: self._on_clicked(k))
             self._layout.addWidget(button, 1)
