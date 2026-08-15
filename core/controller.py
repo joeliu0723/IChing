@@ -44,8 +44,8 @@ class HexagramController:
         """
         執行排卦
 
-        建立 History
-        更新 Session
+        建立 Session 中的暫存 HistoryRecord，但尚不寫入 history.json。
+        需於解卦頁「儲存問題」後才會新增歷史紀錄。
         """
 
         result = self.build_result(lines, question)
@@ -65,8 +65,6 @@ class HexagramController:
 
         record.moving_lines = result.moving_lines.copy()
 
-        self.history_manager.add(record)
-
         result.datetime = record.created_at.strftime("%Y-%m-%d %H:%M")
         result.cast_method = record.cast_method
 
@@ -75,24 +73,45 @@ class HexagramController:
 
         return result
 
-    def save_question(self, question: str):
-        """儲存目前紀錄的占卜問題。"""
-
+    def _require_session_record(self) -> HistoryRecord:
         current = session.record
 
         if current is None or not current.id:
             raise ValueError("目前沒有可儲存的占卜紀錄，請先起卦或從歷史載入。")
 
+        return current
+
+    def _require_persisted_record(self) -> HistoryRecord:
+        """取得已寫入歷史檔的紀錄；尚未「儲存問題」則拒絕。"""
+
+        current = self._require_session_record()
         self.history_manager.load()
         record = self.history_manager.get(current.id)
 
         if record is None:
-            raise ValueError("找不到對應的歷史紀錄。")
+            raise ValueError("請先按「儲存問題」將此卦寫入歷史後，再儲存其他資料。")
 
+        return record
+
+    def save_question(self, question: str):
+        """儲存占卜問題；若尚未寫入歷史則新增一筆。"""
+
+        current = self._require_session_record()
         question = (question or "").strip()
-        record.question = question
-        record.updated_at = datetime.now()
-        self.history_manager.update(record)
+
+        self.history_manager.load()
+        record = self.history_manager.get(current.id)
+
+        if record is None:
+            record = current
+            record.question = question
+            record.updated_at = datetime.now()
+            self.history_manager.add(record)
+        else:
+            record.question = question
+            record.updated_at = datetime.now()
+            self.history_manager.update(record)
+
         session.set_record(record)
 
         if session.result is not None:
@@ -103,16 +122,7 @@ class HexagramController:
     def save_notes(self, notes: str):
         """儲存目前紀錄的心得。"""
 
-        current = session.record
-
-        if current is None or not current.id:
-            raise ValueError("目前沒有可儲存的占卜紀錄，請先起卦或從歷史載入。")
-
-        self.history_manager.load()
-        record = self.history_manager.get(current.id)
-
-        if record is None:
-            raise ValueError("找不到對應的歷史紀錄。")
+        record = self._require_persisted_record()
 
         record.notes = notes
         record.updated_at = datetime.now()
@@ -124,16 +134,7 @@ class HexagramController:
     def set_favorite(self, favorite: bool):
         """設定目前紀錄是否收藏。"""
 
-        current = session.record
-
-        if current is None or not current.id:
-            raise ValueError("目前沒有可收藏的占卜紀錄，請先起卦或從歷史載入。")
-
-        self.history_manager.load()
-        record = self.history_manager.get(current.id)
-
-        if record is None:
-            raise ValueError("找不到對應的歷史紀錄。")
+        record = self._require_persisted_record()
 
         record.favorite = bool(favorite)
         record.updated_at = datetime.now()
@@ -145,20 +146,11 @@ class HexagramController:
     def save_verification(self, content: str, result: str):
         """儲存目前紀錄的驗證內容與驗證結果。"""
 
-        current = session.record
-
-        if current is None or not current.id:
-            raise ValueError("目前沒有可儲存的占卜紀錄，請先起卦或從歷史載入。")
-
         result = (result or "").strip()
         if result not in VERIFICATION_RESULTS:
             raise ValueError(f"無效的驗證結果：{result}")
 
-        self.history_manager.load()
-        record = self.history_manager.get(current.id)
-
-        if record is None:
-            raise ValueError("找不到對應的歷史紀錄。")
+        record = self._require_persisted_record()
 
         record.verification_content = content
         record.verification_result = result

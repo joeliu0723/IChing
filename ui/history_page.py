@@ -78,6 +78,7 @@ class HistoryPage:
         self._row_height = T.HISTORY_ROW_HEIGHT_COMFORT
         self._filtered: list[HistoryRecord] = []
         self._row_by_id: dict[str, HistoryRecordRow] = {}
+        self._selected_ids: set[str] = set()
         self._fit_guard = False
 
         self.root = QWidget()
@@ -145,12 +146,12 @@ class HistoryPage:
 
         self.list_widget = QListWidget()
         self.list_widget.setObjectName("historyList")
-        self.list_widget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.list_widget.setSelectionMode(QAbstractItemView.NoSelection)
+        self.list_widget.setFocusPolicy(Qt.NoFocus)
         self.list_widget.setSpacing(2)
         self.list_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.list_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.list_widget.setUniformItemSizes(True)
-        self.list_widget.itemSelectionChanged.connect(self._on_selection_changed)
         self.list_widget.itemDoubleClicked.connect(self._handle_item_double_clicked)
         self._viewport_filter = _HistoryViewportFilter(self)
         self.list_widget.viewport().installEventFilter(self._viewport_filter)
@@ -225,16 +226,47 @@ class HistoryPage:
         self.on_delete(self.selected_record_ids())
 
     def _on_select_all(self, checked: bool):
-        self.list_widget.blockSignals(True)
-        for i in range(self.list_widget.count()):
-            self.list_widget.item(i).setSelected(checked)
-        self.list_widget.blockSignals(False)
-        self._on_selection_changed()
-
-    def _on_selection_changed(self):
-        selected = set(self.selected_record_ids())
+        self.chk_select_all.blockSignals(True)
         for record_id, row in self._row_by_id.items():
-            row.set_selected(record_id in selected)
+            row.set_checked(checked)
+            if checked:
+                self._selected_ids.add(record_id)
+            else:
+                self._selected_ids.discard(record_id)
+        self.chk_select_all.blockSignals(False)
+
+    def _on_row_selection_toggled(self, record_id: str, checked: bool):
+        if checked:
+            self._selected_ids.add(record_id)
+        else:
+            self._selected_ids.discard(record_id)
+        self._sync_select_all_state()
+
+    def _sync_select_all_state(self):
+        if not self._row_by_id:
+            self.chk_select_all.blockSignals(True)
+            self.chk_select_all.setChecked(False)
+            self.chk_select_all.blockSignals(False)
+            return
+        all_checked = all(
+            record_id in self._selected_ids for record_id in self._row_by_id
+        )
+        self.chk_select_all.blockSignals(True)
+        self.chk_select_all.setChecked(all_checked)
+        self.chk_select_all.blockSignals(False)
+
+    def selected_record_ids(self) -> list[str]:
+        # 保持本頁可見順序，方便刪除確認訊息穩定
+        ordered = []
+        for i in range(self.list_widget.count()):
+            record_id = self.list_widget.item(i).data(Qt.UserRole)
+            if record_id and record_id in self._selected_ids:
+                ordered.append(record_id)
+        # 亦包含其他頁曾勾選者
+        for record_id in self._selected_ids:
+            if record_id not in ordered:
+                ordered.append(record_id)
+        return ordered
 
     def _prev_page(self):
         if self._page > 0:
@@ -247,14 +279,6 @@ class HistoryPage:
             self._page += 1
             self._render_page()
 
-    def selected_record_ids(self) -> list[str]:
-        ids = []
-        for item in self.list_widget.selectedItems():
-            record_id = item.data(Qt.UserRole)
-            if record_id:
-                ids.append(record_id)
-        return ids
-
     def current_query(self) -> str:
         return self.edit_search.text().strip()
 
@@ -263,8 +287,10 @@ class HistoryPage:
         return key if key else SORT_BY_DATE
 
     def refresh(self):
-        selected_ids = set(self.selected_record_ids())
         self.manager.load()
+        # 清除已不存在的勾選
+        valid_ids = {record.id for record in self.manager.get_all()}
+        self._selected_ids &= valid_ids
         records = self.manager.search(self.current_query())
         self._filtered = self.manager.sort_records(
             records,
@@ -275,7 +301,7 @@ class HistoryPage:
         total_pages = max(1, (len(self._filtered) + self._page_size - 1) // self._page_size)
         if self._page >= total_pages:
             self._page = total_pages - 1
-        self._render_page(selected_ids)
+        self._render_page()
 
     def _on_list_resized(self):
         if self._fit_guard:
@@ -327,8 +353,8 @@ class HistoryPage:
         return chosen, row_h
 
     def _render_page(self, selected_ids: set[str] | None = None):
-        if selected_ids is None:
-            selected_ids = set(self.selected_record_ids())
+        if selected_ids is not None:
+            self._selected_ids = set(selected_ids)
 
         self.list_widget.clear()
         self._row_by_id.clear()
@@ -351,15 +377,16 @@ class HistoryPage:
         for record in page_records:
             item = QListWidgetItem()
             item.setData(Qt.UserRole, record.id)
+            item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
             row = HistoryRecordRow(record, row_height=row_h)
             row.activated.connect(lambda rid: self.on_select and self.on_select(rid))
             row.favoriteClicked.connect(self._toggle_favorite)
+            row.selectionToggled.connect(self._on_row_selection_toggled)
             item.setSizeHint(row.sizeHint())
             self.list_widget.addItem(item)
             self.list_widget.setItemWidget(item, row)
             self._row_by_id[record.id] = row
-            if record.id in selected_ids:
-                item.setSelected(True)
+            row.set_checked(record.id in self._selected_ids)
 
         # 內容剛好貼齊時關掉直向捲軸，避免無意義 bar
         content_h = visible * row_h + max(0, visible - 1) * spacing
@@ -372,7 +399,7 @@ class HistoryPage:
         self.page_label.setText(f"{self._page + 1} / {total_pages}")
         self.btn_prev.setEnabled(self._page > 0)
         self.btn_next.setEnabled(self._page + 1 < total_pages)
-        self._on_selection_changed()
+        self._sync_select_all_state()
 
     def _toggle_favorite(self, record_id: str):
         if self.on_favorite:

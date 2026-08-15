@@ -1392,7 +1392,7 @@ class MainWindow(QMainWindow):
             return
 
         self.history_page.refresh_and_keep_selection()
-        QMessageBox.information(self, "儲存成功", "占卜問題已儲存。")
+        QMessageBox.information(self, "儲存成功", "占卜問題已儲存至歷史紀錄。")
 
     def save_notes(self):
         notes = self.ui.txtNotes.toPlainText()

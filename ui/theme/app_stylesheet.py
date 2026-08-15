@@ -461,6 +461,23 @@ QWidget#appNavBar QToolButton#appNavButton:checked {{
 QWidget#appNavBar QToolButton#appNavButton:hover {{
     color: {T.GOLD_BRIGHT};
 }}
+QToolButton#historySelectCheck {{
+    background-color: {T.PAPER};
+    color: {T.GOLD};
+    border: 1px solid {T.BORDER};
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 0px;
+}}
+QToolButton#historySelectCheck:checked {{
+    background-color: {T.NAVY};
+    color: {T.GOLD};
+    border: 1px solid {T.GOLD};
+}}
+QToolButton#historySelectCheck:hover {{
+    border: 1px solid {T.GOLD};
+}}
 QCheckBox#styledCheck {{
     color: {T.INK};
     spacing: 8px;

@@ -34,6 +34,7 @@ def _display_name(name: str) -> str:
 class HistoryRecordRow(QWidget):
     favoriteClicked = Signal(str)
     activated = Signal(str)
+    selectionToggled = Signal(str, bool)
 
     def __init__(self, record: HistoryRecord, parent=None, *, row_height: int = 72):
         super().__init__(parent)
@@ -49,15 +50,23 @@ class HistoryRecordRow(QWidget):
         root.setContentsMargins(10, 6, 10, 6)
         root.setSpacing(10)
 
-        # 解卦時間
+        # 解卦時間 + 選取勾選框（手機友善）
         time_col = QVBoxLayout()
-        time_col.setSpacing(2)
+        time_col.setSpacing(4)
         time_cap = QLabel("解卦時間")
         time_cap.setObjectName("historyColCaption")
         self.time_label = QLabel(record.created_at.strftime("%Y-%m-%d %H:%M"))
         self.time_label.setObjectName("historyTimeValue")
+        self.btn_select = QToolButton()
+        self.btn_select.setObjectName("historySelectCheck")
+        self.btn_select.setCheckable(True)
+        self.btn_select.setCursor(Qt.PointingHandCursor)
+        self.btn_select.setFixedSize(28, 28)
+        self.btn_select.setToolTip("選取此紀錄")
+        self.btn_select.toggled.connect(self._on_select_toggled)
         time_col.addWidget(time_cap)
         time_col.addWidget(self.time_label)
+        time_col.addWidget(self.btn_select, 0, Qt.AlignLeft)
         time_col.addStretch(1)
         root.addLayout(time_col, 2)
 
@@ -158,7 +167,12 @@ class HistoryRecordRow(QWidget):
         ver_col.addStretch(1)
         root.addWidget(ver_wrap)
 
-        self.set_selected(False)
+        self.set_checked(False)
+
+    def _on_select_toggled(self, checked: bool):
+        self.btn_select.setText("✓" if checked else "")
+        self.set_selected(checked)
+        self.selectionToggled.emit(self.record_id, checked)
 
     def _set_favorite(self, favorite: bool):
         self.btn_fav.setIcon(icon_star(T.GOLD, 18, filled=favorite))
@@ -176,6 +190,16 @@ class HistoryRecordRow(QWidget):
 
     def sizeHint(self):
         return QSize(640, self._row_height)
+
+    def is_checked(self) -> bool:
+        return self.btn_select.isChecked()
+
+    def set_checked(self, checked: bool):
+        self.btn_select.blockSignals(True)
+        self.btn_select.setChecked(checked)
+        self.btn_select.setText("✓" if checked else "")
+        self.btn_select.blockSignals(False)
+        self.set_selected(checked)
 
     def set_selected(self, selected: bool):
         self.setProperty("selected", "true" if selected else "false")
