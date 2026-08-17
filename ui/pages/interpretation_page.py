@@ -34,10 +34,22 @@ MAIN_TABS = (
 )
 
 CHANGED_TABS = (
-    ("changed_judgment", "變卦卦辭"),
-    ("changed_tuan", "變卦大帥解釋"),
-    ("changed_translation", "變卦白話翻譯"),
+    ("changed_judgment", "卦辭"),
+    ("changed_tuan", "大帥解釋"),
+    ("changed_translation", "白話翻譯"),
+    ("changed_lines", "爻辭"),
 )
+
+_TAB_KIND = {
+    "judgment": "judgment",
+    "tuan": "tuan",
+    "translation": "translation",
+    "lines": "lines",
+    "changed_judgment": "judgment",
+    "changed_tuan": "tuan",
+    "changed_translation": "translation",
+    "changed_lines": "lines",
+}
 
 
 class InterpretationPage(QWidget):
@@ -54,7 +66,6 @@ class InterpretationPage(QWidget):
         self.setObjectName("interpretationRoot")
         self._role = "main"
         self._content_key = "judgment"
-        self._has_moving = False
         self._narrow = False
         self._side_by_side = True
         self._scroll = None
@@ -241,6 +252,7 @@ class InterpretationPage(QWidget):
             "txtChangedWenyan",
             "txtChangedTranslation",
             "txtLineTexts",
+            "txtChangedLineTexts",
             "txtAIAnalysis",
         ):
             editor = QPlainTextEdit()
@@ -266,9 +278,11 @@ class InterpretationPage(QWidget):
         old.addWidget(self)
 
     def _on_role_clicked(self, role: str):
+        kind = _TAB_KIND.get(self._content_key, "judgment")
         self._role = role
         self.main_card.set_active(role == "main")
         self.changed_card.set_active(role == "changed")
+        self._content_key = kind if role == "main" else f"changed_{kind}"
         self._refresh_tabs()
         self._sync_viewer()
 
@@ -279,8 +293,6 @@ class InterpretationPage(QWidget):
     def _refresh_tabs(self):
         if self._role == "main":
             tabs = list(MAIN_TABS)
-            if not self._has_moving:
-                tabs = [t for t in tabs if t[0] != "lines"]
             default = "judgment"
         else:
             tabs = list(CHANGED_TABS)
@@ -299,6 +311,7 @@ class InterpretationPage(QWidget):
             "changed_judgment": "txtChangedJudgment",
             "changed_tuan": "txtChangedTuan",
             "changed_translation": "txtChangedTranslation",
+            "changed_lines": "txtChangedLineTexts",
         }
         attr = mapping.get(key)
         if not attr:
@@ -316,7 +329,6 @@ class InterpretationPage(QWidget):
 
         lines = list(result.lines or [])
         moving = list(result.moving_lines or [])
-        self._has_moving = bool(moving)
         changed = changed_lines_from(lines)
 
         main_name = result.main.title or result.main.name

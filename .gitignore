@@ -17,6 +17,7 @@ Desktop.ini
 
 # Backup
 backup/
+data/*.bak*
 
 # Build
 dist/

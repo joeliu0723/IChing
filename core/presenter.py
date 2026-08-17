@@ -3,6 +3,17 @@ from core.result import HexagramResult
 
 LINE_LABELS = ["初爻", "二爻", "三爻", "四爻", "五爻", "上爻"]
 
+_LINE_FLIP = {
+    "少陽": "少陽",
+    "少陰": "少陰",
+    "老陽": "少陰",
+    "老陰": "少陽",
+}
+
+
+def _changed_line_types(lines):
+    return [_LINE_FLIP.get(line, line) for line in (lines or [])]
+
 
 class HexagramPresenter:
 
@@ -52,7 +63,16 @@ class HexagramPresenter:
         self._set_text("txtChangedTranslation", result.changed.translation)
 
         # ===== 爻辭 =====
-        self._set_text("txtLineTexts", self._format_line_texts(result))
+        self._set_text("txtLineTexts", self._format_line_texts(result, result.main, result.lines))
+        self._set_text(
+            "txtChangedLineTexts",
+            self._format_line_texts(
+                result,
+                result.changed,
+                _changed_line_types(result.lines),
+                mark_moving=False,
+            ),
+        )
 
         # ===== 心得 =====
         if hasattr(self.ui, "txtNotes"):
@@ -62,19 +82,16 @@ class HexagramPresenter:
         if hasattr(self.ui, attr):
             getattr(self.ui, attr).setPlainText(text or "")
 
-    def _format_line_texts(self, result: HexagramResult) -> str:
-        moving = set(result.moving_lines)
+    def _format_line_texts(self, result: HexagramResult, info, line_types, *, mark_moving: bool = True) -> str:
+        moving = set(result.moving_lines) if mark_moving else set()
         parts = []
         has_yao_text = False
+        types = list(line_types or [])
 
         for index, label in enumerate(LINE_LABELS, start=1):
             prefix = "【動爻】" if index in moving else ""
-            yao_type = ""
-
-            if index - 1 < len(result.lines):
-                yao_type = result.lines[index - 1]
-
-            yao_text = result.main.line_text(index)
+            yao_type = types[index - 1] if index - 1 < len(types) else ""
+            yao_text = info.line_text(index) if info is not None else ""
 
             if yao_text:
                 has_yao_text = True
