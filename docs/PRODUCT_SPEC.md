@@ -2,9 +2,9 @@
 
 # Project IChing - Product Specification
 
-Version: V1.4.12
+Version: V1.4.15
 
-Status: Development（對齊目前已實作功能）
+Status: Development（2026-08-24 對齊目前已實作功能）
 
 ---
 
@@ -73,7 +73,7 @@ Project IChing 是一套本機運行的**易經研究工作台**。
 
 # 起卦頁
 
-功能：建立新的占卜，完成後進入解卦頁並寫入歷史。
+功能：建立新的占卜，完成後進入解卦頁。排卦結果先存在 session；解卦頁按「儲存問題」才寫入 `history.json`。
 
 ## 基本資料
 
@@ -153,7 +153,7 @@ Project IChing 是一套本機運行的**易經研究工作台**。
 
 | 功能 | 狀態 |
 |------|------|
-| 排卦後自動寫入 history.json | ✓ |
+| 「儲存問題」後寫入 history.json | ✓ |
 | 單擊選取／雙擊開啟解卦 | ✓ |
 | 多選刪除（確認後永久刪除） | ✓ |
 | 搜尋（問題、卦名、卦序、收藏、驗證） | ✓ |
@@ -183,7 +183,7 @@ python -m tools.data_editor
 | 依欄位批次匯入 | 已實作但 UI 暫隱藏 |
 
 開發時資料路徑：專案 `data/`。  
-（打包後規劃為 `%APPDATA%\IChing\data\`；安裝包建置暫緩。）
+打包後：`%APPDATA%\IChing\data\`（首次從 `_internal/data/hexagrams.json` 複製）。可攜資料夾／zip：`packaging/build_exes.ps1`。Inno 安裝程式草稿在 `packaging/iching.iss`，正式發行驗證仍可暫緩。
 
 ---
 
@@ -199,8 +199,8 @@ python -m tools.data_editor
 
 | 檔案 | 用途 |
 |------|------|
-| data/hexagrams.json | 64 卦解卦內容 |
-| data/history.json | 占卜歷史 |
+| data/hexagrams.json（開發）或 %APPDATA%\\IChing\\data\\ | 64 卦解卦內容 |
+| data/history.json（同上） | 占卜歷史 |
 | data/hexagram_map.py | 上下卦→卦序 |
 
 ---
@@ -217,7 +217,8 @@ python -m tools.data_editor
 | 項目 | 狀態 |
 |------|------|
 | AI 解卦／問答（V1.5） | 暫緩（UI 占位已有） |
-| Windows 安裝包（PyInstaller／Inno） | 暫緩（packaging/ 草稿已有） |
+| Windows 可攜 exe（PyInstaller onedir） | ✓（`packaging/`） |
+| Inno 安裝程式正式發行驗證 | 暫緩 |
 | 設定頁、備份／還原 ZIP | 未做 |
 | 匯出 PDF／Word | 未做 |
 | 雲端同步、帳號、手機／網頁 | 不做（Local First） |
@@ -236,7 +237,7 @@ python -m tools.data_editor
 ✓ Data Editor 編輯卦資料  
 ✓ 資料保存於本機 JSON  
 
-尚未達成（相對早期 V1.0 規格）：設定頁、備份／還原、AI、安裝包。
+尚未達成（相對早期 V1.0 規格）：設定頁、備份／還原 ZIP、AI、Inno 正式發行。
 
 ---
 
@@ -250,6 +251,7 @@ python -m tools.data_editor
 | V1.4.x | 心得、刪除、搜尋、收藏、驗證、編輯、排序、UX |
 | V1.4.10–11 | Data Editor |
 | V1.4.12 | 梅花數字卦 |
+| V1.4.13–15 | 起卦／解卦／歷史 UI |
 | V1.5 | AI（暫緩） |
 
 ---

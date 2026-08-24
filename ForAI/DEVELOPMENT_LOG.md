@@ -760,12 +760,37 @@ Description
 
 ---
 
+## 2026-08-24 倉儲清理與文件對齊
+
+Date
+
+2026-08-24
+
+Feature
+
+移除未使用資產／一次性爬蟲；合併重複文件並依現況更新規格
+
+Modified Files
+
+- 刪除舊 Hero PNG／SVG、`ui/` 根目錄重複 SVG、`tools/build_hexagrams*.py`
+- 刪除重複：`ForAI/PRODUCT_SPEC.md`、`ForAI/TODO.md`、`docs/01_開發日誌.md`
+- 更新 `docs/*`、`ForAI/CLAUDE.md`、`ForAI/PROJECT_HANDOVER.md`、`assets/UI_ASSET_USAGE.md`
+
+Description
+
+- 執行時資產僅 `hero_banner_desktop.png`、`ornamental_divider.svg`
+- 產品規格以 `docs/PRODUCT_SPEC.md` 為唯一份
+- 待辦以 `docs/PROJECT_STATUS.md` 為準；變更紀錄仍在本檔
+- 歷史寫入時機、APPDATA 路徑、可攜打包寫入 DATA／PRODUCT SPEC
+
+---
+
 # Future
 
-## Packaging（暫緩）
+## Packaging
 
-- PyInstaller 產 exe
-- Inno Setup 安裝程式
+- PyInstaller 可攜資料夾：已可建置
+- Inno Setup 實機驗證：暫緩
 
 ## V1.5
 

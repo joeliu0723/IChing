@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
-<defs><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix values="0 0 0 0 .55 0 0 0 0 .48 0 0 0 0 .36 0 0 0 .08 0"/></filter></defs>
-<rect width="1200" height="800" fill="#F6F1E7"/>
-<rect width="1200" height="800" filter="url(#noise)" opacity=".18"/>
-</svg>

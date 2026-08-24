@@ -1,424 +1,103 @@
 # DATA_SPEC.md
 
-# Project IChing - Data Specification
+Project IChing — 資料規格（與程式對齊）  
+Version: V1.4.15  
+更新日期：2026-08-24
 
-Version: V1.0
-Status: Frozen
+本文件描述**目前實作**。不再使用「一占一檔」或 `database/` 目錄。
 
----
+## 儲存
 
-# Purpose
+- 格式：JSON、UTF-8
+- 無 SQL
+- 開發：專案根目錄 `data/`
+- 打包後可寫目錄：`%APPDATA%\IChing\data\`（`core/paths.py`）
+  - `hexagrams.json`：若使用者檔不存在，從安裝包 `_internal/data/` 複製
+  - `history.json`：不強制從內建複製
 
-本文件定義 Project IChing V1.0 的所有資料結構。
+## 檔案
 
-所有程式、JSON、儲存格式皆必須依照本文件實作。
+| 路徑 | 用途 |
+|------|------|
+| `data/hexagrams.json` | 64 卦解卦內容（JSON 陣列） |
+| `data/hexagram_map.py` | 上下卦 → 卦序 |
+| `data/history.json` | 占卜歷史（JSON 陣列） |
 
-本文件為唯一資料規格（Single Source of Truth）。
+## hexagrams.json
 
----
-
-# Storage
-
-Storage Type
-
-- JSON
-
-Architecture
-
-- Local First
-- One Divination = One JSON File
-
-Database
-
-- None
-
-Encoding
-
-- UTF-8
-
-JSON Format
-
-- Pretty Print
-- Indent = 4
-
----
-
-# Folder Structure
-
-```
-database/
-├── divinations/
-├── favorites/
-└── index/
-
-data/
-├── classics/
-├── reference/
-└── settings/
-
-backup/
-```
-
----
-
-# Divination Record
-
-每一次占卜建立一個 JSON。
-
-檔名：
-
-```
-YYYYMMDD_HHMMSS.json
-```
-
-例如：
-
-```
-20260718_203501.json
-```
-
-檔名只作為儲存用途。
-
-真正識別資料請使用 UUID。
-
----
-
-# JSON Schema
+根節點為陣列，每卦一筆，建議欄位：
 
 ```json
 {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-
-    "created_at": "2026-07-18T20:35:01",
-    "updated_at": "2026-07-18T20:35:01",
-
-    "question": "",
-
-    "user": {
-        "name": "",
-        "gender": "",
-        "age": 0
-    },
-
-    "hexagram": {
-        "number": 0,
-        "name": ""
-    },
-
-    "changed_hexagram": null,
-
-    "moving_lines": [],
-
-    "interpretation": "",
-
-    "validation": "",
-
-    "validation_result": "未驗證",
-
-    "favorite": false
+  "number": 1,
+  "name": "乾",
+  "upper": "乾",
+  "lower": "乾",
+  "gua_text": "",
+  "tuan": "",
+  "xiang": "",
+  "wenyan": "",
+  "translation": "",
+  "lines": ["", "", "", "", "", ""],
+  "description": "",
+  "fortune": "",
+  "love": "",
+  "career": "",
+  "wealth": ""
 }
 ```
 
----
+| 欄位 | 說明 |
+|------|------|
+| number, name, upper, lower | 結構識別；Data Editor「清除全部資訊」會保留 |
+| gua_text | 卦辭 |
+| tuan | 大帥解釋（原彖傳欄） |
+| xiang | 象傳 |
+| wenyan | 文言 |
+| translation | 白話翻譯 |
+| lines | 六爻爻辭，由下而上，長度 6 |
+| description, fortune, love, career, wealth | 舊欄位，仍可存在；解卦 UI 以經文欄為主 |
 
-# Field Specification
+Data Editor 可編輯：卦辭、大帥解釋、象傳、文言、白話、爻辭。
 
-## id
+## history.json
 
-UUID v4。
-
-建立後不得修改。
-
----
-
-## created_at
-
-建立時間。
-
-ISO 8601。
-
-例如：
-
-```
-2026-07-18T20:35:01
-```
-
-建立後不得修改。
-
----
-
-## updated_at
-
-最後修改時間。
-
-每次存檔更新。
-
----
-
-## question
-
-占卜問題。
-
-String。
-
----
-
-## user
+根節點為 `HistoryRecord` 陣列。單筆：
 
 ```json
 {
-    "name": "",
-    "gender": "",
-    "age": 0
+  "id": "uuid",
+  "created_at": "2026-08-24T14:00:00",
+  "updated_at": "2026-08-24T14:00:00",
+  "question": "",
+  "cast_method": "六爻輸入",
+  "lines": ["young_yang", "young_yin", "old_yang", "young_yin", "young_yang", "young_yin"],
+  "main_number": 1,
+  "main_name": "乾",
+  "changed_number": 1,
+  "changed_name": "乾",
+  "moving_lines": [],
+  "notes": "",
+  "favorite": false,
+  "verification_content": "",
+  "verification_result": "未驗證"
 }
 ```
 
----
-
-## hexagram
-
-本卦。
-
-```json
-{
-    "number": 1,
-    "name": "乾"
-}
-```
-
----
-
-## changed_hexagram
-
-有動爻：
-
-```json
-{
-    "number": 44,
-    "name": "姤"
-}
-```
-
-沒有動爻：
-
-```json
-null
-```
-
----
-
-## moving_lines
-
-由下而上。
-
-例如：
-
-```json
-[2,5]
-```
-
-表示：
-
-二爻、五爻。
-
-沒有動爻：
-
-```json
-[]
-```
-
----
-
-## interpretation
-
-我的解卦。
-
-Multi-line String。
-
----
-
-## validation
-
-事後驗證。
-
-Multi-line String。
-
----
-
-## validation_result
-
-固定值：
-
-- 未驗證
-- 符合
-- 部分符合
-- 不符合
-
-不得使用其他文字。
-
----
-
-## favorite
-
-Boolean。
-
-```
-true
-false
-```
-
----
-
-# Favorite
-
-不建立 Favorites Database。
-
-直接使用：
-
-```json
-"favorite": true
-```
-
----
-
-# Search Fields
-
-搜尋來源：
-
-```
-database/divinations/
-```
-
-支援：
-
-- question
-- user.name
-- hexagram.number
-- hexagram.name
-- changed_hexagram.number
-- changed_hexagram.name
-- validation_result
-- favorite
-- created_at
-
----
-
-# Settings
-
-位置：
-
-```
-data/settings/settings.json
-```
-
-格式：
-
-```json
-{
-    "default_name": "",
-    "default_gender": "",
-    "default_age": 0,
-
-    "font_size": 10,
-
-    "dark_mode": false,
-
-    "window_width": 1600,
-    "window_height": 900
-}
-```
-
----
-
-# Reference Data
-
-位置：
-
-```
-data/classics/
-```
-
-保存：
-
-- 易經原文
-- 十翼
-- 卦辭
-- 爻辭
-
-唯讀。
-
----
-
-位置：
-
-```
-data/reference/
-```
-
-保存：
-
-- 老師筆記
-- 書籍資料
-- 匯入資料
-
-唯讀。
-
----
-
-# Backup
-
-Backup
-
-將
-
-```
-database/
-```
-
-壓縮為 ZIP。
-
-Restore
-
-直接覆蓋：
-
-```
-database/
-```
-
----
-
-# Development Rules
-
-所有 JSON：
-
-- UTF-8
-- Pretty Print
-- Indent = 4
-
-不得：
-
-- SQLite
-- MySQL
-- PostgreSQL
-- ORM
-- Binary Format
-
-V1.0 僅使用 JSON。
-
----
-
-# AI Development Rules
-
-新增欄位：
-
-不得修改既有 Schema。
-
-若 V2 新增欄位：
-
-只能向下擴充。
-
-不得刪除或重新命名既有欄位。
-
----
-
-# End
+| 欄位 | 規則 |
+|------|------|
+| id | UUID；建立後不改 |
+| created_at | 建立時間，ISO 8601；不改 |
+| updated_at | 每次存檔更新 |
+| lines | 六爻字串，由下而上 |
+| moving_lines | 動爻序號（1–6），無則 `[]` |
+| verification_result | 僅：未驗證／符合／部分符合／不符合 |
+| favorite | boolean |
+
+寫入時機：解卦頁「儲存問題」才新增；心得／驗證／收藏需該筆已在歷史中。
+
+規格中的姓名／性別／年齡、`data/settings/`、`data/classics/` **尚未實作**。
+
+## 備份
+
+規格曾規劃 ZIP 備份整個資料目錄；**尚未實作**。Data Editor 可另存備份檔到使用者資料目錄。

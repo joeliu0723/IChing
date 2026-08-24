@@ -2,7 +2,7 @@
 
 # Project IChing — 開發狀態儀表板
 
-更新日期：2026-08-12
+更新日期：2026-08-24
 
 ---
 
@@ -27,9 +27,9 @@ Status：**Active Development**
 | 優先 | 項目 | 狀態 |
 |------|------|------|
 | 1 | 以 Data Editor 補齊 hexagrams.json 內容 | In Progress |
-| 2 | Windows 安裝包（PyInstaller + Inno） | Deferred |
+| 2 | Inno 安裝程式實機驗證 | Deferred |
 | 3 | V1.5 AI 解卦／問答 | Deferred |
-| 4 | 設定頁、備份／還原 | Todo |
+| 4 | 設定頁、備份／還原 ZIP | Todo |
 
 ---
 
@@ -42,60 +42,31 @@ Status：**Active Development**
 - [x] HexagramLookup（卦序／卦名／上下卦）
 - [x] 梅花三數起卦（`core/meihua.py`）
 - [x] Session、HistoryRecord、HistoryManager
-- [x] 共用資料路徑（`core/paths.py`；開發用 `data/`）
+- [x] 共用資料路徑（`core/paths.py`；開發 `data/`，打包 `%APPDATA%\IChing\data\`）
 
 ### 起卦
 
-- [x] 六爻輸入
-- [x] 卦名輸入
-- [x] 卦序輸入
-- [x] 上下卦輸入
-- [x] 數字卦（梅花易數三數）
-- [x] 輸入模式切換（固定高度 Stack，不跳動）
-- [x] V1.4.13 起卦首頁視覺改版（Hero 單圖、五模式列、六爻卡片、問題卡）
-- [x] V1.4.14 起卦 CTA 精修（深藍金邊主按鈕）
-- [x] V1.4.15 全站 UI 對齊（寬窄導航、解卦頁、歷史列、Hero 頂部漸層）
+- [x] 六爻／卦名／卦序／上下卦／數字卦
 - [x] 「開始解卦」按鈕（不自動排卦）
-- [x] 占卜問題輸入
-- [x] 輸入驗證與錯誤提示
+- [x] V1.4.13–15 起卦與全站 UI
 
 ### 解卦
 
-- [x] 本卦／變卦／動爻顯示
-- [x] 本卦：卦辭、大帥解釋、象傳、文言、白話翻譯
-- [x] 變卦：卦辭、大帥解釋、象傳、文言、白話翻譯
-- [x] 爻辭（動爻標記）
-- [x] 解卦區塊可折疊
-- [x] 問題編輯與儲存
-- [x] 我的心得編輯與儲存
-- [x] 事後驗證（結果＋內容）
-- [x] 收藏 Checkbox
+- [x] 本卦／變卦／動爻；卦辭、大帥解釋、象傳、文言、白話、爻辭
+- [x] 問題／心得／驗證／收藏
 - [ ] AI 分析（僅 UI 占位）
 
 ### 歷史
 
-- [x] 排卦後自動寫入 history.json
-- [x] 列表顯示（日期／卦名／問題／★／驗證）
-- [x] V1.4.15 歷史列對齊 Layout（解卦時間、本卦／變卦、5–8 筆適配）
-- [x] 單擊選取、雙擊開啟
-- [x] 多選刪除＋確認
-- [x] 搜尋
-- [x] 排序＋升降切換
-- [x] 從歷史還原完整解卦內容
+- [x] 「儲存問題」後寫入 history.json
+- [x] 搜尋、排序、多選刪除、雙擊開啟
 
-### 工具
+### 工具／發行
 
 - [x] Data Editor（`python -m tools.data_editor`）
-- [x] Editor 捲動、Win+H 語音、隱藏批次匯入 UI
-- [x] packaging/ 安裝包草稿（未驗證建置）
-
-### 尚未完成
-
-- [ ] 設定頁
-- [ ] 備份／還原 ZIP
-- [ ] 匯出 PDF／Word
-- [ ] Windows Installer 正式發行
-- [ ] AI 串接
+- [x] PyInstaller 可攜資料夾（主程式與 Data Editor 共用 `_internal`）
+- [ ] Inno 正式發行驗證
+- [ ] 設定頁、備份 ZIP、匯出 PDF／Word
 
 ---
 
@@ -122,18 +93,17 @@ Presenter → UI
 | `main.py` | 主程式入口 |
 | `ui/main_window.py` | 主視窗 |
 | `tools/data_editor/` | 64 卦資料編輯器 |
-| `data/hexagrams.json` | 卦資料 |
-| `data/history.json` | 歷史（本機執行產物，通常不進版控） |
-| `ForAI/` | AI 交接與詳細開發日誌 |
-| `docs/` | 本目錄：規格／狀態／開發日誌（對外整理） |
-| `packaging/` | 安裝包草稿（暫緩） |
+| `data/hexagrams.json` | 卦資料（開發） |
+| `data/history.json` | 歷史（本機產物，勿隨意推送） |
+| `docs/` | 規格與狀態 |
+| `ForAI/` | 開發日誌與決策 |
+| `packaging/` | exe／Inno |
 
 ---
 
-## Git（參考）
+## Git
 
-- Branch：`ui-redesign`（V1.4.15 全站 UI 對齊；尚未合併 `main`）
-- 近期功能已分段 commit（含 Data Editor、梅花數字卦、全站 UI 改版等）
+- Branch：`main`
 - 勿將個人 `history.json`／未定稿卦文內容隨意推送
 
 ---
@@ -141,5 +111,5 @@ Presenter → UI
 ## Long Term（未排程）
 
 - 統計分析
-- 更多起卦變體（時間起卦等）
-- 雲端同步（若未來要做，不得破壞 Local First 相容）
+- 更多起卦變體
+- 雲端同步（若未來要做，不得破壞 Local First）

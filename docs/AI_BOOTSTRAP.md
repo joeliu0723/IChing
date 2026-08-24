@@ -1,322 +1,49 @@
 # AI_BOOTSTRAP.md
 
-# Project IChing - AI Bootstrap
+Project IChing — AI 接手最小資訊  
+Version: V1.4.15  
+更新日期：2026-08-24
 
-Version: V1.0
+## 專案
 
----
+Windows 桌面易經研究工作台。Python 3.13、PySide6、JSON、Local First。  
+入口：`python main.py`。資料編輯：`python -m tools.data_editor`。
 
-# Purpose
+## 先讀
 
-本文件提供任何 AI 接手 Project IChing 時所需的最小資訊。
+1. `docs/PROJECT_STATUS.md`
+2. `docs/PRODUCT_SPEC.md`
+3. `docs/DATA_SPEC.md`
+4. 需要改 UI 時：`docs/CURSOR_UI_HANDOFF.md`、`assets/UI_ASSET_USAGE.md`
+5. 決策衝突：`ForAI/DECISIONS.md`
+6. 變更紀錄：`ForAI/DEVELOPMENT_LOG.md`
 
-目標：
+## 架構
 
-- 快速理解專案
-- 了解已確認的設計決策
-- 依照既有架構繼續開發
-- 避免重複設計與修改已確認規格
+UI → Controller → HexagramEngine / Lookup / Meihua / HistoryManager → Presenter → UI
 
-本文件優先於聊天紀錄。
+- Engine 不碰 UI
+- Presenter 不做排卦運算
+- Controller 不直接操作 Widget
 
----
+## 資料（現況）
 
-# Project Summary
+- `hexagrams.json`：64 卦解卦內容（陣列）
+- `history.json`：占卜紀錄陣列（**不是**一卦一個檔）
+- 開發：專案 `data/`
+- 打包後：`%APPDATA%\IChing\data\`；內建預設在 `_internal/data/`
 
-Project Name
+歷史：排卦只進 session；解卦頁「儲存問題」才寫入 `history.json`。
 
-Project IChing（易經研究工作台）
+## 已完成（摘要）
 
-Type
+五種起卦（含梅花三數）、解卦經文與折疊、歷史搜尋排序刪除、Data Editor、可攜 exe（`packaging/`）。
 
-Windows Desktop Application
+## 未做
 
-Language
+設定頁、備份／還原 ZIP、AI 串接、正式 Inno 發行驗證。
 
-Python 3.13
+## 工作原則
 
-GUI
-
-PySide6 + Qt Designer
-
-Storage
-
-JSON
-
-Architecture
-
-Local First
-
-Current Version
-
-V1.0
-
-Current Stage
-
-Development
-
----
-
-# Project Goal
-
-建立一套可長期使用的易經研究工具。
-
-V1.0 必須完成：
-
-- 起卦
-- 解卦
-- 占卜紀錄
-- 查詢紀錄
-- JSON 儲存
-- 備份與還原
-
-不追求大量功能。
-
-優先完成完整工作流程。
-
----
-
-# Development Philosophy
-
-遵循以下原則：
-
-1.
-Specification First
-
-先確認功能，再撰寫程式。
-
-2.
-Feature Driven
-
-一次完成一個功能。
-
-不要同時修改多個模組。
-
-3.
-Keep It Simple
-
-優先簡單且容易維護。
-
-不要過度設計。
-
-4.
-Local First
-
-所有資料皆儲存在本機。
-
-不依賴雲端。
-
----
-
-# Confirmed Decisions
-
-以下內容已確認。
-
-除非使用者要求，不可修改。
-
-Storage
-
-JSON
-
-Database
-
-不使用 SQL
-
-GUI
-
-Qt Designer
-
-Framework
-
-PySide6
-
-Platform
-
-Windows
-
-Programming Language
-
-Python 3.13
-
-Architecture
-
-Local First
-
-One Divination
-
-One JSON File
-
-Record
-
-可修改
-
-Favorite
-
-Boolean
-
-Delete
-
-永久刪除
-
-Reference Data
-
-唯讀
-
-Settings
-
-JSON
-
-Backup
-
-ZIP
-
----
-
-# Development Priority
-
-依照以下順序完成：
-
-1.
-
-Main Window
-
-↓
-
-2.
-
-起卦
-
-↓
-
-3.
-
-排卦核心
-
-↓
-
-4.
-
-解卦
-
-↓
-
-5.
-
-JSON 儲存
-
-↓
-
-6.
-
-資料管理
-
-↓
-
-7.
-
-設定
-
-不要跳步。
-
----
-
-# Working Rules
-
-開始任何工作前：
-
-1.
-
-閱讀
-
-PRODUCT_SPEC.md
-
-2.
-
-閱讀
-
-DATA_SPEC.md
-
-3.
-
-完成目前功能。
-
-4.
-
-保持程式可執行。
-
-不要一次修改大量程式。
-
----
-
-# Scope
-
-V1.0
-
-僅完成：
-
-已確認功能。
-
-若想到新功能：
-
-不要直接加入。
-
-完成目前功能即可。
-
----
-
-# Success Definition
-
-V1.0 完成代表：
-
-✓ 可以起卦
-
-✓ 可以顯示本卦
-
-✓ 可以顯示變卦
-
-✓ 可以輸入解卦
-
-✓ 可以儲存 JSON
-
-✓ 可以重新開啟紀錄
-
-✓ 可以搜尋紀錄
-
-其它功能皆可留待 V2。
-
----
-
-# Document Priority
-
-若資訊衝突：
-
-DATA_SPEC.md
-
-↓
-
-PRODUCT_SPEC.md
-
-↓
-
-README.md
-
-聊天紀錄僅供參考。
-
-正式文件優先。
-
----
-
-# Final Rule
-
-若有兩種以上實作方式：
-
-優先選擇：
-
-- 最簡單
-- 最容易閱讀
-- 最容易維護
-- 最少程式碼
-
-不要為了擴充性增加 V1.0 的複雜度。
-
-完成比完美更重要。
+一次改一件事；保持可執行；不要為未排程功能加架構。  
+產品規格在 `docs/PRODUCT_SPEC.md`（`ForAI/` 不再另存一份 SPEC）。
