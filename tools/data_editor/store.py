@@ -18,7 +18,7 @@ from core.paths import hexagrams_path, user_data_dir
 
 EDITABLE_FIELDS = (
     ("gua_text", "卦辭"),
-    ("tuan", "大帥解釋"),
+    ("tuan", "自定義解釋"),
     ("xiang", "象傳"),
     ("wenyan", "文言"),
     ("translation", "白話翻譯"),
@@ -191,6 +191,31 @@ class HexagramStore:
             written += 1
 
         return written, skipped
+
+    def clear_imported_text(self) -> int:
+        """
+        清除全部可匯入文字欄位（卦辭、自定義解釋、象傳、文言、白話、爻辭）。
+
+        保留卦序、卦名、上下卦等結構欄位。回傳受影響的卦數。
+        """
+
+        affected = 0
+        for record in self.records:
+            changed = False
+            for key, _label in EDITABLE_FIELDS:
+                if str(record.get(key, "") or "").strip():
+                    changed = True
+                record[key] = ""
+
+            lines = record.get("lines")
+            if isinstance(lines, list) and any(str(item or "").strip() for item in lines):
+                changed = True
+            record["lines"] = [""] * 6
+
+            if changed:
+                affected += 1
+
+        return affected
 
 
 def _split_line_parts(text: str) -> list[str]:

@@ -27,6 +27,15 @@ def is_frozen() -> bool:
     return bool(getattr(sys, "frozen", False))
 
 
+def resource_root() -> Path:
+    """開發時為專案根目錄；打包後為 PyInstaller _MEIPASS。"""
+
+    if is_frozen():
+        return Path(sys._MEIPASS)
+
+    return project_root()
+
+
 def bundled_data_dir() -> Path:
     """
     內建唯讀預設資料目錄。
@@ -35,10 +44,13 @@ def bundled_data_dir() -> Path:
     PyInstaller：_MEIPASS/data/
     """
 
-    if is_frozen():
-        return Path(sys._MEIPASS) / "data"
+    return resource_root() / "data"
 
-    return project_root() / "data"
+
+def assets_ui_dir() -> Path:
+    """UI 圖檔／SVG（Hero、飾線）。"""
+
+    return resource_root() / "assets" / "ui"
 
 
 def user_data_dir() -> Path:

@@ -684,7 +684,7 @@
         <item>
          <widget class="QGroupBox" name="grp_txtTuan">
           <property name="title">
-           <string>彖傳</string>
+           <string>自定義解釋</string>
           </property>
           <layout class="QVBoxLayout" name="layout_txtTuan">
            <item>

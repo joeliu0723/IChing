@@ -211,6 +211,14 @@ class DataEditorWindow(QMainWindow):
         # 暫不使用，保留程式碼方便日後恢復
         self.btn_import.hide()
 
+        self.btn_clear_all = QPushButton("清除全部資訊")
+        self.btn_clear_all.setToolTip(
+            "一鍵清空全部卦的卦辭、自定義解釋、象傳、文言、白話翻譯與爻辭。\n"
+            "不會刪除卦名／上下卦等結構資料。寫入目前資料檔。"
+        )
+        self.btn_clear_all.clicked.connect(self.clear_all_imported_text)
+        toolbar.addWidget(self.btn_clear_all)
+
         outer.addLayout(toolbar)
 
         splitter = QSplitter()
@@ -448,6 +456,39 @@ class DataEditorWindow(QMainWindow):
             QMessageBox.warning(self, "匯出失敗", str(error))
             return
         QMessageBox.information(self, "完成", f"已匯出：\n{path}")
+
+    def clear_all_imported_text(self):
+        reply = QMessageBox.warning(
+            self,
+            "清除全部資訊",
+            "將清空全部 64 卦的卦辭、自定義解釋、象傳、文言、白話翻譯與爻辭，"
+            "並立即寫入資料檔。\n\n"
+            f"資料檔：\n{self.store.path}\n\n"
+            "此操作無法復原（建議先「匯出備份」）。確定繼續？",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            return
+
+        self._apply_editors_to_store()
+        try:
+            affected = self.store.clear_imported_text()
+            self.store.save()
+        except Exception as error:
+            QMessageBox.warning(self, "清除失敗", str(error))
+            return
+
+        if self._current_number is not None:
+            self._load_record(self._current_number)
+        else:
+            self._dirty = False
+
+        QMessageBox.information(
+            self,
+            "清除完成",
+            f"已清空 {affected} 卦的匯入文字，並寫入：\n{self.store.path}",
+        )
 
     def open_import(self):
         dialog = ImportDialog(self)

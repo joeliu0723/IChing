@@ -4,7 +4,6 @@ __pycache__/
 
 # Virtual Environment
 .venv/
-.venv.broken*/
 
 # VSCode
 .vscode/
@@ -18,13 +17,10 @@ Desktop.ini
 
 # Backup
 backup/
-data/*.bak*
 
 # Build
-dist/
 build/
 
 # Local-only (kept on disk, not on GitHub)
 ForAI/
-packaging/
 開啟ui

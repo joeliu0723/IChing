@@ -15,15 +15,14 @@ BrandHero — 起卦頁主視覺（單一完成稿圖檔）。
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor, QLinearGradient, QPainter, QPixmap, QPixmapCache
 from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 
+from core.paths import assets_ui_dir
 
-_ASSETS = Path(__file__).resolve().parents[2] / "assets" / "ui"
-_HERO_BANNER = _ASSETS / "hero_banner_desktop.png"
+
+_HERO_BANNER = assets_ui_dir() / "hero_banner_desktop.png"
 
 # 原圖 2400×560；太極圖中心（相對座標）
 _SRC_W = 2400

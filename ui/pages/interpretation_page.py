@@ -28,14 +28,14 @@ from ui.widgets.segmented_tabs import SegmentedTabs
 
 MAIN_TABS = (
     ("judgment", "卦辭"),
-    ("tuan", "大帥解釋"),
+    ("tuan", "自定義解釋"),
     ("translation", "白話翻譯"),
     ("lines", "爻辭"),
 )
 
 CHANGED_TABS = (
     ("changed_judgment", "卦辭"),
-    ("changed_tuan", "大帥解釋"),
+    ("changed_tuan", "自定義解釋"),
     ("changed_translation", "白話翻譯"),
     ("changed_lines", "爻辭"),
 )

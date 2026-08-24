@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 from PySide6.QtCore import QEvent, QObject, Qt, QRectF
 from PySide6.QtGui import QColor, QFont, QPainter, QPen
@@ -42,6 +41,7 @@ from ui.widgets.app_nav_bar import AppNavBar
 from ui.widgets.brand_hero import BrandHero
 from ui.widgets.mode_selector import ModeSelector
 from ui.widgets.nav_icons import icon_book, icon_list, icon_taiji
+from core.paths import assets_ui_dir
 
 
 TRIGRAM_NAMES = ["乾", "坤", "震", "巽", "坎", "離", "兌", "艮"]
@@ -54,7 +54,7 @@ CAST_METHOD_LABELS = {
     "meihua": "梅花易數",
 }
 
-_ASSETS_UI = Path(__file__).resolve().parents[1] / "assets" / "ui"
+_ASSETS_UI = assets_ui_dir()
 
 CAST_HOME_STYLE = build_app_stylesheet()
 

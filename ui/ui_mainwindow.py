@@ -598,7 +598,7 @@ class Ui_MainWindow(object):
         self.label_lblMovingLines.setText(QCoreApplication.translate("MainWindow", u"\u52d5\u723b", None))
         self.lblMovingLines.setText(QCoreApplication.translate("MainWindow", u"-", None))
         self.grp_txtJudgment.setTitle(QCoreApplication.translate("MainWindow", u"\u5366\u8fad", None))
-        self.grp_txtTuan.setTitle(QCoreApplication.translate("MainWindow", u"\u5f56\u50b3", None))
+        self.grp_txtTuan.setTitle(QCoreApplication.translate("MainWindow", u"自定義解釋", None))
         self.grp_txtXiang.setTitle(QCoreApplication.translate("MainWindow", u"\u8c61\u50b3", None))
         self.grp_txtWenyan.setTitle(QCoreApplication.translate("MainWindow", u"\u6587\u8a00", None))
         self.grp_txtTranslation.setTitle(QCoreApplication.translate("MainWindow", u"\u767d\u8a71\u7ffb\u8b6f", None))
