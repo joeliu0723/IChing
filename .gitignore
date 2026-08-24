@@ -23,3 +23,8 @@ data/*.bak*
 # Build
 dist/
 build/
+
+# Local-only (kept on disk, not on GitHub)
+ForAI/
+packaging/
+開啟ui
